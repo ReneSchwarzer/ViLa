@@ -1,0 +1,112 @@
+﻿.profile 
+{
+    
+}
+
+.profile img
+{
+    width: 40px;
+    height: 40px;
+    float: left;
+    margin-top: 5px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+.profile b
+{
+    width: 40px;
+    height: 40px;
+    float: left;
+    margin-top: 5px;
+    margin-right: 10px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+}
+
+.timeline
+{
+    list-style: none;
+    margin: 0px;
+    padding-left: 10px
+}
+
+.timeline .item 
+{
+    border: none;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    padding: 5px;
+}
+
+.timeline .item .header
+{
+    width: 100%;
+}
+
+.timeline .item .header p span
+{
+    margin: 0px;
+    color: gray;
+    font-weight: normal;
+}
+
+.timeline .item .header small
+{
+    margin: 0px;
+    color: gray;
+}
+
+.timeline .item .post
+{
+    padding: 5px 5px 15px 5px;
+    position: relative;
+}
+
+.timeline .item .options
+{
+    margin-bottom: 10px;
+}
+
+.timeline .item form
+{
+    margin-left: 0px;
+    margin-right: 50px;
+}
+
+.timeline .item form textarea
+{
+    margin-bottom: 10px;
+}
+
+.timeline .item form button
+{
+    display: inline-block;
+}
+
+.timeline .item .comment
+{
+    background-color: white;
+    margin-left: 50px;
+}
+
+.timeline .item .comment .header
+{
+    border: none;
+    margin-bottom: 10px;
+}
+
+.timeline .item .comment .post
+{
+    background-color: white;
+    margin-left: 50px;
+    margin-right: 0px;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.timeline .item .comment .options
+{
+    margin-left: 50px;
+}

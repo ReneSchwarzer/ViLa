@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config version = "1">
+
+    <!-- Loggingeinstellungen Off, Override, Append-->
+    <log modus="Off" path="/var/log/" encoding="iso-8859-15" filename="turtlebay.log" timepattern="dd.MM.yyyy HH:mm:ss" />
+
+    <port>80</port>
+    <connectionlimit>300</connectionlimit>
+    <assets>./</assets>
+
+    <stagedirectory>./</stagedirectory>
+    
+</config>
