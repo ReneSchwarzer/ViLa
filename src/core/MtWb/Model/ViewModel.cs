@@ -85,10 +85,12 @@ namespace MtWb.Model
                         if (value)
                         {
                             GPIO.Write(_electricContactorPin, PinValue.High);
+                            Log(new LogItem(LogItem.LogLevel.Error, "Status des Schütz wurde auf HIGH geändert"));
                         }
                         else
                         {
                             GPIO.Write(_electricContactorPin, PinValue.Low);
+                            Log(new LogItem(LogItem.LogLevel.Error, "Status des Schütz wurde auf LOW"));
                         }
 
                         _electricContactorStatus = value;
@@ -146,8 +148,7 @@ namespace MtWb.Model
                 GPIO.OpenPin(_powerMeterPin, PinMode.InputPullUp);
                 GPIO.OpenPin(_electricContactorPin, PinMode.Output);
 
-                _electricContactorStatus = false;
-                GPIO.Write(_electricContactorPin, PinValue.Low);
+                ElectricContactorStatus = true;
 
                 Log(new LogItem(LogItem.LogLevel.Info, "GpioController gestartet"));
                 Log(new LogItem(LogItem.LogLevel.Debug, "ElectricContactorPin " + _electricContactorPin));
@@ -156,8 +157,6 @@ namespace MtWb.Model
             {
 
             }
-
-            ElectricContactorStatus = false;
         }
 
         /// <summary>
