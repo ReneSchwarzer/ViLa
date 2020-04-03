@@ -19,6 +19,7 @@ sudo chmod +x /opt/mtwb
 
 
 cp -Rf MtWb/bin/Debug/netcoreapp3.1/publish/* /opt/mtwb
+cp -Rf MtWb.App/bin/Debug/netcoreapp3.1/publish/* /opt/mtwb
 cp mtwb.sh /opt/mtwb
 sudo chmod +x /opt/mtwb/mtwb.sh
 

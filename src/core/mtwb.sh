@@ -7,6 +7,6 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1
 dir=´pwd´
 
 cd /opt/mtwb
-./MtWb
+./MtWb.App
 
 cd $dir
