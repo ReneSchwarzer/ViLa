@@ -34,11 +34,15 @@ namespace MtWb
             var help = new VariationPath(root, "help", new PathItem("Hilfe", "help"));
             var on = new VariationPath(root, "on", new PathItem("On", "on"));
             var off = new VariationPath(root, "off", new PathItem("Off", "off"));
+            var log = new VariationPath(root, "log", new PathItem("Logging", "log"));
+            var debug = new VariationPath(root, "debug", new PathItem("Debug", "debug"));
 
             root.GetUrls("Home").ForEach(x => Register(new WorkerPage<PageDashboard>(x) { }));
             help.GetUrls("Hilfe").ForEach(x => Register(new WorkerPage<PageHelp>(x) { }));
             on.GetUrls("On").ForEach(x => Register(new WorkerPage<PageOn>(x) { }));
             off.GetUrls("Off").ForEach(x => Register(new WorkerPage<PageOff>(x) { }));
+            log.GetUrls("Logging").ForEach(x => Register(new WorkerPage<PageLog>(x) { }));
+            debug.GetUrls("Debug").ForEach(x => Register(new WorkerPage<PageDebug>(x) { }));
 
             Task.Run(() => { Run(); });
         }
