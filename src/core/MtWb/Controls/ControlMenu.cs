@@ -30,7 +30,8 @@ namespace MtWb.Controls
 
             Items.Add(new ControlLink(Page) { Text = "Home", Icon = Icon.Home, Url = Page.GetUrl(0) });
             Items.Add(new ControlDropdownMenuDivider(Page) { });
- 
+            Items.Add(new ControlLink(Page) { Text = "Logging", Icon = Icon.Book, Url = Page.GetUrl(0, "log") });
+
             if (Page.Url == Page.GetUrl("/"))
             {
                 Items.Add(new ControlDropdownMenuDivider(Page) { });

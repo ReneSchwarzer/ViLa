@@ -143,8 +143,10 @@ namespace MtWb.Model
             {
                 // Initialisierung des Controllers
                 GPIO = new GpioController(PinNumberingScheme.Logical);
+                GPIO.OpenPin(_powerMeterPin, PinMode.InputPullUp);
                 GPIO.OpenPin(_electricContactorPin, PinMode.Output);
 
+                _electricContactorStatus = false;
                 GPIO.Write(_electricContactorPin, PinValue.Low);
 
                 Log(new LogItem(LogItem.LogLevel.Info, "GpioController gestartet"));
