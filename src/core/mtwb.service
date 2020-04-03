@@ -1,0 +1,12 @@
+[Unit]
+Description=MtWb Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/mtwb/
+ExecStart=/opt/mtwb/mtwb.sh
+
+[Install]
+WantedBy=multi-user.target
