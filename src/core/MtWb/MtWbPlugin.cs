@@ -1,9 +1,8 @@
 ﻿using MtWb.Model;
 using MtWb.Pages;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using WebExpress.Pages;
 using WebExpress.Workers;
 
@@ -33,10 +32,42 @@ namespace MtWb
 
             var root = new VariationPath("home", new PathItem("Home"));
             var help = new VariationPath(root, "help", new PathItem("Hilfe", "help"));
- 
+            var on = new VariationPath(root, "on", new PathItem("On", "on"));
+            var off = new VariationPath(root, "off", new PathItem("Off", "off"));
+
             root.GetUrls("Home").ForEach(x => Register(new WorkerPage<PageDashboard>(x) { }));
-             help.GetUrls("Hilfe").ForEach(x => Register(new WorkerPage<PageHelp>(x) { }));
- 
+            help.GetUrls("Hilfe").ForEach(x => Register(new WorkerPage<PageHelp>(x) { }));
+            on.GetUrls("On").ForEach(x => Register(new WorkerPage<PageOn>(x) { }));
+            off.GetUrls("Off").ForEach(x => Register(new WorkerPage<PageOff>(x) { }));
+
+            Task.Run(() => { Run(); });
+        }
+
+        /// <summary>
+        /// Diese Methode wird aufgerufen, nachdem das Fenster aktiv ist.
+        /// </summary>
+        private void Run()
+        {
+            // Loop
+            while (true)
+            {
+                try
+                {
+                    Update();
+                }
+                finally
+                {
+                    Thread.Sleep(100);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Diese Methode wird aufgerufen, nachdem das Fenster aktiv ist.
+        /// </summary>
+        private void Update()
+        {
+            ViewModel.Instance.Update();
         }
     }
 }

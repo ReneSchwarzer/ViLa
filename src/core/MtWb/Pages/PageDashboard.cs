@@ -1,8 +1,5 @@
 ﻿using MtWb.Controls;
 using MtWb.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WebExpress.UI.Controls;
 
 namespace MtWb.Pages
@@ -25,7 +22,7 @@ namespace MtWb.Pages
         {
             base.Init();
 
-            var menu = new ControlMenu(this);  
+            var menu = new ControlMenu(this);
             ToolBar.Add(menu);
         }
 
@@ -37,9 +34,27 @@ namespace MtWb.Pages
             base.Process();
 
             var grid = new ControlGrid(this) { Fluid = false };
-            int i = 0;
 
-            
+            if (!ViewModel.Instance.ElectricContactorStatus)
+            {
+                grid.Add(0, new ControlButtonLink(this)
+                {
+                    Text = "An",
+                    Layout = TypesLayoutButton.Success,
+                    Icon = Icon.PowerOff,
+                    Url = GetUrl(0, "on")
+                });
+            }
+            else
+            {
+                grid.Add(0, new ControlButtonLink(this)
+                {
+                    Text = "Aus",
+                    Layout = TypesLayoutButton.Danger,
+                    Icon = Icon.PowerOff,
+                    Url = GetUrl(0, "off")
+                });
+            }
 
             Main.Content.Add(grid);
         }
