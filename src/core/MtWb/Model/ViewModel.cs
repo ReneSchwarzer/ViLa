@@ -148,7 +148,8 @@ namespace MtWb.Model
                 GPIO.OpenPin(_powerMeterPin, PinMode.InputPullUp);
                 GPIO.OpenPin(_electricContactorPin, PinMode.Output);
 
-                ElectricContactorStatus = false;
+                GPIO.Write(_electricContactorPin, PinValue.High);
+                _electricContactorStatus = false;
 
                 Log(new LogItem(LogItem.LogLevel.Info, "GpioController gestartet"));
                 Log(new LogItem(LogItem.LogLevel.Debug, "ElectricContactorPin " + _electricContactorPin));
