@@ -219,8 +219,9 @@ namespace MtWb.Model
                     if (newValue != LastPowerMeterStatus && newValue == true)
                     {
                         CurrentMeasurementLog.Impulse++;
+                        CurrentMeasurementLog.Power = (float)CurrentMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
                         CurrentMeasurementLog.CurrentMeasurement.Impulse++;
-                        CurrentMeasurementLog.CurrentMeasurement.Power = (float)Instance.CurrentMeasurementLog?.Impulse / Instance.Settings.ImpulsePerkWh;
+                        CurrentMeasurementLog.CurrentMeasurement.Power = (float)CurrentMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
 
                     // Neuer Messwert
