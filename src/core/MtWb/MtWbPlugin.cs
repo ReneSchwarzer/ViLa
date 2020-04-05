@@ -29,6 +29,7 @@ namespace MtWb
             Host.Context.Log.Info(MethodBase.GetCurrentMethod(), "MtWbPlugin initialisierung");
 
             Register(new WorkerFile(new Path("", "Assets/.*"), Host.Context.AssetBaseFolder));
+            Register(new WorkerFile(new Path("", "measurements/.*"), Host.Context.AssetBaseFolder));
 
             var root = new VariationPath("home", new PathItem("Home"));
             var help = new VariationPath(root, "help", new PathItem("Hilfe", "help"));
@@ -37,7 +38,6 @@ namespace MtWb
             var log = new VariationPath(root, "log", new PathItem("Logging", "log"));
             var debug = new VariationPath(root, "debug", new PathItem("Debug", "debug"));
             var settings = new VariationPath(root, "settings", new PathItem("Einstellungen", "settings"));
-
 
             root.GetUrls("Home").ForEach(x => Register(new WorkerPage<PageDashboard>(x) { }));
             help.GetUrls("Hilfe").ForEach(x => Register(new WorkerPage<PageHelp>(x) { }));

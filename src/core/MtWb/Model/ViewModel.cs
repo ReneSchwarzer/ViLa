@@ -223,14 +223,17 @@ namespace MtWb.Model
                         CurrentMeasurementLog.CurrentMeasurement.Impulse++;
                         CurrentMeasurementLog.CurrentMeasurement.Power = (float)CurrentMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
+                    
+                    LastPowerMeterStatus = PowerMeterStatus;
 
                     // Neuer Messwert
                     if ((DateTime.Now - CurrentMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
                     {
-                        CurrentMeasurementLog.Measurements.Add(new MeasurementItem());
+                        CurrentMeasurementLog.Measurements.Add(new MeasurementItem() 
+                        { 
+                            MeasurementTimePoint = DateTime.Now 
+                        });
                     }
-
-                    LastPowerMeterStatus = PowerMeterStatus;
                 }
             }
             catch (Exception ex)
@@ -332,7 +335,12 @@ namespace MtWb.Model
                 From = DateTime.Now,
                 Measurements = new List<MeasurementItem>()
             };
-            CurrentMeasurementLog.Measurements.Add(new MeasurementItem());
+
+            // Initialer Messwert
+            CurrentMeasurementLog.Measurements.Add(new MeasurementItem() 
+            { 
+                MeasurementTimePoint = DateTime.Now 
+            });
 
             ElectricContactorStatus = true;
         }

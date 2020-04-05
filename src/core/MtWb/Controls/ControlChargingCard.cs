@@ -1,4 +1,5 @@
 ﻿using MtWb.Model;
+using System;
 using WebExpress.Pages;
 using WebExpress.UI.Controls;
 using WebServer.Html;
@@ -59,7 +60,15 @@ namespace MtWb.Controls
                     Text = string.Format("Verbrauch: {0:F2} kWh", ViewModel.Instance.CurrentMeasurementLog?.Power)
                 });
             }
-            
+
+            if (ViewModel.Instance.ActiveCharging)
+            {
+                Content.Add(new ControlText(Page)
+                {
+                    Text = string.Format("Ladedauer: {0}", new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null))
+                });
+            }
+
             return base.ToHtml();
         }
     }

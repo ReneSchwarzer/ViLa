@@ -41,6 +41,12 @@ namespace MtWb.Controls
             {
                 Text = MeasurementLog?.From.ToString("HH:mm:ss") + " - " + MeasurementLog?.Till.ToString("HH:mm:ss") + " Uhr",
                 Format = TypesTextFormat.Small
+            }.ToHtml() +
+            new HtmlElementBr() + 
+            new ControlLink(Page)
+            {
+                Text = "Download",
+                Url = "/measurements/" + MeasurementLog.ID + ".xml"
             }.ToHtml();
             Value = string.Format("{0:F2} kWh", MeasurementLog?.Power);
             Icon = Icon.TachometerAlt;
