@@ -1,5 +1,6 @@
 ﻿using MtWb.Controls;
 using MtWb.Model;
+using System;
 using WebExpress.UI.Controls;
 
 namespace MtWb.Pages
@@ -32,27 +33,34 @@ namespace MtWb.Pages
         {
             base.Process();
 
+            var i = 0;
+
             var grid = new ControlGrid(this) { Fluid = false };
 
-            if (!ViewModel.Instance.ElectricContactorStatus)
+            grid.Add(i++, new ControlText(this)
             {
-                grid.Add(0, new ControlButtonLink(this)
-                {
-                    Text = "An",
-                    Layout = TypesLayoutButton.Success,
-                    Icon = Icon.PowerOff,
-                    Url = GetUrl(0, "on")
-                });
-            }
-            else
+                Text = "Willkommen",
+                Format = TypesTextFormat.H1
+            });
+
+            grid.Add(i++, new ControlChargingCard(this)
             {
-                grid.Add(0, new ControlButtonLink(this)
+            });
+
+            grid.Add(i++, new ControlText(this)
+            {
+                Text = "Letzter Monat",
+                Format = TypesTextFormat.H1
+            });
+
+            foreach (var measurementLog in ViewModel.Instance.GetHistoryMeasurementLogs(DateTime.Now.AddMonths(-1)))
+            {
+                var card = new ControlMeasurementLogCard(this)
                 {
-                    Text = "Aus",
-                    Layout = TypesLayoutButton.Danger,
-                    Icon = Icon.PowerOff,
-                    Url = GetUrl(0, "off")
-                });
+                    MeasurementLog = measurementLog
+                };
+
+                grid.Add(i++, card);
             }
 
             Main.Content.Add(grid);

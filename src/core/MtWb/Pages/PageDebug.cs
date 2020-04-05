@@ -30,8 +30,8 @@ namespace MtWb.Pages
         {
             base.Process();
 
-            //ViewModel.Instance.Settings.DebugMode = !ViewModel.Instance.Settings.DebugMode;
-            //ViewModel.Instance.SaveSettings();
+            ViewModel.Instance.Settings.DebugMode = !ViewModel.Instance.Settings.DebugMode;
+            ViewModel.Instance.SaveSettings();
 
             Redirecting("/log");
         }

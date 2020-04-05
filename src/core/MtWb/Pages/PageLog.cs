@@ -1,4 +1,5 @@
-﻿using MtWb.Model;
+﻿using MtWb.Controls;
+using MtWb.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,9 @@ namespace MtWb.Pages
         public override void Init()
         {
             base.Init();
+
+            var menu = new ControlMenu(this);
+            ToolBar.Add(menu);
         }
 
         /// <summary>
@@ -67,7 +71,7 @@ namespace MtWb.Pages
 
             var log = ViewModel.Instance.Logging;
 
-            //if (!ViewModel.Instance.Settings.DebugMode)
+            if (!ViewModel.Instance.Settings.DebugMode)
             {
                 log = log.Where(x => !(x.Level == LogItem.LogLevel.Debug || x.Level == LogItem.LogLevel.Exception)).ToList();
             }
@@ -84,14 +88,14 @@ namespace MtWb.Pages
             }
 
             Main.Content.Add(table);
-            //Main.Content.Add(new ControlPanelCenter(this, new ControlButtonLink(this)
-            //{
-            //    Text = ViewModel.Instance.Settings.DebugMode ? "Debug-Ausgaben ausblenden" : "Debug-Ausgaben einblenden",
-            //    Icon = Icon.Bug,
-            //    Color = TypesTextColor.Warning,
-            //    Url = "/debug",
-            //    Class = "m-3"
-            //})); ;
+            Main.Content.Add(new ControlPanelCenter(this, new ControlButtonLink(this)
+            {
+                Text = ViewModel.Instance.Settings.DebugMode ? "Debug-Ausgaben ausblenden" : "Debug-Ausgaben einblenden",
+                Icon = Icon.Bug,
+                Color = TypesTextColor.Warning,
+                Url = "/debug",
+                Class = "m-3"
+            }));
         }
 
         /// <summary>
