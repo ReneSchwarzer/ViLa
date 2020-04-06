@@ -36,14 +36,6 @@ namespace MtWb.Pages
         {
             base.Process();
 
-            Main.Content.Add(new ControlText(this)
-            {
-                Text = "Ereignisse",
-                Format = TypesTextFormat.Center,
-                Color = TypesTextColor.Primary,
-                Class = "m-3"
-            });
-
             var table = new ControlTable(this);
             table.AddColumn("Level", Icon.Hashtag, TypesLayoutTableRow.Info);
             table.AddColumn("Instanz", Icon.Code, TypesLayoutTableRow.Warning);

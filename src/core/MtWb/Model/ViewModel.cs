@@ -220,6 +220,7 @@ namespace MtWb.Model
                     {
                         CurrentMeasurementLog.Impulse++;
                         CurrentMeasurementLog.Power = (float)CurrentMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
+                        CurrentMeasurementLog.Cost = CurrentMeasurementLog.Power * Settings.ElectricityPricePerkWh;
                         CurrentMeasurementLog.CurrentMeasurement.Impulse++;
                         CurrentMeasurementLog.CurrentMeasurement.Power = (float)CurrentMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }

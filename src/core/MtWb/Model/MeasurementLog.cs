@@ -15,12 +15,13 @@ namespace MtWb.Model
         /// <summary>
         /// Die ID
         /// </summary>
+        [XmlAttribute("id")]
         public string ID { get; set; }
 
         /// <summary>
         /// Liefert oder setzt den Mandanten
         /// </summary>
-        [XmlElement(ElementName = "mandant")]
+        [XmlAttribute("mandant")]
         public string Client { get; set; }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace MtWb.Model
         /// <summary>
         /// Liefert oder setzt die Anzahl der gemessenen Gesammtimpulse
         /// </summary>
-        [XmlElement(ElementName = "counter")]
+        [XmlAttribute("counter")]
         public long Impulse { get; set; }
 
         /// <summary>
@@ -46,6 +47,12 @@ namespace MtWb.Model
         /// </summary>
         [XmlAttribute("power")]
         public float Power { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die Kosten in €
+        /// </summary>
+        [XmlAttribute("cost")]
+        public float Cost { get; set; }
 
         /// <summary>
         /// Liefert oder setzt den aktuellen Messwert

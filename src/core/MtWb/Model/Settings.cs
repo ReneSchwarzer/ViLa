@@ -14,7 +14,19 @@ namespace MtWb.Model
         /// <summary>
         /// Liefert oder setzt die Anzahl der Impulse pro kWh
         /// </summary>
-        [XmlElement(ElementName = "impulseperkwh")]
+        [XmlElement(ElementName = "ImpulsePerkWh")]
         public int ImpulsePerkWh { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt den Strompreis pro kWh
+        /// </summary>
+        [XmlElement(ElementName = "ElectricityPricePerkWh")]
+        public float ElectricityPricePerkWh { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die maximale Leistung in kWh
+        /// </summary>
+        [XmlElement(ElementName = "MaxPower")]
+        public float MaxPower { get; set; }
     }
 }

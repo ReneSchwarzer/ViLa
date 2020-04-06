@@ -13,6 +13,7 @@ namespace MtWb.Pages
         public PageDashboard()
             : base("Überblick")
         {
+            HeaderScriptLinks.Add("/Assets/js/dashboard.js");
         }
 
         /// <summary>
@@ -33,37 +34,44 @@ namespace MtWb.Pages
         {
             base.Process();
 
-            var i = 0;
-
-            var grid = new ControlGrid(this) { Fluid = false };
-
-            grid.Add(i++, new ControlText(this)
+            Main.Content.Add(new ControlText(this)
             {
                 Text = "Willkommen",
-                Format = TypesTextFormat.H1
+                Format = TypesTextFormat.H1,
+                Class = "mb-5"
             });
 
-            grid.Add(i++, new ControlChargingCard(this)
+            Main.Content.Add(new ControlChargingCard(this)
             {
+                Class = "ml-4 mr-4"
             });
 
-            grid.Add(i++, new ControlText(this)
-            {
-                Text = "Letzter Monat",
-                Format = TypesTextFormat.H1
-            });
+            var history = ViewModel.Instance.GetHistoryMeasurementLogs(DateTime.Now.AddMonths(-1));
 
-            foreach (var measurementLog in ViewModel.Instance.GetHistoryMeasurementLogs(DateTime.Now.AddMonths(-1)))
+            if (history.Count > 0)
             {
-                var card = new ControlMeasurementLogCard(this)
+                Main.Content.Add(new ControlText(this)
                 {
-                    MeasurementLog = measurementLog
-                };
+                    Text = "Letzte Ladungen",
+                    Format = TypesTextFormat.H1,
+                    Class = "mt-5"
+                });
 
-                grid.Add(i++, card);
+                var i = 0;
+                var grid = new ControlGrid(this) { Fluid = false };
+
+                foreach (var measurementLog in history)
+                {
+                    var card = new ControlMeasurementLogCard(this)
+                    {
+                        MeasurementLog = measurementLog
+                    };
+
+                    grid.Add(i++, card);
+                }
+
+                Main.Content.Add(grid);
             }
-
-            Main.Content.Add(grid);
         }
 
         /// <summary>

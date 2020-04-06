@@ -32,9 +32,14 @@ namespace MtWb.Controls
         /// <returns>Das Control als HTML</returns>
         public override IHtmlNode ToHtml()
         {
+            var card = new ControlPanelCard(Page)
+            {
+                Layout = TypesLayoutCard.Light
+            };
+
             if (!ViewModel.Instance.ActiveCharging)
             {
-                Content.Add(new ControlButtonLink(Page)
+                card.Content.Add(new ControlButtonLink(Page)
                 {
                     Text = "Ladevorgang starten",
                     Layout = TypesLayoutButton.Success,
@@ -44,7 +49,7 @@ namespace MtWb.Controls
             }
             else
             {
-                Content.Add(new ControlButtonLink(Page)
+                card.Content.Add(new ControlButtonLink(Page)
                 {
                     Text = "Ladevorgang abbrechen",
                     Layout = TypesLayoutButton.Danger,
@@ -55,19 +60,25 @@ namespace MtWb.Controls
 
             if (ViewModel.Instance.ActiveCharging)
             {
-                Content.Add(new ControlText(Page)
+                card.Content.Add(new ControlPanelCard(Page,
+                    new ControlText(Page, "measurementtime")
+                    {
+                        Text = string.Format("Ladedauer: {0}", new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null))
+                    }, new ControlText(Page, "cost")
+                    {
+                        Text = string.Format("Angefallene Kosten: {0:F2} €", ViewModel.Instance.CurrentMeasurementLog?.Cost)
+                    }, new ControlText(Page, "power")
+                    {
+                        Text = string.Format("Verbrauch: {0:F2} kWh", ViewModel.Instance.CurrentMeasurementLog?.Power)
+                    })
                 {
-                    Text = string.Format("Verbrauch: {0:F2} kWh", ViewModel.Instance.CurrentMeasurementLog?.Power)
+                    HorizontalAlignment = TypesHorizontalAlignment.Default,
+                    Layout = TypesLayoutCard.Default,
+                    Class = "mt-5"
                 });
             }
 
-            if (ViewModel.Instance.ActiveCharging)
-            {
-                Content.Add(new ControlText(Page)
-                {
-                    Text = string.Format("Ladedauer: {0}", new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null))
-                });
-            }
+            Content.Add(card);
 
             return base.ToHtml();
         }
