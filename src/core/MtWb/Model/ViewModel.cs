@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Device.Gpio;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading;
 using System.Xml.Serialization;
 using WebExpress;
 
@@ -8,6 +13,11 @@ namespace MtWb.Model
 {
     public class ViewModel
     {
+        /// <summary>
+        /// Impulsdauer im ms 
+        /// </summary>
+        public const int ImpulseDuration = 30;
+
         /// <summary>
         /// Der GPIO-Pin, welcher die S0-Schnittstelle des Strommeßgerät ausließt
         /// </summary>
@@ -63,7 +73,7 @@ namespace MtWb.Model
         /// <summary>
         /// Liefert oder setzt die Zeit des letzen auslesen der Temperatur
         /// </summary>
-        private DateTime _lastMetering;
+        private DateTime _lastMetering = DateTime.MinValue;
 
         /// <summary>
         /// Der Zustand des GPIO-Pins, welcher den Schütz steuert
@@ -73,7 +83,7 @@ namespace MtWb.Model
         /// <summary>
         /// Liefert oder setzt ob der Schütz angeschaltet ist
         /// </summary>
-        public virtual bool ElectricContactorStatus
+        protected virtual bool ElectricContactorStatus
         {
             get => _electricContactorStatus;
             set
@@ -107,16 +117,16 @@ namespace MtWb.Model
         /// <summary>
         /// Liefert oder setzt ob im S0-Impuls anliegt 
         /// </summary>
-        public virtual bool PowerMeterStatus
+        protected virtual bool PowerMeterStatus
         {
-            get 
+            get
             {
                 try
                 {
                     var value = GPIO.Read(_powerMeterPin);
 
                     return value == PinValue.High;
-                   
+
                 }
                 catch (Exception ex)
                 {
@@ -126,8 +136,35 @@ namespace MtWb.Model
 
                 return false;
             }
-            
+
         }
+
+        /// <summary>
+        /// Liefert oder setzt den letzten Status der S0-Schnittstelle
+        /// </summary>
+        private bool LastPowerMeterStatus { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt das aktuelle Messprotokoll
+        /// </summary>
+        public MeasurementLog CurrentMeasurementLog { get; private set; }
+
+        /// <summary>
+        /// Liefert oder setzt, ob der Ladevorgang aktiv ist
+        /// </summary>
+        public bool ActiveCharging => CurrentMeasurementLog != null;
+
+        /// <summary>
+        /// Liefert oder setzt die Settings
+        /// </summary>
+        public Settings Settings { get; private set; } = new Settings();
+
+        /// <summary>
+        /// Liefert die Programmversion
+        /// </summary>
+        [XmlIgnore]
+        public string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
 
         /// <summary>
         /// Konstruktor
@@ -158,6 +195,8 @@ namespace MtWb.Model
             {
 
             }
+
+            ResetSettings();
         }
 
         /// <summary>
@@ -165,11 +204,44 @@ namespace MtWb.Model
         /// </summary>
         public virtual void Update()
         {
+            if (CurrentMeasurementLog == null)
+            {
+                Thread.Sleep(ImpulseDuration);
+
+                return;
+            }
+
             try
             {
-                if (_lastMetering == null || (DateTime.Now - _lastMetering).TotalSeconds > 60)
+                if (_lastMetering != DateTime.MinValue)
                 {
-                    _lastMetering = DateTime.Now;
+                    var delta = (DateTime.Now - _lastMetering).TotalMilliseconds;
+
+                    if (delta > ImpulseDuration)
+                    {
+                        Log(new LogItem(LogItem.LogLevel.Warning, string.Format("Zeitspanne der S0-Schnittstelle um {0}ms überschritten", delta - ViewModel.ImpulseDuration)));
+                    }
+
+                    var newValue = PowerMeterStatus;
+                    if (newValue != LastPowerMeterStatus && newValue == true)
+                    {
+                        CurrentMeasurementLog.Impulse++;
+                        CurrentMeasurementLog.Power = (float)CurrentMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
+                        CurrentMeasurementLog.Cost = CurrentMeasurementLog.Power * Settings.ElectricityPricePerkWh;
+                        CurrentMeasurementLog.CurrentMeasurement.Impulse++;
+                        CurrentMeasurementLog.CurrentMeasurement.Power = (float)CurrentMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
+                    }
+
+                    LastPowerMeterStatus = PowerMeterStatus;
+
+                    // Neuer Messwert
+                    if ((DateTime.Now - CurrentMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
+                    {
+                        CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
+                        {
+                            MeasurementTimePoint = DateTime.Now
+                        });
+                    }
                 }
             }
             catch (Exception ex)
@@ -178,6 +250,23 @@ namespace MtWb.Model
                 Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
 
+            _lastMetering = DateTime.Now;
+
+            if (Settings.MaxChargingTime > 0 && (DateTime.Now - CurrentMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
+            {
+                Log(new LogItem(LogItem.LogLevel.Info, "Maximale Ladedauer wurde erreicht"));
+
+                StopsCharging();
+                return;
+            }
+
+            if (Settings.MaxWattage > 0 && CurrentMeasurementLog.Power > Settings.MaxWattage)
+            {
+                Log(new LogItem(LogItem.LogLevel.Info, "Maximaler Stromverbrauch wurde erreicht"));
+
+                StopsCharging();
+                return;
+            }
         }
 
         /// <summary>
@@ -206,6 +295,139 @@ namespace MtWb.Model
                     Host.Context.Log.Exception(logItem.Instance, logItem.Massage);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Wird aufgerufen, wenn das Speichern der Einstellungen erfolgen soll
+        /// </summary>
+        public void SaveSettings()
+        {
+            Log(new LogItem(LogItem.LogLevel.Info, "Einstellungen werden gespeichert"));
+
+            // Konfiguration speichern
+            var serializer = new XmlSerializer(typeof(Settings));
+
+            using (var memoryStream = new System.IO.MemoryStream())
+            {
+                serializer.Serialize(memoryStream, Settings);
+
+                var utf = new UTF8Encoding();
+
+                File.WriteAllText
+                (
+                    Path.Combine(Host.Context.ConfigBaseFolder, "settings.xml"),
+                    utf.GetString(memoryStream.ToArray())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Wird aufgerufen, wenn die Einstellungen zurückgesetzt werden sollen
+        /// </summary>
+        public void ResetSettings()
+        {
+            Log(new LogItem(LogItem.LogLevel.Info, "Einstellungen werden geladen"));
+
+            // Konfiguration laden
+            var serializer = new XmlSerializer(typeof(Settings));
+
+            try
+            {
+                using (var reader = File.OpenText(Path.Combine(Host.Context.ConfigBaseFolder, "settings.xml")))
+                {
+                    Settings = serializer.Deserialize(reader) as Settings;
+                }
+            }
+            catch
+            {
+                Log(new LogItem(LogItem.LogLevel.Warning, "Datei mit den Einstellungen wurde nicht gefunden!"));
+            }
+
+            Log(new LogItem(LogItem.LogLevel.Debug, "ImpulsePerkWh = " + Settings.ImpulsePerkWh));
+        }
+
+        /// <summary>
+        /// Startet den Ladevorgang.
+        /// </summary>
+        public void StartsTheChargingProcess()
+        {
+            Log(new LogItem(LogItem.LogLevel.Info, "Startet den Ladevorgang"));
+
+            CurrentMeasurementLog = new MeasurementLog()
+            {
+                ID = Guid.NewGuid().ToString(),
+                From = DateTime.Now,
+                Measurements = new List<MeasurementItem>()
+            };
+
+            // Initialer Messwert
+            CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
+            {
+                MeasurementTimePoint = DateTime.Now
+            });
+
+            ElectricContactorStatus = true;
+        }
+
+        /// <summary>
+        /// Beendet den Ladevorgang.
+        /// </summary>
+        public void StopsCharging()
+        {
+            Log(new LogItem(LogItem.LogLevel.Info, "Beendet den Ladevorgang"));
+
+            CurrentMeasurementLog.Till = DateTime.Now;
+
+            // Messung speichern
+            var serializer = new XmlSerializer(typeof(MeasurementLog));
+
+            using (var memoryStream = new MemoryStream())
+            {
+                serializer.Serialize(memoryStream, CurrentMeasurementLog);
+
+                var utf = new UTF8Encoding();
+                var fileName = Path.Combine(Host.Context.AssetBaseFolder, "measurements", string.Format("{0}.xml", CurrentMeasurementLog.ID));
+
+                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+                }
+
+                File.WriteAllText
+                (
+                    fileName,
+                    utf.GetString(memoryStream.ToArray())
+                );
+
+                Log(new LogItem(LogItem.LogLevel.Info, string.Format("Messprotokoll wurde unter {0} gespeichert", fileName)));
+            }
+
+            CurrentMeasurementLog = null;
+            _lastMetering = DateTime.MinValue;
+
+            ElectricContactorStatus = false;
+        }
+
+        /// <summary>
+        /// Liefert die abgeschlossenen Messprotokolle
+        /// </summary>
+        /// <param name="date">Die Zeitspanne, in welcher die Messprotokolle geliefert werden sollen</param>
+        public List<MeasurementLog> GetHistoryMeasurementLogs(DateTime date)
+        {
+            var list = new List<MeasurementLog>();
+            var directoryName = Path.Combine(Host.Context.AssetBaseFolder, "measurements");
+            var files = Directory.GetFiles(directoryName, "*.xml").Where(x => File.GetCreationTime(x) > date).OrderByDescending(x => File.GetCreationTime(x));
+            var serializer = new XmlSerializer(typeof(MeasurementLog));
+
+            foreach (var file in files)
+            {
+                using (var reader = File.OpenText(file))
+                {
+                    list.Add(serializer.Deserialize(reader) as MeasurementLog);
+                }
+            }
+
+            return list;
         }
     }
 }

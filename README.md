@@ -16,3 +16,11 @@ WebExpress (https://github.com/ReneSchwarzer/WebExpress.git)
 
 # Einrichtung 
 siehe doc/MtWb.docx
+
+# Verwendete Bibliotheken
+https://getbootstrap.com/
+https://www.chartjs.org
+https://jquery.com/
+https://summernote.org/
+https://popper.js.org/
+

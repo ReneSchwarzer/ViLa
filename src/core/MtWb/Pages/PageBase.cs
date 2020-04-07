@@ -62,8 +62,7 @@ namespace MtWb.Pages
                 Style = "font-size:190%; height: 50px;"
             }));
 
-            Main.Class = "p-3";
-            Main.Content.Add(new ControlLine(this));
+            Main.Class = "pl-3 pr-3";
 
             Foot.Content.Add(new ControlText(this, "now")
             {

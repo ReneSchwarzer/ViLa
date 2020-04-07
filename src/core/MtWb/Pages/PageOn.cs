@@ -33,7 +33,7 @@ namespace MtWb.Pages
         {
             base.Process();
 
-            ViewModel.Instance.ElectricContactorStatus = true;
+            ViewModel.Instance.StartsTheChargingProcess();
 
             Redirecting("/");
         }

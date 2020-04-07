@@ -29,6 +29,7 @@ namespace MtWb
             Host.Context.Log.Info(MethodBase.GetCurrentMethod(), "MtWbPlugin initialisierung");
 
             Register(new WorkerFile(new Path("", "Assets/.*"), Host.Context.AssetBaseFolder));
+            Register(new WorkerFile(new Path("", "measurements/.*"), Host.Context.AssetBaseFolder));
 
             var root = new VariationPath("home", new PathItem("Home"));
             var help = new VariationPath(root, "help", new PathItem("Hilfe", "help"));
@@ -36,6 +37,8 @@ namespace MtWb
             var off = new VariationPath(root, "off", new PathItem("Off", "off"));
             var log = new VariationPath(root, "log", new PathItem("Logging", "log"));
             var debug = new VariationPath(root, "debug", new PathItem("Debug", "debug"));
+            var settings = new VariationPath(root, "settings", new PathItem("Einstellungen", "settings"));
+            var api = new VariationPath(root, "api", new PathItem("API", "api"));
 
             root.GetUrls("Home").ForEach(x => Register(new WorkerPage<PageDashboard>(x) { }));
             help.GetUrls("Hilfe").ForEach(x => Register(new WorkerPage<PageHelp>(x) { }));
@@ -43,6 +46,8 @@ namespace MtWb
             off.GetUrls("Off").ForEach(x => Register(new WorkerPage<PageOff>(x) { }));
             log.GetUrls("Logging").ForEach(x => Register(new WorkerPage<PageLog>(x) { }));
             debug.GetUrls("Debug").ForEach(x => Register(new WorkerPage<PageDebug>(x) { }));
+            settings.GetUrls("Einstellungen").ForEach(x => Register(new WorkerPage<PageSettings>(x) { }));
+            api.GetUrls("API").ForEach(x => Register(new WorkerPage<PageApiBase>(x) { }));
 
             Task.Run(() => { Run(); });
         }
@@ -52,6 +57,8 @@ namespace MtWb
         /// </summary>
         private void Run()
         {
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            
             // Loop
             while (true)
             {
@@ -61,7 +68,7 @@ namespace MtWb
                 }
                 finally
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(1);
                 }
             }
         }
