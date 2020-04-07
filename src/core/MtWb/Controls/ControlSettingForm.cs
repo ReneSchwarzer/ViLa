@@ -20,7 +20,12 @@ namespace MtWb.Controls
         /// <summary>
         /// Liefert oder setzt die maximale Leistung in kWh
         /// </summary>
-        private ControlFormularItemTextBox MaxPowerCtrl { get; set; }
+        private ControlFormularItemTextBox MaxWattageCtrl { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die maximale Ladezeit in h
+        /// </summary>
+        private ControlFormularItemTextBox MaxChargingTimeCtrl { get; set; }
 
         /// <summary>
         /// Konstruktor
@@ -52,28 +57,37 @@ namespace MtWb.Controls
                 Label = "Der Strompreis in € pro kWh:"
             };
 
-            MaxPowerCtrl = new ControlFormularItemTextBox(this)
+            MaxWattageCtrl = new ControlFormularItemTextBox(this)
             {
-                Name = "MaxPowerCtrl",
-                Label = "Die maximale Leistung in kWh:"
+                Name = "MaxWattageCtrl",
+                Label = "Der maximale Stromverbrauch in kWh:"
+            };
+
+            MaxChargingTimeCtrl = new ControlFormularItemTextBox(this)
+            {
+                Name = "MaxChargingTime",
+                Label = "Die maximale Ladedauer in h:"
             };
 
             Add(ImpulsePerkWhCtrl);
             Add(ElectricityPricePerkWhCtrl);
-            Add(MaxPowerCtrl);
+            Add(MaxWattageCtrl);
+            Add(MaxChargingTimeCtrl);
 
             InitFormular += (s, e) =>
             {
                 ImpulsePerkWhCtrl.Value = ViewModel.Instance.Settings.ImpulsePerkWh.ToString();
                 ElectricityPricePerkWhCtrl.Value = ViewModel.Instance.Settings.ElectricityPricePerkWh.ToString();
-                MaxPowerCtrl.Value = ViewModel.Instance.Settings.MaxPower.ToString();
+                MaxWattageCtrl.Value = ViewModel.Instance.Settings.MaxWattage.ToString();
+                MaxChargingTimeCtrl.Value = ViewModel.Instance.Settings.MaxChargingTime.ToString();
             };
 
             ProcessFormular += (s, e) =>
             {
                 ViewModel.Instance.Settings.ImpulsePerkWh = Convert.ToInt32(ImpulsePerkWhCtrl.Value);
                 ViewModel.Instance.Settings.ElectricityPricePerkWh = (float)Convert.ToDouble(ElectricityPricePerkWhCtrl.Value);
-                ViewModel.Instance.Settings.MaxPower = Convert.ToInt32(MaxPowerCtrl.Value);
+                ViewModel.Instance.Settings.MaxWattage = !string.IsNullOrWhiteSpace(MaxWattageCtrl.Value) ? Convert.ToInt32(MaxWattageCtrl.Value) : -1;
+                ViewModel.Instance.Settings.MaxChargingTime = !string.IsNullOrWhiteSpace(MaxChargingTimeCtrl.Value) ? Convert.ToInt32(MaxChargingTimeCtrl.Value) : -1;
                 ViewModel.Instance.SaveSettings();
             };
 
@@ -81,7 +95,7 @@ namespace MtWb.Controls
             {
                 try
                 {
-
+                    Convert.ToInt32(e.Value);
                 }
                 catch (Exception ex)
                 {
@@ -118,11 +132,51 @@ namespace MtWb.Controls
                 }
             };
 
-            MaxPowerCtrl.Validation += (s, e) =>
+            MaxWattageCtrl.Validation += (s, e) =>
             {
                 try
                 {
+                    if (!string.IsNullOrWhiteSpace(e.Value))
+                    {
+                        var value = Convert.ToInt32(e.Value);
 
+                        if (value < -1)
+                        {
+                            e.Results.Add(new ValidationResult()
+                            {
+                                Text = "Der Wert ist zu klein",
+                                Type = TypesInputValidity.Error
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    e.Results.Add(new ValidationResult()
+                    {
+                        Text = ex.Message,
+                        Type = TypesInputValidity.Error
+                    });
+                }
+            };
+
+            MaxChargingTimeCtrl.Validation += (s, e) =>
+            {
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(e.Value))
+                    {
+                        var value = Convert.ToInt32(e.Value);
+
+                        if (value < -1)
+                        {
+                            e.Results.Add(new ValidationResult()
+                            {
+                                Text = "Der Wert ist zu klein",
+                                Type = TypesInputValidity.Error
+                            });
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

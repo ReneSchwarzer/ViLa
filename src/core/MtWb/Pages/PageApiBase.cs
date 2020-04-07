@@ -1,5 +1,6 @@
 ﻿using MtWb.Model;
 using System;
+using System.Linq;
 using System.Text.Json;
 using WebExpress.Pages;
 
@@ -40,7 +41,9 @@ namespace MtWb.Pages
                 Impulse = string.Format("{0}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Impulse : 0),
                 Power = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Power : 0f),
                 Cost = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Cost : 0f),
-                Now = ViewModel.Instance.Now
+                Now = ViewModel.Instance.Now,
+                ChartLabels = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() : null,
+                ChartData = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power.ToString()).ToArray() : null 
             };
 
             var options = new JsonSerializerOptions

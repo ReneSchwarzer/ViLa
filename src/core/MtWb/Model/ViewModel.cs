@@ -244,6 +244,22 @@ namespace MtWb.Model
             }
 
             _lastMetering = DateTime.Now;
+
+            if (Settings.MaxChargingTime > 0 && (DateTime.Now - CurrentMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
+            {
+                Log(new LogItem(LogItem.LogLevel.Info, "Maximale Ladedauer wurde erreicht"));
+
+                StopsCharging();
+                return;
+            }
+
+            if (Settings.MaxWattage > 0 && CurrentMeasurementLog.Power > Settings.MaxWattage)
+            {
+                Log(new LogItem(LogItem.LogLevel.Info, "Maximaler Stromverbrauch wurde erreicht"));
+
+                StopsCharging();
+                return;
+            } 
         }
 
         /// <summary>

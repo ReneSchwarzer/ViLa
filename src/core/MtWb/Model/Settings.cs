@@ -24,9 +24,15 @@ namespace MtWb.Model
         public float ElectricityPricePerkWh { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die maximale Leistung in kWh
+        /// Liefert oder setzt die maximale Stromverbrauch in kWh
         /// </summary>
-        [XmlElement(ElementName = "MaxPower")]
-        public float MaxPower { get; set; }
+        [XmlElement(ElementName = "MaxWattage")]
+        public int MaxWattage { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die maximale Ladezeit in h
+        /// </summary>
+        [XmlElement(ElementName = "MaxChargingTime")]
+        public int MaxChargingTime  { get; set; }
     }
 }

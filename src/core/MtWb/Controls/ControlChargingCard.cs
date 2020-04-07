@@ -76,6 +76,8 @@ namespace MtWb.Controls
                     Layout = TypesLayoutCard.Default,
                     Class = "mt-5"
                 });
+
+                card.Content.Add(new ControlCanvas(Page, "canvas"));
             }
 
             Content.Add(card);

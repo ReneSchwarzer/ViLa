@@ -35,5 +35,15 @@ namespace MtWb.Model
         /// Liefert oder setzt die aktuelle Zeit
         /// </summary>
         public string Now { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die Daten
+        /// </summary>
+        public string[] ChartLabels { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die Daten
+        /// </summary>
+        public string[] ChartData { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace MtWb.Pages
         public PageDashboard()
             : base("Überblick")
         {
+            HeaderScriptLinks.Add("/Assets/js/Chart.min.js");
             HeaderScriptLinks.Add("/Assets/js/dashboard.js");
         }
 
