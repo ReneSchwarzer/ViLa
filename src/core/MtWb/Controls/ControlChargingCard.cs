@@ -51,7 +51,7 @@ namespace MtWb.Controls
             {
                 card.Content.Add(new ControlButtonLink(Page)
                 {
-                    Text = "Ladevorgang abbrechen",
+                    Text = "Ladevorgang beenden",
                     Layout = TypesLayoutButton.Danger,
                     Icon = Icon.PowerOff,
                     Url = Page.GetUrl(0, "off")

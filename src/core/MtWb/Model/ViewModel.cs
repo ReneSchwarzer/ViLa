@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Device.Gpio;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Xml.Linq;
 using System.Xml.Serialization;
 using WebExpress;
 
@@ -160,6 +160,13 @@ namespace MtWb.Model
         public Settings Settings { get; private set; } = new Settings();
 
         /// <summary>
+        /// Liefert die Programmversion
+        /// </summary>
+        [XmlIgnore]
+        public string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+
+        /// <summary>
         /// Konstruktor
         /// </summary>
         private ViewModel()
@@ -224,15 +231,15 @@ namespace MtWb.Model
                         CurrentMeasurementLog.CurrentMeasurement.Impulse++;
                         CurrentMeasurementLog.CurrentMeasurement.Power = (float)CurrentMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
-                    
+
                     LastPowerMeterStatus = PowerMeterStatus;
 
                     // Neuer Messwert
                     if ((DateTime.Now - CurrentMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
                     {
-                        CurrentMeasurementLog.Measurements.Add(new MeasurementItem() 
-                        { 
-                            MeasurementTimePoint = DateTime.Now 
+                        CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
+                        {
+                            MeasurementTimePoint = DateTime.Now
                         });
                     }
                 }
@@ -259,7 +266,7 @@ namespace MtWb.Model
 
                 StopsCharging();
                 return;
-            } 
+            }
         }
 
         /// <summary>
@@ -354,9 +361,9 @@ namespace MtWb.Model
             };
 
             // Initialer Messwert
-            CurrentMeasurementLog.Measurements.Add(new MeasurementItem() 
-            { 
-                MeasurementTimePoint = DateTime.Now 
+            CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
+            {
+                MeasurementTimePoint = DateTime.Now
             });
 
             ElectricContactorStatus = true;
@@ -368,7 +375,7 @@ namespace MtWb.Model
         public void StopsCharging()
         {
             Log(new LogItem(LogItem.LogLevel.Info, "Beendet den Ladevorgang"));
-            
+
             CurrentMeasurementLog.Till = DateTime.Now;
 
             // Messung speichern
