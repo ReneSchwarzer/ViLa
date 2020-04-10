@@ -44,7 +44,7 @@ namespace MtWb.Controls
                     Text = "Ladevorgang starten",
                     Layout = TypesLayoutButton.Success,
                     Icon = Icon.PlayCircle,
-                    Url = Page.GetUrl(0, "on")
+                    Url = Page.GetPath(0, "on")
                 });
             }
             else
@@ -54,7 +54,7 @@ namespace MtWb.Controls
                     Text = "Ladevorgang beenden",
                     Layout = TypesLayoutButton.Danger,
                     Icon = Icon.PowerOff,
-                    Url = Page.GetUrl(0, "off")
+                    Url = Page.GetPath(0, "off")
                 });
             }
 

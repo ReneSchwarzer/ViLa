@@ -35,7 +35,7 @@ namespace MtWb.Pages
 
             ViewModel.Instance.StopsCharging();
 
-            Redirecting("/");
+            Redirecting(GetPath(0));
         }
 
         /// <summary>

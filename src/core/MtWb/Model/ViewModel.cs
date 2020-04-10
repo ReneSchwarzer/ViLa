@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
-using WebExpress;
+using WebExpress.Plugins;
 
 namespace MtWb.Model
 {
@@ -55,9 +55,9 @@ namespace MtWb.Model
         public string Now => DateTime.Now.ToString("dd.MM.yyyy<br>HH:mm:ss");
 
         /// <summary>
-        /// Liefert oder setzt den Verweis auf dem Host
+        /// Liefert oder setzt den Verweis auf den Kontext des Plugins
         /// </summary>
-        public IHost Host { get; set; }
+        public IPluginContext Context { get; set; }
 
         /// <summary>
         /// Liefert oder setzt den Staustext
@@ -280,19 +280,19 @@ namespace MtWb.Model
             switch (logItem.Level)
             {
                 case LogItem.LogLevel.Info:
-                    //Host.Context.Log.Info(logItem.Instance, logItem.Massage);
+                    Context.Log.Info(logItem.Instance, logItem.Massage);
                     break;
                 case LogItem.LogLevel.Debug:
-                    //Host.Context.Log.Debug(logItem.Instance, logItem.Massage);
+                    Context.Log.Debug(logItem.Instance, logItem.Massage);
                     break;
                 case LogItem.LogLevel.Warning:
-                    Host.Context.Log.Warning(logItem.Instance, logItem.Massage);
+                    Context.Log.Warning(logItem.Instance, logItem.Massage);
                     break;
                 case LogItem.LogLevel.Error:
-                    Host.Context.Log.Error(logItem.Instance, logItem.Massage);
+                    Context.Log.Error(logItem.Instance, logItem.Massage);
                     break;
                 case LogItem.LogLevel.Exception:
-                    Host.Context.Log.Exception(logItem.Instance, logItem.Massage);
+                    Context.Log.Exception(logItem.Instance, logItem.Massage);
                     break;
             }
         }
@@ -315,7 +315,7 @@ namespace MtWb.Model
 
                 File.WriteAllText
                 (
-                    Path.Combine(Host.Context.ConfigBaseFolder, "settings.xml"),
+                    Path.Combine(Context.ConfigBaseFolder, "settings.xml"),
                     utf.GetString(memoryStream.ToArray())
                 );
             }
@@ -333,7 +333,7 @@ namespace MtWb.Model
 
             try
             {
-                using (var reader = File.OpenText(Path.Combine(Host.Context.ConfigBaseFolder, "settings.xml")))
+                using (var reader = File.OpenText(Path.Combine(Context.ConfigBaseFolder, "settings.xml")))
                 {
                     Settings = serializer.Deserialize(reader) as Settings;
                 }
@@ -386,7 +386,7 @@ namespace MtWb.Model
                 serializer.Serialize(memoryStream, CurrentMeasurementLog);
 
                 var utf = new UTF8Encoding();
-                var fileName = Path.Combine(Host.Context.AssetBaseFolder, "measurements", string.Format("{0}.xml", CurrentMeasurementLog.ID));
+                var fileName = Path.Combine(Context.AssetBaseFolder, "measurements", string.Format("{0}.xml", CurrentMeasurementLog.ID));
 
                 if (!Directory.Exists(Path.GetDirectoryName(fileName)))
                 {
@@ -415,7 +415,7 @@ namespace MtWb.Model
         public List<MeasurementLog> GetHistoryMeasurementLogs(DateTime date)
         {
             var list = new List<MeasurementLog>();
-            var directoryName = Path.Combine(Host.Context.AssetBaseFolder, "measurements");
+            var directoryName = Path.Combine(Context.AssetBaseFolder, "measurements");
             var files = Directory.GetFiles(directoryName, "*.xml").Where(x => File.GetCreationTime(x) > date).OrderByDescending(x => File.GetCreationTime(x));
             var serializer = new XmlSerializer(typeof(MeasurementLog));
 

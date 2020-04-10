@@ -33,7 +33,7 @@ namespace MtWb.Pages
             ViewModel.Instance.Settings.DebugMode = !ViewModel.Instance.Settings.DebugMode;
             ViewModel.Instance.SaveSettings();
 
-            Redirecting("/log");
+            Redirecting(GetPath(0, "/log"));
         }
 
         /// <summary>

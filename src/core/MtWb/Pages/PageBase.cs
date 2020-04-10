@@ -1,8 +1,6 @@
 ﻿using MtWb.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WebExpress.Html;
+using WebExpress.Pages;
 using WebExpress.UI.Controls;
 using WebExpress.UI.Pages;
 
@@ -41,7 +39,7 @@ namespace MtWb.Pages
 
             Head.Content.Add(new ControlImage(this)
             {
-                Source = "/Assets/img/Logo.png",
+                Source = new Path(Context, "/Assets/img/Logo.png"),
                 Height = 50,
                 HorizontalAlignment = TypesHorizontalAlignment.Left
             });

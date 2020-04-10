@@ -5,6 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>MtWb.App</AssemblyName>
     <RootNamespace>MtWb.App</RootNamespace>
+    <PackageLicenseExpression>GNU General Public License v3.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/ReneSchwarzer/MtWb.git</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -133,6 +135,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\StoreLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\mtwb.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Config\config.xml">
