@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WebExpress.Pages;
 using WebExpress.UI.Controls;
 
 namespace MtWb.Pages
@@ -85,7 +86,7 @@ namespace MtWb.Pages
                 Text = ViewModel.Instance.Settings.DebugMode ? "Debug-Ausgaben ausblenden" : "Debug-Ausgaben einblenden",
                 Icon = Icon.Bug,
                 Color = TypesTextColor.Warning,
-                Url = "/debug",
+                Url = GetPath(0, "/debug"),
                 Class = "m-3"
             }));
         }

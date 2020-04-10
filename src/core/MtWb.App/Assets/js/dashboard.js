@@ -67,7 +67,7 @@ $(document).ready(function()
 {
     setInterval(function () 
     {
-        $.ajax({ url: "/api", dataType:'json' }).then(function(data) 
+        $.ajax({ url: "api", dataType:'json' }).then(function(data) 
         {
             $('#now').html(data.Now);
             $('#measurementtime').html("Ladedauer: " + data.MeasurementTime);

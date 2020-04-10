@@ -28,18 +28,18 @@ namespace MtWb.Controls
             Text = "";
             Layout = TypesLayoutButton.Primary;
 
-            Items.Add(new ControlLink(Page) { Text = "Home", Icon = Icon.Home, Url = Page.GetUrl(0) });
+            Items.Add(new ControlLink(Page) { Text = "Home", Icon = Icon.Home, Url = Page.GetPath(0) });
             //Items.Add(new ControlDropdownMenuDivider(Page) { });
             
             //if (Page.Url == Page.GetUrl("/"))
             {
                 Items.Add(new ControlDropdownMenuDivider(Page) { });
-                Items.Add(new ControlLink(Page) { Text = "Export", Icon = Icon.Download, Url = Page.GetUrl(0) });
+                Items.Add(new ControlLink(Page) { Text = "Export", Icon = Icon.Download, Url = Page.GetPath(0) });
                 Items.Add(new ControlDropdownMenuDivider(Page) { });
-                Items.Add(new ControlLink(Page) { Text = "Logging", Icon = Icon.Book, Url = Page.GetUrl(0, "log") });
-                Items.Add(new ControlLink(Page) { Text = "Einstellungen", Icon = Icon.Cog, Url = Page.GetUrl(0, "settings") });
+                Items.Add(new ControlLink(Page) { Text = "Logging", Icon = Icon.Book, Url = Page.GetPath(0, "log") });
+                Items.Add(new ControlLink(Page) { Text = "Einstellungen", Icon = Icon.Cog, Url = Page.GetPath(0, "settings") });
                 Items.Add(new ControlDropdownMenuDivider(Page) { });
-                Items.Add(new ControlLink(Page) { Text = "Hilfe", Icon = Icon.InfoCircle, Url = Page.GetUrl(0, "help") });
+                Items.Add(new ControlLink(Page) { Text = "Hilfe", Icon = Icon.InfoCircle, Url = Page.GetPath(0, "help") });
             }
         }
 

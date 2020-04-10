@@ -24,14 +24,16 @@ namespace MtWb
         /// <param name="configFileName">Der Dateiname der Konfiguration oder null</param>
         public override void Init(string configFileName = null)
         {
-            ViewModel.Instance.Host = Host;
+            base.Init(configFileName);
+
+            ViewModel.Instance.Context = Context;
             ViewModel.Instance.Init();
-            Host.Context.Log.Info(MethodBase.GetCurrentMethod(), "MtWbPlugin initialisierung");
+            Context.Log.Info(MethodBase.GetCurrentMethod(), "MtWbPlugin initialisierung");
 
-            Register(new WorkerFile(new Path("", "Assets/.*"), Host.Context.AssetBaseFolder));
-            Register(new WorkerFile(new Path("", "measurements/.*"), Host.Context.AssetBaseFolder));
+            Register(new WorkerFile(new Path(Context, "", "Assets/.*"), Context.AssetBaseFolder));
+            Register(new WorkerFile(new Path(Context, "", "measurements/.*"), Context.AssetBaseFolder));
 
-            var root = new VariationPath("home", new PathItem("Home"));
+            var root = new VariationPath(Context, "home", new PathItem("Home"));
             var help = new VariationPath(root, "help", new PathItem("Hilfe", "help"));
             var on = new VariationPath(root, "on", new PathItem("On", "on"));
             var off = new VariationPath(root, "off", new PathItem("Off", "off"));
