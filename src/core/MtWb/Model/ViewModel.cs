@@ -252,7 +252,7 @@ namespace MtWb.Model
 
             _lastMetering = DateTime.Now;
 
-            if (Settings.MaxChargingTime > 0 && (DateTime.Now - CurrentMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
+            if (ActiveCharging && Settings.MaxChargingTime > 0 && (DateTime.Now - CurrentMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
             {
                 Log(new LogItem(LogItem.LogLevel.Info, "Maximale Ladedauer wurde erreicht"));
 
@@ -260,7 +260,7 @@ namespace MtWb.Model
                 return;
             }
 
-            if (Settings.MaxWattage > 0 && CurrentMeasurementLog.Power > Settings.MaxWattage)
+            if (ActiveCharging && Settings.MaxWattage > 0 && CurrentMeasurementLog.Power > Settings.MaxWattage)
             {
                 Log(new LogItem(LogItem.LogLevel.Info, "Maximaler Stromverbrauch wurde erreicht"));
 
@@ -428,6 +428,28 @@ namespace MtWb.Model
             }
 
             return list;
+        }
+
+        /// <summary>
+        /// Liefert die abgeschlossenen Messprotokolle
+        /// </summary>
+        /// <param name="id">Die ID des Messprotokolls</param>
+        public MeasurementLog GetHistoryMeasurementLogs(string id)
+        {
+            var list = new List<MeasurementLog>();
+            var directoryName = Path.Combine(Context.AssetBaseFolder, "measurements");
+            var files = Directory.GetFiles(directoryName, id + ".xml");
+            var serializer = new XmlSerializer(typeof(MeasurementLog));
+
+            foreach (var file in files)
+            {
+                using (var reader = File.OpenText(file))
+                {
+                    list.Add(serializer.Deserialize(reader) as MeasurementLog);
+                }
+            }
+
+            return list.FirstOrDefault();
         }
     }
 }

@@ -45,8 +45,8 @@ namespace MtWb.Controls
             new HtmlElementBr() + 
             new ControlLink(Page)
             {
-                Text = "Download",
-                Url = new Path(Page.Context, "/measurements/" + MeasurementLog.ID + ".xml")
+                Text = "Details",
+                Url = new Path(Page.Context, "/" + MeasurementLog.ID)
             }.ToHtml();
             Value = string.Format("{0:F2} kWh", MeasurementLog?.Power) + " / " + string.Format("{0:F2} €", MeasurementLog?.Cost);
             Icon = Icon.TachometerAlt;
