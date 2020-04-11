@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.2.0.0</Version>
-    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <Version>1.2.1.0</Version>
+    <AssemblyVersion>1.2.1.0</AssemblyVersion>
     <PackageLicenseExpression>GNU General Public License v3.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/ReneSchwarzer/MtWb.git</RepositoryUrl>
   </PropertyGroup>
