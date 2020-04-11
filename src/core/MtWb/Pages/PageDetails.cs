@@ -73,6 +73,14 @@ namespace MtWb.Pages
                 this,
                 new ControlButtonLink(this)
                 {
+                    Text = "Datei herunterladen",
+                    Layout = TypesLayoutButton.Primary,
+                    Icon = Icon.Download,
+                    Color = TypesTextColor.Light,
+                    Url = GetPath(0, "measurements/" + id + ".xml")
+                },
+                new ControlButtonLink(this)
+                {
                     Text = "Datei archivieren",
                     Layout = TypesLayoutButton.Primary,
                     Icon = Icon.Clock,
@@ -95,7 +103,8 @@ namespace MtWb.Pages
                             OnClick = "window.location.href = '" + GetPath(2, "archive").ToString() + " '"
                         }
                     )
-                }, new ControlButtonLink(this)
+                },
+                new ControlButtonLink(this)
                 {
                     Text = "Datei löschen",
                     Layout = TypesLayoutButton.Danger,
