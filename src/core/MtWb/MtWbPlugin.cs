@@ -14,7 +14,7 @@ namespace MtWb
         /// Konstruktor
         /// </summary>
         public MtWbPlugin()
-        : base("MtWb")
+        : base("MtWb", "/Assets/img/MtWb.svg")
         {
         }
 
@@ -41,6 +41,10 @@ namespace MtWb
             var debug = new VariationPath(root, "debug", new PathItem("Debug", "debug"));
             var settings = new VariationPath(root, "settings", new PathItem("Einstellungen", "settings"));
             var api = new VariationPath(root, "api", new PathItem("API", "api"));
+            
+            var details = new VariationPath(root, "details", new PathItem("Details", "$id"));
+            var del = new VariationPath(details, "del", new PathItem("Löschen", "del"));
+            var archive = new VariationPath(details, "archive", new PathItem("Archivieren", "archive"));
 
             root.GetUrls("Home").ForEach(x => Register(new WorkerPage<PageDashboard>(x) { }));
             help.GetUrls("Hilfe").ForEach(x => Register(new WorkerPage<PageHelp>(x) { }));
@@ -50,6 +54,9 @@ namespace MtWb
             debug.GetUrls("Debug").ForEach(x => Register(new WorkerPage<PageDebug>(x) { }));
             settings.GetUrls("Einstellungen").ForEach(x => Register(new WorkerPage<PageSettings>(x) { }));
             api.GetUrls("API").ForEach(x => Register(new WorkerPage<PageApiBase>(x) { }));
+            details.GetUrls("Details").ForEach(x => Register(new WorkerPage<PageDetails>(x) { }));
+            del.GetUrls("Löschen").ForEach(x => Register(new WorkerPage<PageDel>(x) { }));
+            archive.GetUrls("Archivieren").ForEach(x => Register(new WorkerPage<PageArchive>(x) { }));
 
             Task.Run(() => { Run(); });
         }

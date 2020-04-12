@@ -36,18 +36,22 @@ namespace MtWb.Pages
         public override void Init()
         {
             base.Init();
+            Head.Style = "position: sticky; top: 0; z-index: 99;";
+            Head.Content.Add(HamburgerMenu);
+            HamburgerMenu.HorizontalAlignment = TypesHorizontalAlignment.Left;
+            HamburgerMenu.Image = GetPath(0, "Assets/img/Logo.png");
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Home", Icon = Icon.Home, Url = GetPath(0) });
+            HamburgerMenu.AddSeperator();
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Logging", Icon = Icon.Book, Url = GetPath(0, "log") });
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Einstellungen", Icon = Icon.Cog, Url = GetPath(0, "settings") });
+            HamburgerMenu.AddSeperator();
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Hilfe", Icon = Icon.InfoCircle, Url = GetPath(0, "help") });
 
-            Head.Content.Add(new ControlImage(this)
-            {
-                Source = new Path(Context, "/Assets/img/Logo.png"),
-                Height = 50,
-                HorizontalAlignment = TypesHorizontalAlignment.Left
-            });
-
+            // SideBar
             ToolBar = new ControlToolBar(this)
             {
-                Class = "p-2 bg-light"
-
+                Class = "sidebar bg-success",
+                HorizontalAlignment = TypesHorizontalAlignment.Left
             };
 
             Head.Content.Add(new ControlPanelCenter(this, new ControlText(this)
@@ -60,7 +64,8 @@ namespace MtWb.Pages
                 Style = "font-size:190%; height: 50px;"
             }));
 
-            Main.Class = "pl-3 pr-3";
+            Main.Class = "content";
+            PathCtrl.Class = "content";
 
             Foot.Content.Add(new ControlText(this, "now")
             {

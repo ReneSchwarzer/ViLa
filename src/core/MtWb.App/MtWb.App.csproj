@@ -5,11 +5,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>MtWb.App</AssemblyName>
     <RootNamespace>MtWb.App</RootNamespace>
+    <Version>1.2.1.0</Version>
+    <AssemblyVersion>1.2.1.0</AssemblyVersion>
     <PackageLicenseExpression>GNU General Public License v3.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/ReneSchwarzer/MtWb.git</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\WebExpressAgent\src\core\WebExpressAgent\WebExpressAgent.csproj" />
     <ProjectReference Include="..\..\..\..\WebExpress\core\WebExpress.App\WebExpress.App.csproj" />
     <ProjectReference Include="..\..\..\..\WebExpress\core\WebExpress.UI\WebExpress.UI.csproj" />
     <ProjectReference Include="..\..\..\..\WebExpress\core\WebExpress\WebExpress.csproj" />
@@ -119,6 +122,9 @@
     <None Update="Assets\js\Chart.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\js\details.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\js\dashboard.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -135,6 +141,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\StoreLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\agent.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Config\mtwb.config.xml">

@@ -17,7 +17,7 @@ namespace MtWb
         /// <param name="context">Der Kontext</param>
         /// <param name="configFileName">Der Dateiname der Konfiguration oder null</param>
         /// <returns>Die Instanz des Plugins</returns>
-        public override IPlugin Create(IPluginContext context, string configFileName)
+        public override IPlugin Create(HttpServerContext context, string configFileName)
         {
             var plugin = Create<MtWbPlugin>(context, configFileName);
             

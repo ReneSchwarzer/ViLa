@@ -110,3 +110,39 @@
 {
     margin-left: 50px;
 }
+
+.sidebar 
+{
+    margin: 0;
+    padding: 0;
+    width: 40px;
+    height: 100%; 
+    overflow: auto;
+	font-size: 1em;
+	position: fixed !important;
+    display: block;
+	vertical-align: middle;
+}
+
+.sidebar a 
+{
+    display: block;
+	color: white;
+    padding: 10px 11px;
+    text-decoration: none;
+}
+
+.sidebar a:link 
+{
+    color: white;
+}
+
+.sidebar a:visited 
+{
+    color: white;
+}
+
+.content
+{
+    padding-left: 40px;
+}

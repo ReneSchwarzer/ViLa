@@ -23,8 +23,6 @@ namespace MtWb.Pages
         public override void Init()
         {
             base.Init();
-
-            ToolBar.Add(new ControlMenu(this));
         }
 
         /// <summary>
