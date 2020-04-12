@@ -34,6 +34,7 @@ namespace MtWb
             Register(new WorkerFile(new Path(Context, "", "measurements/.*"), Context.AssetBaseFolder));
 
             var root = new VariationPath(Context, "home", new PathItem("Home"));
+            var history = new VariationPath(root, "history", new PathItem("Verlauf", "history"));
             var help = new VariationPath(root, "help", new PathItem("Hilfe", "help"));
             var on = new VariationPath(root, "on", new PathItem("On", "on"));
             var off = new VariationPath(root, "off", new PathItem("Off", "off"));
@@ -47,6 +48,7 @@ namespace MtWb
             var archive = new VariationPath(details, "archive", new PathItem("Archivieren", "archive"));
 
             root.GetUrls("Home").ForEach(x => Register(new WorkerPage<PageDashboard>(x) { }));
+            history.GetUrls("Verlauf").ForEach(x => Register(new WorkerPage<PageHistory>(x) { }));
             help.GetUrls("Hilfe").ForEach(x => Register(new WorkerPage<PageHelp>(x) { }));
             on.GetUrls("On").ForEach(x => Register(new WorkerPage<PageOn>(x) { }));
             off.GetUrls("Off").ForEach(x => Register(new WorkerPage<PageOff>(x) { }));

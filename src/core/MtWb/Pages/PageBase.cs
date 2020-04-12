@@ -7,12 +7,7 @@ using WebExpress.UI.Pages;
 namespace MtWb.Pages
 {
     public class PageBase : PageTemplateWebApp
-    {
-        ///// <summary>
-        ///// Liefert oder setzt die Toolbar
-        ///// </summary>
-        //public ControlToolBar ToolBar { get; set; }
-        
+    {     
         /// <summary>
         /// Konstruktor
         /// </summary>
@@ -41,6 +36,7 @@ namespace MtWb.Pages
             HamburgerMenu.HorizontalAlignment = TypesHorizontalAlignment.Left;
             HamburgerMenu.Image = GetPath(0, "Assets/img/Logo.png");
             HamburgerMenu.Add(new ControlLink(this) { Text = "Home", Icon = Icon.Home, Url = GetPath(0) });
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Verlauf", Icon = Icon.ChartBar, Url = GetPath(0, "history") });
             HamburgerMenu.AddSeperator();
             HamburgerMenu.Add(new ControlLink(this) { Text = "Logging", Icon = Icon.Book, Url = GetPath(0, "log") });
             HamburgerMenu.Add(new ControlLink(this) { Text = "Einstellungen", Icon = Icon.Cog, Url = GetPath(0, "settings") });
