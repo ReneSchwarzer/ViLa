@@ -32,6 +32,9 @@ namespace MtWb.Pages
         {
             base.Process();
 
+            Main.Content.Add(new ControlTabMenu(this));
+            Main.Content.Add(new ControlLine(this));
+
             Main.Content.Add(new ControlText(this)
             {
                 Text = "Willkommen",

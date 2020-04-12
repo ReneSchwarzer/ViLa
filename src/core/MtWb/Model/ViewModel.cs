@@ -451,5 +451,26 @@ namespace MtWb.Model
 
             return list.FirstOrDefault();
         }
+
+        /// <summary>
+        /// Liefert die abgeschlossenen Messprotokolle
+        /// </summary>
+        public List<MeasurementLog> GetHistoryMeasurementLogs()
+        {
+            var list = new List<MeasurementLog>();
+            var directoryName = Path.Combine(Context.AssetBaseFolder, "measurements");
+            var files = Directory.GetFiles(directoryName, "*.xml");
+            var serializer = new XmlSerializer(typeof(MeasurementLog));
+
+            foreach (var file in files)
+            {
+                using (var reader = File.OpenText(file))
+                {
+                    list.Add(serializer.Deserialize(reader) as MeasurementLog);
+                }
+            }
+
+            return list;
+        }
     }
 }

@@ -34,8 +34,8 @@ namespace MtWb.Pages
 
             var id = GetParam("id");
             var measurementLog = ViewModel.Instance.GetHistoryMeasurementLogs(id);
-            var chartLabels = measurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - measurementLog.From).TotalMinutes).ToString()).ToArray();
-            var chartData = measurementLog.Measurements.Select(x => x.Power.ToString()).ToArray();
+            var chartLabels = measurementLog?.Measurements.Select(x => ((int)(x.MeasurementTimePoint - measurementLog.From).TotalMinutes).ToString()).ToArray();
+            var chartData = measurementLog?.Measurements.Select(x => x.Power.ToString()).ToArray();
 
             Main.Content.Add(new ControlText(this)
             {
@@ -58,11 +58,11 @@ namespace MtWb.Pages
 
             var builder = new StringBuilder();
             builder.Append("config.data.labels = [");
-            builder.Append(string.Join(",", chartLabels));
+            builder.Append(string.Join(",", chartLabels ?? new string[1]));
             builder.AppendLine("];");
             builder.AppendLine("config.data.datasets.forEach(function(dataset){");
             builder.Append("dataset.data = [");
-            builder.Append(string.Join(",", chartData));
+            builder.Append(string.Join(",", chartData ?? new string[1]));
             builder.AppendLine("];");
             builder.Append("});");
 
