@@ -1,4 +1,4 @@
 #!/bin/bash
-# Startet den MtWb-Service manuell
+# Startet den ViLa-Service manuell
 
-sudo systemctl start mtwb.service
+sudo systemctl start vila.service

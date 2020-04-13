@@ -1,3 +1,3 @@
 #!/bin/bash
-# Stoppt den MtWb-Service 
-sudo systemctl stop mtwb.service
+# Stoppt den ViLa-Service 
+sudo systemctl stop vila.service

@@ -1,11 +1,11 @@
-# Makes the Wallbox better
-IoT Projekt zur Verbesserung einer Wallbox (MtWb). 
+# Visuelles Laden (ViLa)
+IoT Projekt zur Verbesserung einer Wallbox . 
 
 # Beschreibung
 Die Software steuert eine Wallbox und macht diese Smart.
 
 # Plattform
-MtWb ist eine WebApp, welche in C# speziell für den Raspberry Pi entwickelt wurde.
+ViLa ist eine WebApp, welche in C# speziell für den Raspberry Pi entwickelt wurde.
 
 # Voraussetzungen
 Raspberry Pi 3B
@@ -15,7 +15,7 @@ Raspbian Buster Lite (https://downloads.raspberrypi.org/raspbian_lite_latest)
 WebExpress (https://github.com/ReneSchwarzer/WebExpress.git)
 
 # Einrichtung 
-siehe doc/MtWb.docx
+siehe doc/ViLa.docx
 
 # Verwendete Bibliotheken
 https://getbootstrap.com/
