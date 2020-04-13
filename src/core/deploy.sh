@@ -1,5 +1,5 @@
 #!/bin/bash
-# Erstellt und verteilt den MtWb-Service, ohne ihn zu starten.
+# Erstellt und verteilt den ViLa-Service, ohne ihn zu starten.
 # Das Starten und Stoppen erfolgt automatisch (Starten beim booten) 
 # oder manuell über die Skripte start.sh und stop.sh.
 
@@ -9,19 +9,19 @@ export DOTNET_ROOT=/usr/share/dotnet-sdk/
 dotnet build
 dotnet publish
 
-if (sudo systemctl -q is-enabled mtwb.service)
+if (sudo systemctl -q is-enabled vila.service)
 then
-	sudo systemctl disable mtwb.service 
+	sudo systemctl disable vila.service 
 fi
 
-sudo mkdir -p /opt/mtwb
-sudo chmod +x /opt/mtwb
+sudo mkdir -p /opt/vila
+sudo chmod +x /opt/vila
 
 
-##cp -Rf MtWb/bin/Debug/netcoreapp3.1/publish/* /opt/mtwb
-cp -Rf MtWb.App/bin/Debug/netcoreapp3.1/publish/* /opt/mtwb
-cp mtwb.sh /opt/mtwb
-sudo chmod +x /opt/mtwb/mtwb.sh
+##cp -Rf ViLa/bin/Debug/netcoreapp3.1/publish/* /opt/vila
+cp -Rf ViLa.App/bin/Debug/netcoreapp3.1/publish/* /opt/vila
+cp vila.sh /opt/vila
+sudo chmod +x /opt/vila/vila.sh
 
-sudo cp mtwb.service /etc/systemd/system
-sudo systemctl enable mtwb.service
+sudo cp vila.service /etc/systemd/system
+sudo systemctl enable vila.service
