@@ -35,6 +35,13 @@ namespace MtWb.Model
         /// <summary>
         /// Konstruktor
         /// </summary>
+        public LogItem()
+        {
+        }
+
+        /// <summary>
+        /// Konstruktor
+        /// </summary>
         /// <param name="level">Das Loglevel</param>
         /// <param name="massage">Die Lognachricht</param>
         public LogItem(LogLevel level, string massage)

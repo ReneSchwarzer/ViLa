@@ -95,12 +95,12 @@ namespace MtWb.Model
                         if (!value)
                         {
                             GPIO.Write(_electricContactorPin, PinValue.High);
-                            Log(new LogItem(LogItem.LogLevel.Error, "Status des Schütz wurde auf HIGH geändert"));
+                            Log(new LogItem(LogItem.LogLevel.Debug, "Status des Schütz wurde auf HIGH geändert"));
                         }
                         else
                         {
                             GPIO.Write(_electricContactorPin, PinValue.Low);
-                            Log(new LogItem(LogItem.LogLevel.Error, "Status des Schütz wurde auf LOW"));
+                            Log(new LogItem(LogItem.LogLevel.Debug, "Status des Schütz wurde auf LOW geändert"));
                         }
 
                         _electricContactorStatus = value;
@@ -158,13 +158,6 @@ namespace MtWb.Model
         /// Liefert oder setzt die Settings
         /// </summary>
         public Settings Settings { get; private set; } = new Settings();
-
-        /// <summary>
-        /// Liefert die Programmversion
-        /// </summary>
-        [XmlIgnore]
-        public string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
 
         /// <summary>
         /// Konstruktor
@@ -276,6 +269,12 @@ namespace MtWb.Model
         public void Log(LogItem logItem)
         {
             Logging.Add(logItem);
+
+            if(ActiveCharging && logItem.Level != LogItem.LogLevel.Info)
+            {
+                var current = CurrentMeasurementLog?.CurrentMeasurement;
+                current.Logitems.Add(logItem);
+            }
 
             switch (logItem.Level)
             {

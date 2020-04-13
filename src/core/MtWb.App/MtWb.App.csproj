@@ -5,8 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>MtWb.App</AssemblyName>
     <RootNamespace>MtWb.App</RootNamespace>
-    <Version>1.2.2.0</Version>
-    <AssemblyVersion>1.2.2.0</AssemblyVersion>
+    <Version>1.2.3.0</Version>
+    <AssemblyVersion>1.2.3.0</AssemblyVersion>
     <PackageLicenseExpression>GNU General Public License v3.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/ReneSchwarzer/MtWb.git</RepositoryUrl>
   </PropertyGroup>
@@ -100,6 +100,9 @@
     </None>
     <None Update="Assets\img\Logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\img\MtWb.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\img\Reboot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

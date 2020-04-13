@@ -43,7 +43,7 @@ namespace MtWb
             var settings = new VariationPath(root, "settings", new PathItem("Einstellungen", "settings"));
             var api = new VariationPath(root, "api", new PathItem("API", "api"));
             
-            var details = new VariationPath(root, "details", new PathItem("Details", "$id"));
+            var details = new VariationPath(root, "details", new PathItemVariable("Details", "id", "(([0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}))"));
             var del = new VariationPath(details, "del", new PathItem("Löschen", "del"));
             var archive = new VariationPath(details, "archive", new PathItem("Archivieren", "archive"));
 
