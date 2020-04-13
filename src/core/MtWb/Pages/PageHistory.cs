@@ -49,10 +49,10 @@ namespace MtWb.Pages
             foreach (var measurementLog in history.OrderByDescending(x => x.From))
             {
                 var row = new ControlTableRow(this) { };
-                row.Cells.Add(new ControlText(this) { Text = string.Format("{0}", measurementLog.From.ToShortDateString()) });
+                row.Cells.Add(new ControlText(this) { Text = string.Format("{0}", measurementLog.From.ToString("dd.MM.yyyy")) });
                 row.Cells.Add(new ControlText(this) { Text = string.Format("{0} - {1} Uhr", measurementLog.From.ToShortTimeString(), measurementLog.Till.ToShortTimeString()) });
-                row.Cells.Add(new ControlText(this) { Text = string.Format("{0} kWh", measurementLog.Power) });
-                row.Cells.Add(new ControlText(this) { Text = string.Format("{0} €", measurementLog.Cost) });
+                row.Cells.Add(new ControlText(this) { Text = string.Format("{0:F2} kWh", measurementLog.Power) });
+                row.Cells.Add(new ControlText(this) { Text = string.Format("{0:F2} €", measurementLog.Cost) });
                 row.Cells.Add(new ControlLink(this) { Text = "Details", Url = GetPath(0, measurementLog.ID) });
 
                 table.Rows.Add(row);

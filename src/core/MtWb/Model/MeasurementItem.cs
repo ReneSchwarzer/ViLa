@@ -27,5 +27,11 @@ namespace MtWb.Model
         /// </summary>
         [XmlAttribute("power")]
         public float Power { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die Logitems
+        /// </summary>
+        [XmlElement("logitem")]
+        public List<LogItem> Logitems { get; set; } = new List<LogItem>();
     }
 }
