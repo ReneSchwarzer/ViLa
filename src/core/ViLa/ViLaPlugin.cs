@@ -46,6 +46,10 @@ namespace ViLa
             var details = new VariationPath(root, "details", new PathItemVariable("Details", "id", "(([0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}))"));
             var del = new VariationPath(details, "del", new PathItem("Löschen", "del"));
             var archive = new VariationPath(details, "archive", new PathItem("Archivieren", "archive"));
+            var details_his = new VariationPath(history, "details", new PathItemVariable("Details", "id", "(([0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}))"));
+            var his_del = new VariationPath(details_his, "del", new PathItem("Löschen", "del"));
+            var his_archive = new VariationPath(details_his, "archive", new PathItem("Archivieren", "archive"));
+
 
             root.GetUrls("Home").ForEach(x => Register(new WorkerPage<PageDashboard>(x) { }));
             history.GetUrls("Verlauf").ForEach(x => Register(new WorkerPage<PageHistory>(x) { }));
@@ -57,8 +61,11 @@ namespace ViLa
             settings.GetUrls("Einstellungen").ForEach(x => Register(new WorkerPage<PageSettings>(x) { }));
             api.GetUrls("API").ForEach(x => Register(new WorkerPage<PageApiBase>(x) { }));
             details.GetUrls("Details").ForEach(x => Register(new WorkerPage<PageDetails>(x) { }));
+            details_his.GetUrls("Details").ForEach(x => Register(new WorkerPage<PageDetails>(x) { }));
             del.GetUrls("Löschen").ForEach(x => Register(new WorkerPage<PageDel>(x) { }));
             archive.GetUrls("Archivieren").ForEach(x => Register(new WorkerPage<PageArchive>(x) { }));
+            his_del.GetUrls("Löschen").ForEach(x => Register(new WorkerPage<PageDel>(x) { }));
+            his_archive.GetUrls("Archivieren").ForEach(x => Register(new WorkerPage<PageArchive>(x) { }));
 
             Task.Run(() => { Run(); });
         }

@@ -45,7 +45,7 @@ namespace ViLa.Pages
                 ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
 
-            Redirecting(GetPath(0));
+            Redirecting(GetPath(-2));
         }
 
         /// <summary>

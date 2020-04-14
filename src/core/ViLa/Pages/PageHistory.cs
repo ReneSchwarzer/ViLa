@@ -1,6 +1,7 @@
 ﻿using ViLa.Model;
 using System.Linq;
 using WebExpress.UI.Controls;
+using ViLa.Controls;
 
 namespace ViLa.Pages
 {
@@ -31,12 +32,13 @@ namespace ViLa.Pages
 
             var history = ViewModel.Instance.GetHistoryMeasurementLogs();
 
+            Main.Content.Add(new ControlTabMenu(this));
+            Main.Content.Add(new ControlLine(this));
+
             Main.Content.Add(new ControlText(this)
             {
                 Text = "Messprotokolle",
-                Format = TypesTextFormat.Center,
-                Color = TypesTextColor.Primary,
-                Class = "m-3"
+                Format = TypesTextFormat.H1
             });
 
             var table = new ControlTable(this);
@@ -53,7 +55,7 @@ namespace ViLa.Pages
                 row.Cells.Add(new ControlText(this) { Text = string.Format("{0} - {1} Uhr", measurementLog.From.ToShortTimeString(), measurementLog.Till.ToShortTimeString()) });
                 row.Cells.Add(new ControlText(this) { Text = string.Format("{0:F2} kWh", measurementLog.Power) });
                 row.Cells.Add(new ControlText(this) { Text = string.Format("{0:F2} €", measurementLog.Cost) });
-                row.Cells.Add(new ControlLink(this) { Text = "Details", Url = GetPath(0, measurementLog.ID) });
+                row.Cells.Add(new ControlLink(this) { Text = "Details", Url = GetPath(measurementLog.ID) });
 
                 table.Rows.Add(row);
             }

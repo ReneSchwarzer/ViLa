@@ -39,6 +39,12 @@ namespace ViLa.Pages
 
             Main.Content.Add(new ControlText(this)
             {
+                Text = id + ".mxl",
+                Color = TypesTextColor.Muted
+            });
+
+            Main.Content.Add(new ControlText(this)
+            {
                 Text = string.Format("{0:F2} kWh", measurementLog?.Power) + " / " + string.Format("{0:F2} €", measurementLog?.Cost),
                 Format = TypesTextFormat.H1,
                 Color = TypesTextColor.Primary
@@ -100,7 +106,7 @@ namespace ViLa.Pages
                             Icon = Icon.Clock,
                             Class = "m-1",
                             Layout = TypesLayoutButton.Success,
-                            OnClick = "window.location.href = '" + GetPath(2, "archive").ToString() + " '"
+                            OnClick = "window.location.href = '" + GetPath("archive").ToString() + " '"
                         }
                     )
                 },
@@ -126,7 +132,7 @@ namespace ViLa.Pages
                             Icon = Icon.TrashAlt,
                             Class = "m-1",
                             Layout = TypesLayoutButton.Danger,
-                            OnClick = "window.location.href = '" + GetPath(2, "del").ToString() + " '"
+                            OnClick = "window.location.href = '" + GetPath("del").ToString() + " '"
                         }
                     )
             })
