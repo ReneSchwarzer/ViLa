@@ -14,7 +14,7 @@ namespace ViLa.Pages
             : base("Überblick")
         {
             HeaderScriptLinks.Add("/Assets/js/Chart.min.js");
-            HeaderScriptLinks.Add("/Assets/js/dashboard.js");
+            HeaderScriptLinks.Add("/Assets/js/vila.dashboard.js");
         }
 
         /// <summary>

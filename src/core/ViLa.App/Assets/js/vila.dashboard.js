@@ -74,6 +74,31 @@ $(document).ready(function()
             $('#power').html("Verbrauch: " + data.Power + " kWh");
             $('#cost').html("Angefallene Kosten: " + data.Cost + " €");
 
+			if (data.ActiveCharging)
+			{
+				$('#charging_btn').removeClass('btn-success');
+				$('#charging_btn').removeClass('btn-danger');
+                $('#charging_btn').addClass('btn-danger');
+				$('#charging_btn').html("&nbsp;&nbsp;&nbsp;Ladevorgang beenden");
+				var span = document.createElement('span');
+				span.setAttribute('class', 'fas fa-power-off');
+				var a = document.getElementById('charging_btn');
+				a.insertAdjacentElement('afterbegin', span);
+				a.setAttribute('href', '/off');
+			}
+			else
+			{
+				$('#charging_btn').removeClass('btn-success');
+				$('#charging_btn').removeClass('btn-danger');
+                $('#charging_btn').addClass('btn-success');
+				$('#charging_btn').html("&nbsp;&nbsp;&nbsp;Ladevorgang starten");
+				var span = document.createElement('span');
+				span.setAttribute('class', 'fas fa-play-circle');
+				var a = document.getElementById('charging_btn');
+				a.insertAdjacentElement('afterbegin', span);
+				a.setAttribute('href', '/on');
+			}
+
 			config.data.labels = data.ChartLabels;
 
 		    config.data.datasets.forEach(function(dataset) 

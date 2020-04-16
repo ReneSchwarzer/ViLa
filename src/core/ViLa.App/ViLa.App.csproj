@@ -128,7 +128,7 @@
     <None Update="Assets\js\details.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\js\dashboard.js">
+    <None Update="Assets\js\vila.dashboard.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\js\jquery-3.3.1.min.js">

@@ -230,6 +230,18 @@ namespace ViLa.Model
                     // Neuer Messwert
                     if ((DateTime.Now - CurrentMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
                     {
+                        if 
+                        (
+                            Settings.MinWattage >= 0 && 
+                            CurrentMeasurementLog?.Power >= 0.5 &&
+                            CurrentMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage)
+                        {
+                            Log(new LogItem(LogItem.LogLevel.Info, "Minimale Leistungsaufnahme wurde erreicht"));
+
+                            StopsCharging();
+                            return;
+                        }
+
                         CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
                         {
                             MeasurementTimePoint = DateTime.Now

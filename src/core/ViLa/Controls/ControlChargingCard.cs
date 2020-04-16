@@ -39,7 +39,7 @@ namespace ViLa.Controls
 
             if (!ViewModel.Instance.ActiveCharging)
             {
-                card.Content.Add(new ControlButtonLink(Page)
+                card.Content.Add(new ControlButtonLink(Page, "charging_btn")
                 {
                     Text = "Ladevorgang starten",
                     Layout = TypesLayoutButton.Success,
@@ -49,7 +49,7 @@ namespace ViLa.Controls
             }
             else
             {
-                card.Content.Add(new ControlButtonLink(Page)
+                card.Content.Add(new ControlButtonLink(Page, "charging_btn")
                 {
                     Text = "Ladevorgang beenden",
                     Layout = TypesLayoutButton.Danger,

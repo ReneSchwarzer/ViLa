@@ -12,6 +12,11 @@ namespace ViLa.Model
         public string Client { get; set; }
 
         /// <summary>
+        /// Liefert oder setzt, ob der Ladevorgang aktiv ist
+        /// </summary>
+        public bool ActiveCharging { get; set; }
+
+        /// <summary>
         /// Liefert oder setzt den Anfang des Messzeitpunkt
         /// </summary>
         public string MeasurementTime { get; set; }
