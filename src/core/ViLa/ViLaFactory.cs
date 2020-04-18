@@ -1,5 +1,4 @@
-﻿using System;
-using WebExpress;
+﻿using WebExpress;
 using WebExpress.Plugins;
 
 namespace ViLa
@@ -20,7 +19,7 @@ namespace ViLa
         public override IPlugin Create(HttpServerContext context, string configFileName)
         {
             var plugin = Create<ViLaPlugin>(context, configFileName);
-            
+
             return plugin;
         }
     }

@@ -1,8 +1,8 @@
-﻿using ViLa.Model;
-using System;
+﻿using System;
+using ViLa.Model;
+using WebExpress.Html;
 using WebExpress.Pages;
 using WebExpress.UI.Controls;
-using WebServer.Html;
 
 namespace ViLa.Controls
 {
@@ -44,7 +44,7 @@ namespace ViLa.Controls
                     Text = "Ladevorgang starten",
                     Layout = TypesLayoutButton.Success,
                     Icon = Icon.PlayCircle,
-                    Url = Page.GetPath(0, "on")
+                    Uri = Page.Uri.Root.Append("on")
                 });
             }
             else
@@ -54,7 +54,7 @@ namespace ViLa.Controls
                     Text = "Ladevorgang beenden",
                     Layout = TypesLayoutButton.Danger,
                     Icon = Icon.PowerOff,
-                    Url = Page.GetPath(0, "off")
+                    Uri = Page.Uri.Root.Append("off")
                 });
             }
 

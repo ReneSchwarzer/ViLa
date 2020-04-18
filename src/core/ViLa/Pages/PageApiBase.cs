@@ -1,7 +1,7 @@
-﻿using ViLa.Model;
-using System;
+﻿using System;
 using System.Linq;
 using System.Text.Json;
+using ViLa.Model;
 using WebExpress.Pages;
 
 namespace ViLa.Pages
@@ -44,7 +44,7 @@ namespace ViLa.Pages
                 Cost = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Cost : 0f),
                 Now = ViewModel.Instance.Now,
                 ChartLabels = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() : null,
-                ChartData = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power.ToString()).ToArray() : null 
+                ChartData = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power.ToString()).ToArray() : null
             };
 
             var options = new JsonSerializerOptions

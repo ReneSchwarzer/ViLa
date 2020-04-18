@@ -1,9 +1,4 @@
-﻿using ViLa.Controls;
-using ViLa.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using WebExpress.UI.Controls;
+﻿using ViLa.Model;
 
 namespace ViLa.Pages
 {
@@ -35,7 +30,7 @@ namespace ViLa.Pages
 
             ViewModel.Instance.StartsTheChargingProcess();
 
-            Redirecting(GetPath(0));
+            Redirecting(Uri.Root);
         }
 
         /// <summary>

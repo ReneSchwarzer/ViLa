@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ViLa.Model
 {
-    public class TimeSpanConverter 
+    public class TimeSpanConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

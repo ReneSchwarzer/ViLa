@@ -40,6 +40,6 @@ namespace ViLa.Model
         /// Liefert oder setzt die maximale Ladezeit in h
         /// </summary>
         [XmlElement(ElementName = "MaxChargingTime")]
-        public int MaxChargingTime  { get; set; }
+        public int MaxChargingTime { get; set; }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ViLa.Model
+﻿namespace ViLa.Model
 {
     public class API
     {

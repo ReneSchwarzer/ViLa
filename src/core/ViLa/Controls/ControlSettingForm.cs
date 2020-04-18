@@ -54,7 +54,7 @@ namespace ViLa.Controls
             {
                 Name = "ImpulsePerkWhCtrl",
                 Label = "Die Anzahl der Impulse pro kWh:",
-                Help = "Der Wert stammt vom Drehstromzähler." 
+                Help = "Der Wert stammt vom Drehstromzähler."
             };
 
             ElectricityPricePerkWhCtrl = new ControlFormularItemTextBox(this)

@@ -1,10 +1,6 @@
-﻿using ViLa.Controls;
-using ViLa.Model;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using WebExpress.Pages;
+using ViLa.Model;
 using WebExpress.UI.Controls;
 
 namespace ViLa.Pages
@@ -83,7 +79,7 @@ namespace ViLa.Pages
                 Text = ViewModel.Instance.Settings.DebugMode ? "Debug-Ausgaben ausblenden" : "Debug-Ausgaben einblenden",
                 Icon = Icon.Bug,
                 Color = TypesTextColor.Warning,
-                Url = GetPath(0, "/debug"),
+                Uri = Uri.Root.Append("/debug"),
                 Class = "m-3"
             }));
         }

@@ -1,14 +1,11 @@
 ﻿using ViLa.Pages;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WebExpress.Pages;
 using WebExpress.UI.Controls;
 
 namespace ViLa.Controls
 {
     public class ControlTabMenu : ControlTab
-    { 
+    {
         /// <summary>
         /// Konstruktor
         /// </summary>
@@ -24,23 +21,49 @@ namespace ViLa.Controls
         /// </summary>
         private void Init()
         {
+            var root = Page.Uri.Root;
+
             Layout = TypesLayoutTab.Pill;
             HorizontalAlignment = TypesTabHorizontalAlignment.Center;
 
             Items.Add(new ControlLink(Page)
             {
                 Text = "Home",
-                Url = Page.GetPath(0),
-                Class = Page is PageDashboard ? "active" : string.Empty,
+                Uri = root,
+                Class = Page is PageDashboard || !Page.Uri.ContainsSegemtID("Verlauf") ? "active" : string.Empty,
                 Icon = Icon.Home
             });
 
             Items.Add(new ControlLink(Page)
             {
                 Text = "Verlauf",
-                Url = Page.GetPath(0, "history"),
-                Class = Page is PageHistory ? "active" : string.Empty,
+                Uri = root.Append("history"),
+                Class = Page is PageHistory || Page.Uri.ContainsSegemtID("Verlauf") ? "active" : string.Empty,
                 Icon = Icon.ChartBar
+            });
+
+            Items.Add(new ControlLink(Page)
+            {
+                Text = "Einstellungen",
+                Uri = Page.Uri.Root.Append("settings"),
+                Class = Page is PageSettings ? "active" : string.Empty,
+                Icon = Icon.Cog
+            });
+
+            Items.Add(new ControlLink(Page)
+            {
+                Text = "Logging",
+                Uri = Page.Uri.Root.Append("log"),
+                Class = Page is PageLog ? "active" : string.Empty,
+                Icon = Icon.Book
+            });
+
+            Items.Add(new ControlLink(Page)
+            {
+                Text = "Hilfe",
+                Uri = Page.Uri.Root.Append("help"),
+                Class = Page is PageHelp ? "active" : string.Empty,
+                Icon = Icon.InfoCircle
             });
         }
     }

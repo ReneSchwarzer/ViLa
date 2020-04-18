@@ -1,4 +1,4 @@
-﻿using WebExpress.Pages;
+﻿using WebExpress.Html;
 using WebExpress.UI.Controls;
 
 namespace ViLa.Pages
@@ -30,7 +30,7 @@ namespace ViLa.Pages
 
             Main.Content.Add(new ControlImage(this)
             {
-                Source = GetPath(0, "Assets/StoreLogo.png"),
+                Source = Uri.Root.Append("Assets/StoreLogo.png"),
                 Width = 200,
                 Height = 200,
                 HorizontalAlignment = TypesHorizontalAlignment.Right
@@ -53,7 +53,7 @@ namespace ViLa.Pages
                 Text = "Datenschutzrichtlinie",
                 Format = TypesTextFormat.H4
             });
-            
+
             Main.Content.Add(new ControlText(this)
             {
                 Text = "Die während der Nutzung eingegebenen Daten werden lokal auf Ihrem Gerät gespeichert. Sie behalten jederzeit die Datenhoheit. Die Daten werden zu keiner Zeit an Dritte übermittelt. Persönliche Informationen und Standortinformationen werden nicht erhoben.",
@@ -65,10 +65,10 @@ namespace ViLa.Pages
                 Text = "Haftungsausschluss",
                 Format = TypesTextFormat.H4
             });
-            
+
             Main.Content.Add(new ControlText(this)
             {
-                Text = "Die Haftung für Schäden durch Sachmängel wird ausgeschlossen.Die Haftung auf Schadensersatz wegen Körperverletzung sowie bei grober Fahrlässigkeit oder Vorsatz bleibt unberührt.",
+                Text = "Die Haftung für Schäden durch Sachmängel wird ausgeschlossen. Die Haftung auf Schadensersatz wegen Körperverletzung sowie bei grober Fahrlässigkeit oder Vorsatz bleibt unberührt.",
                 Format = TypesTextFormat.Paragraph
             });
 
@@ -102,7 +102,11 @@ namespace ViLa.Pages
                     new ControlLink(this)
                     {
                         Text = string.Format("rene_schwarzer@hotmail.de"),
-                        Url = new PathExtern("mailto:rene_schwarzer@hotmail.de"),
+                        Uri = new UriAbsolute()
+                        {
+                            Scheme = UriScheme.Mailto,
+                            Authority = new UriAuthority("rene_schwarzer@hotmail.de")
+                        },
                         Color = TypesTextColor.Dark
                     }
                 )

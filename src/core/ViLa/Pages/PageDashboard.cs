@@ -1,6 +1,6 @@
-﻿using ViLa.Controls;
+﻿using System;
+using ViLa.Controls;
 using ViLa.Model;
-using System;
 using WebExpress.UI.Controls;
 
 namespace ViLa.Pages
@@ -31,9 +31,6 @@ namespace ViLa.Pages
         public override void Process()
         {
             base.Process();
-
-            Main.Content.Add(new ControlTabMenu(this));
-            Main.Content.Add(new ControlLine(this));
 
             Main.Content.Add(new ControlText(this)
             {
