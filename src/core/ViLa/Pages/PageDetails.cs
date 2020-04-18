@@ -1,6 +1,6 @@
-﻿using ViLa.Model;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
+using ViLa.Model;
 using WebExpress.UI.Controls;
 
 namespace ViLa.Pages
@@ -32,7 +32,7 @@ namespace ViLa.Pages
         {
             base.Process();
 
-            var id = GetParam("id");
+            var id = string.Format("{0}-{1}-{2}-{3}-{4}", GetParam("id1"), GetParam("id2"), GetParam("id3"), GetParam("id4"), GetParam("id5"));
             var measurementLog = ViewModel.Instance.GetHistoryMeasurementLogs(id);
             var chartLabels = measurementLog?.Measurements.Select(x => ((int)(x.MeasurementTimePoint - measurementLog.From).TotalMinutes).ToString()).ToArray();
             var chartData = measurementLog?.Measurements.Select(x => x.Power.ToString()).ToArray();
@@ -83,7 +83,7 @@ namespace ViLa.Pages
                     Layout = TypesLayoutButton.Primary,
                     Icon = Icon.Download,
                     Color = TypesTextColor.Light,
-                    Url = GetPath(0, "measurements/" + id + ".xml")
+                    Uri = Uri.Root.Append("measurements/" + id + ".xml")
                 },
                 new ControlButtonLink(this)
                 {
@@ -106,7 +106,7 @@ namespace ViLa.Pages
                             Icon = Icon.Clock,
                             Class = "m-1",
                             Layout = TypesLayoutButton.Success,
-                            OnClick = "window.location.href = '" + GetPath("archive").ToString() + " '"
+                            OnClick = "window.location.href = '" + Uri.Append("archive").ToString() + " '"
                         }
                     )
                 },
@@ -132,10 +132,10 @@ namespace ViLa.Pages
                             Icon = Icon.TrashAlt,
                             Class = "m-1",
                             Layout = TypesLayoutButton.Danger,
-                            OnClick = "window.location.href = '" + GetPath("del").ToString() + " '"
+                            OnClick = "window.location.href = '" + Uri.Append("del").ToString() + " '"
                         }
                     )
-            })
+                })
             {
                 Class = "mr-4"
             });

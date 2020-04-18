@@ -1,10 +1,6 @@
-﻿using ViLa.Controls;
-using ViLa.Model;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Text;
-using WebExpress.UI.Controls;
+using ViLa.Model;
 
 namespace ViLa.Pages
 {
@@ -33,7 +29,7 @@ namespace ViLa.Pages
         public override void Process()
         {
             base.Process();
-            var id = GetParam("id");
+            var id = string.Format("{0}-{1}-{2}-{3}-{4}", GetParam("id1"), GetParam("id2"), GetParam("id3"), GetParam("id4"), GetParam("id5"));
 
             try
             {
@@ -45,7 +41,7 @@ namespace ViLa.Pages
                 ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
 
-            Redirecting(GetPath(-2));
+            Redirecting(Uri.Take(-2));
         }
 
         /// <summary>

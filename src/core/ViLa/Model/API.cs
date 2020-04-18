@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ViLa.Model
+﻿namespace ViLa.Model
 {
     public class API
     {
@@ -10,6 +6,11 @@ namespace ViLa.Model
         /// Liefert oder setzt den Mandanten
         /// </summary>
         public string Client { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt, ob der Ladevorgang aktiv ist
+        /// </summary>
+        public bool ActiveCharging { get; set; }
 
         /// <summary>
         /// Liefert oder setzt den Anfang des Messzeitpunkt

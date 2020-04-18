@@ -1,8 +1,9 @@
-﻿using ViLa.Model;
-using ViLa.Pages;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using ViLa.Model;
+using ViLa.Pages;
+using WebExpress.Html;
 using WebExpress.Pages;
 using WebExpress.Workers;
 
@@ -30,42 +31,62 @@ namespace ViLa
             ViewModel.Instance.Init();
             Context.Log.Info(MethodBase.GetCurrentMethod(), "ViLaPlugin initialisierung");
 
-            Register(new WorkerFile(new Path(Context, "", "Assets/.*"), Context.AssetBaseFolder));
-            Register(new WorkerFile(new Path(Context, "", "measurements/.*"), Context.AssetBaseFolder));
-
-            var root = new VariationPath(Context, "home", new PathItem("Home"));
-            var history = new VariationPath(root, "history", new PathItem("Verlauf", "history"));
-            var help = new VariationPath(root, "help", new PathItem("Hilfe", "help"));
-            var on = new VariationPath(root, "on", new PathItem("On", "on"));
-            var off = new VariationPath(root, "off", new PathItem("Off", "off"));
-            var log = new VariationPath(root, "log", new PathItem("Logging", "log"));
-            var debug = new VariationPath(root, "debug", new PathItem("Debug", "debug"));
-            var settings = new VariationPath(root, "settings", new PathItem("Einstellungen", "settings"));
-            var api = new VariationPath(root, "api", new PathItem("API", "api"));
+            var siteMap = new SiteMap(Context);
             
-            var details = new VariationPath(root, "details", new PathItemVariable("Details", "id", "(([0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}))"));
-            var del = new VariationPath(details, "del", new PathItem("Löschen", "del"));
-            var archive = new VariationPath(details, "archive", new PathItem("Archivieren", "archive"));
-            var details_his = new VariationPath(history, "details", new PathItemVariable("Details", "id", "(([0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}))"));
-            var his_del = new VariationPath(details_his, "del", new PathItem("Löschen", "del"));
-            var his_archive = new VariationPath(details_his, "archive", new PathItem("Archivieren", "archive"));
+            siteMap.AddPage("Assets", "Assets", (x) => { return new WorkerFile(x, Context.AssetBaseFolder); });
+            siteMap.AddPage("Messprotokolle", "measurements", (x) => { return new WorkerFile(x, Context.AssetBaseFolder); });
 
+            siteMap.AddPage("Home", (x) => { return new WorkerPage<PageDashboard>(x); });
+            siteMap.AddPage("Dashboard", "dashboard", (x) => { return new WorkerPage<PageDashboard>(x); });
+            siteMap.AddPage("Verlauf", "history", (x) => { return new WorkerPage<PageHistory>(x); });
+            siteMap.AddPage("Hilfe", "help", (x) => { return new WorkerPage<PageHelp>(x); });
+            siteMap.AddPage("On", "on", (x) => { return new WorkerPage<PageOn>(x); });
+            siteMap.AddPage("Off", "off", (x) => { return new WorkerPage<PageOff>(x); });
+            siteMap.AddPage("Logging", "log", (x) => { return new WorkerPage<PageLog>(x); });
+            siteMap.AddPage("Debug", "debug", (x) => { return new WorkerPage<PageDebug>(x); });
+            siteMap.AddPage("Einstellungen", "settings", (x) => { return new WorkerPage<PageSettings>(x); });
+            siteMap.AddPage("API", "api", (x) => { return new WorkerPage<PageApiBase>(x); });
+            siteMap.AddPage("Details", "details", (x) => { return new WorkerPage<PageDetails>(x); });
+            siteMap.AddPage("Löschen", "del", (x) => { return new WorkerPage<PageDel>(x); });
+            siteMap.AddPage("Archivieren", "archive", (x) => { return new WorkerPage<PageArchive>(x); });
+            
+            siteMap.AddPathSegmentVariable
+            (
+                "Details",
+                new UriPathSegmentDynamicDisplay
+                (
+                    new UriPathSegmentDynamicDisplayText("Details"),
+                    new UriPathSegmentDynamicDisplayText(" "),
+                    new UriPathSegmentDynamicDisplayReference("id5")
+                ),
+                "-",
+                new UriPathSegmentVariable("id1", "([0-9A-Fa-f]{8})"),
+                new UriPathSegmentVariable("id2", "([0-9A-Fa-f]{4})"),
+                new UriPathSegmentVariable("id3", "([0-9A-Fa-f]{4})"),
+                new UriPathSegmentVariable("id4", "([0-9A-Fa-f]{4})"),
+                new UriPathSegmentVariable("id5", "([0-9A-Fa-f]{12})")
+            );
 
-            root.GetUrls("Home").ForEach(x => Register(new WorkerPage<PageDashboard>(x) { }));
-            history.GetUrls("Verlauf").ForEach(x => Register(new WorkerPage<PageHistory>(x) { }));
-            help.GetUrls("Hilfe").ForEach(x => Register(new WorkerPage<PageHelp>(x) { }));
-            on.GetUrls("On").ForEach(x => Register(new WorkerPage<PageOn>(x) { }));
-            off.GetUrls("Off").ForEach(x => Register(new WorkerPage<PageOff>(x) { }));
-            log.GetUrls("Logging").ForEach(x => Register(new WorkerPage<PageLog>(x) { }));
-            debug.GetUrls("Debug").ForEach(x => Register(new WorkerPage<PageDebug>(x) { }));
-            settings.GetUrls("Einstellungen").ForEach(x => Register(new WorkerPage<PageSettings>(x) { }));
-            api.GetUrls("API").ForEach(x => Register(new WorkerPage<PageApiBase>(x) { }));
-            details.GetUrls("Details").ForEach(x => Register(new WorkerPage<PageDetails>(x) { }));
-            details_his.GetUrls("Details").ForEach(x => Register(new WorkerPage<PageDetails>(x) { }));
-            del.GetUrls("Löschen").ForEach(x => Register(new WorkerPage<PageDel>(x) { }));
-            archive.GetUrls("Archivieren").ForEach(x => Register(new WorkerPage<PageArchive>(x) { }));
-            his_del.GetUrls("Löschen").ForEach(x => Register(new WorkerPage<PageDel>(x) { }));
-            his_archive.GetUrls("Archivieren").ForEach(x => Register(new WorkerPage<PageArchive>(x) { }));
+            siteMap.AddPath("Assets", true);
+            siteMap.AddPath("Messprotokolle", true);
+
+            siteMap.AddPath("Home/Verlauf");
+            siteMap.AddPath("Home/Hilfe");
+            siteMap.AddPath("Home/On");
+            siteMap.AddPath("Home/Off");
+            siteMap.AddPath("Home/Logging");
+            siteMap.AddPath("Home/Debug");
+            siteMap.AddPath("Home/Einstellungen");
+            siteMap.AddPath("Home/API");
+            siteMap.AddPath("Home/Details");
+            siteMap.AddPath("Home/Details/Löschen");
+            siteMap.AddPath("Home/Details/Archivieren");
+            siteMap.AddPath("Home/Verlauf/Details");
+            siteMap.AddPath("Home/Verlauf/Details/Löschen");
+            siteMap.AddPath("Home/Verlauf/Details/Archivieren");
+            siteMap.AddPath("Home", true); // Behandle alle nicht bekannten Pfade
+
+            Register(siteMap);
 
             Task.Run(() => { Run(); });
         }
@@ -76,7 +97,7 @@ namespace ViLa
         private void Run()
         {
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
-            
+
             // Loop
             while (true)
             {

@@ -30,9 +30,16 @@ namespace ViLa.Model
         public int MaxWattage { get; set; }
 
         /// <summary>
+        /// Liefert oder setzt die minimalen Stromverbrauch in kWh, 
+        /// bei dem der Ladevorgang abgebrochen wird
+        /// </summary>
+        [XmlElement(ElementName = "MinWattage")]
+        public float MinWattage { get; set; }
+
+        /// <summary>
         /// Liefert oder setzt die maximale Ladezeit in h
         /// </summary>
         [XmlElement(ElementName = "MaxChargingTime")]
-        public int MaxChargingTime  { get; set; }
+        public int MaxChargingTime { get; set; }
     }
 }

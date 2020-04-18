@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Device.Gpio;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
@@ -230,6 +229,18 @@ namespace ViLa.Model
                     // Neuer Messwert
                     if ((DateTime.Now - CurrentMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
                     {
+                        if
+                        (
+                            Settings.MinWattage >= 0 &&
+                            CurrentMeasurementLog?.Power >= 0.5 &&
+                            CurrentMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage)
+                        {
+                            Log(new LogItem(LogItem.LogLevel.Info, "Minimale Leistungsaufnahme wurde erreicht"));
+
+                            StopsCharging();
+                            return;
+                        }
+
                         CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
                         {
                             MeasurementTimePoint = DateTime.Now
@@ -270,8 +281,8 @@ namespace ViLa.Model
         {
             Logging.Add(logItem);
 
-            if(ActiveCharging && 
-                logItem.Level != LogItem.LogLevel.Info && 
+            if (ActiveCharging &&
+                logItem.Level != LogItem.LogLevel.Info &&
                 logItem.Level != LogItem.LogLevel.Debug)
             {
                 var current = CurrentMeasurementLog?.CurrentMeasurement;

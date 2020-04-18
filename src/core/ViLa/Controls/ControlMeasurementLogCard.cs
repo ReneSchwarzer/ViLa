@@ -1,7 +1,7 @@
 ﻿using ViLa.Model;
+using WebExpress.Html;
 using WebExpress.Pages;
 using WebExpress.UI.Controls;
-using WebServer.Html;
 
 namespace ViLa.Controls
 {
@@ -42,11 +42,11 @@ namespace ViLa.Controls
                 Text = MeasurementLog?.From.ToString("HH:mm:ss") + " - " + MeasurementLog?.Till.ToString("HH:mm:ss") + " Uhr",
                 Format = TypesTextFormat.Small
             }.ToHtml() +
-            new HtmlElementBr() + 
+            new HtmlElementBr() +
             new ControlLink(Page)
             {
                 Text = "Details",
-                Url = new Path(Page.Context, "/" + MeasurementLog.ID)
+                Uri = Page.Uri.Root.Append(MeasurementLog.ID)
             }.ToHtml();
             Value = string.Format("{0:F2} kWh", MeasurementLog?.Power) + " / " + string.Format("{0:F2} €", MeasurementLog?.Cost);
             Icon = Icon.TachometerAlt;
