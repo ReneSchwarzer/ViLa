@@ -30,7 +30,7 @@ namespace ViLa.Controls
             {
                 Text = "Home",
                 Uri = root,
-                Class = Page is PageDashboard || !Page.Uri.ContainsSegemtID("Verlauf") ? "active" : string.Empty,
+                Class = (Page is PageDashboard || Page is PageDetails) && !Page.Uri.ContainsSegemtID("Verlauf") ? "active" : string.Empty,
                 Icon = Icon.Home
             });
 

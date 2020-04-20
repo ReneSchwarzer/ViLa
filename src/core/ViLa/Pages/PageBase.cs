@@ -34,7 +34,7 @@ namespace ViLa.Pages
             Head.Style = "position: sticky; top: 0; z-index: 99;";
             Head.Content.Add(HamburgerMenu);
             HamburgerMenu.HorizontalAlignment = TypesHorizontalAlignment.Left;
-            HamburgerMenu.Image = Uri.Root.Append("Assets/img/Logo.png");
+            HamburgerMenu.Image = Uri?.Root.Append("Assets/img/Logo.png");
             HamburgerMenu.Add(new ControlLink(this) { Text = "Home", Icon = Icon.Home, Uri = Uri.Root });
             HamburgerMenu.Add(new ControlLink(this) { Text = "Verlauf", Icon = Icon.ChartBar, Uri = Uri.Root.Append("history") });
             HamburgerMenu.AddSeperator();

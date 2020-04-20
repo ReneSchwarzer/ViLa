@@ -70,6 +70,7 @@ namespace ViLa
             siteMap.AddPath("Assets", true);
             siteMap.AddPath("Messprotokolle", true);
 
+            siteMap.AddPath("Home");
             siteMap.AddPath("Home/Verlauf");
             siteMap.AddPath("Home/Hilfe");
             siteMap.AddPath("Home/On");
@@ -84,9 +85,11 @@ namespace ViLa
             siteMap.AddPath("Home/Verlauf/Details");
             siteMap.AddPath("Home/Verlauf/Details/Löschen");
             siteMap.AddPath("Home/Verlauf/Details/Archivieren");
-            siteMap.AddPath("Home", true); // Behandle alle nicht bekannten Pfade
-
+            
             Register(siteMap);
+
+            RegisterStatusPage(404, () => { return new PageStatusNotFound(); });
+            RegisterStatusPage(500, () => { return new PageStatusInternalServerError(); });
 
             Task.Run(() => { Run(); });
         }
