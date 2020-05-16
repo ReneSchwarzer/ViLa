@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ViLa.Model;
 using ViLa.Pages;
-using WebExpress.Html;
 using WebExpress.Pages;
 using WebExpress.Workers;
 
@@ -32,24 +31,24 @@ namespace ViLa
             Context.Log.Info(MethodBase.GetCurrentMethod(), "ViLaPlugin initialisierung");
 
             var siteMap = new SiteMap(Context);
-            
-            siteMap.AddPage("Assets", "Assets", (x) => { return new WorkerFile(x, Context.AssetBaseFolder); });
-            siteMap.AddPage("Messprotokolle", "measurements", (x) => { return new WorkerFile(x, Context.AssetBaseFolder); });
 
-            siteMap.AddPage("Home", (x) => { return new WorkerPage<PageDashboard>(x); });
-            siteMap.AddPage("Dashboard", "dashboard", (x) => { return new WorkerPage<PageDashboard>(x); });
-            siteMap.AddPage("Verlauf", "history", (x) => { return new WorkerPage<PageHistory>(x); });
-            siteMap.AddPage("Hilfe", "help", (x) => { return new WorkerPage<PageHelp>(x); });
-            siteMap.AddPage("On", "on", (x) => { return new WorkerPage<PageOn>(x); });
-            siteMap.AddPage("Off", "off", (x) => { return new WorkerPage<PageOff>(x); });
-            siteMap.AddPage("Logging", "log", (x) => { return new WorkerPage<PageLog>(x); });
-            siteMap.AddPage("Debug", "debug", (x) => { return new WorkerPage<PageDebug>(x); });
-            siteMap.AddPage("Einstellungen", "settings", (x) => { return new WorkerPage<PageSettings>(x); });
-            siteMap.AddPage("API", "api", (x) => { return new WorkerPage<PageApiBase>(x); });
-            siteMap.AddPage("Details", "details", (x) => { return new WorkerPage<PageDetails>(x); });
-            siteMap.AddPage("Löschen", "del", (x) => { return new WorkerPage<PageDel>(x); });
-            siteMap.AddPage("Archivieren", "archive", (x) => { return new WorkerPage<PageArchive>(x); });
-            
+            siteMap.AddPage("Assets", "Assets", (x) => new WorkerFile(x, Context.AssetBaseFolder));
+            siteMap.AddPage("Messprotokolle", "measurements", (x) => new WorkerFile(x, Context.AssetBaseFolder));
+
+            siteMap.AddPage("Home", (x) => new WorkerPage<PageDashboard>(x));
+            siteMap.AddPage("Dashboard", "dashboard", (x) => new WorkerPage<PageDashboard>(x));
+            siteMap.AddPage("Verlauf", "history", (x) => new WorkerPage<PageHistory>(x));
+            siteMap.AddPage("Hilfe", "help", (x) => new WorkerPage<PageHelp>(x));
+            siteMap.AddPage("On", "on", (x) => new WorkerPage<PageOn>(x));
+            siteMap.AddPage("Off", "off", (x) => new WorkerPage<PageOff>(x));
+            siteMap.AddPage("Logging", "log", (x) => new WorkerPage<PageLog>(x));
+            siteMap.AddPage("Debug", "debug", (x) => new WorkerPage<PageDebug>(x));
+            siteMap.AddPage("Einstellungen", "settings", (x) => new WorkerPage<PageSettings>(x));
+            siteMap.AddPage("API", "api", (x) => new WorkerPage<PageApiBase>(x));
+            siteMap.AddPage("Details", "details", (x) => new WorkerPage<PageDetails>(x));
+            siteMap.AddPage("Löschen", "del", (x) => new WorkerPage<PageDel>(x));
+            siteMap.AddPage("Archivieren", "archive", (x) => new WorkerPage<PageArchive>(x));
+
             siteMap.AddPathSegmentVariable
             (
                 "Details",
@@ -85,11 +84,11 @@ namespace ViLa
             siteMap.AddPath("Home/Verlauf/Details");
             siteMap.AddPath("Home/Verlauf/Details/Löschen");
             siteMap.AddPath("Home/Verlauf/Details/Archivieren");
-            
+
             Register(siteMap);
 
-            RegisterStatusPage(404, () => { return new PageStatusNotFound(); });
-            RegisterStatusPage(500, () => { return new PageStatusInternalServerError(); });
+            RegisterStatusPage(404, () => new PageStatusNotFound());
+            RegisterStatusPage(500, () => new PageStatusInternalServerError());
 
             Task.Run(() => { Run(); });
         }

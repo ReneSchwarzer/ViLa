@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ViLa.Model;
 using WebExpress.Html;
 using WebExpress.Pages;
@@ -34,7 +35,7 @@ namespace ViLa.Controls
         {
             var card = new ControlPanelCard(Page)
             {
-                Layout = TypesLayoutCard.Light
+                BackgroundColor = new PropertyColorBackground(TypeColorBackground.Light)
             };
 
             if (!ViewModel.Instance.ActiveCharging)
@@ -42,8 +43,8 @@ namespace ViLa.Controls
                 card.Content.Add(new ControlButtonLink(Page, "charging_btn")
                 {
                     Text = "Ladevorgang starten",
-                    Layout = TypesLayoutButton.Success,
-                    Icon = Icon.PlayCircle,
+                    Color = new PropertyColorButton(TypeColorButton.Success),
+                    Icon = new PropertyIcon(TypeIcon.PlayCircle),
                     Uri = Page.Uri.Root.Append("on")
                 });
             }
@@ -52,8 +53,8 @@ namespace ViLa.Controls
                 card.Content.Add(new ControlButtonLink(Page, "charging_btn")
                 {
                     Text = "Ladevorgang beenden",
-                    Layout = TypesLayoutButton.Danger,
-                    Icon = Icon.PowerOff,
+                    Color = new PropertyColorButton(TypeColorButton.Success),
+                    Icon = new PropertyIcon(TypeIcon.PowerOff),
                     Uri = Page.Uri.Root.Append("off")
                 });
             }
@@ -72,9 +73,8 @@ namespace ViLa.Controls
                         Text = string.Format("Verbrauch: {0:F2} kWh", ViewModel.Instance.CurrentMeasurementLog?.Power)
                     })
                 {
-                    HorizontalAlignment = TypesHorizontalAlignment.Default,
-                    Layout = TypesLayoutCard.Default,
-                    Class = "mt-5"
+                    HorizontalAlignment = TypeHorizontalAlignment.Default,
+                    Classes = new List<string>(new[] { "mt-5" })
                 });
 
                 card.Content.Add(new ControlCanvas(Page, "canvas"));

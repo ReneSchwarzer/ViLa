@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using ViLa.Model;
 using WebExpress.UI.Controls;
@@ -40,26 +42,26 @@ namespace ViLa.Pages
             Main.Content.Add(new ControlText(this)
             {
                 Text = id + ".mxl",
-                Color = TypesTextColor.Muted
+                TextColor = new PropertyColorText(TypeColorText.Muted)
             });
 
             Main.Content.Add(new ControlText(this)
             {
                 Text = string.Format("{0:F2} kWh", measurementLog?.Power) + " / " + string.Format("{0:F2} €", measurementLog?.Cost),
-                Format = TypesTextFormat.H1,
-                Color = TypesTextColor.Primary
+                Format = TypeFormatText.H1,
+                TextColor = new PropertyColorText(TypeColorText.Primary)
             });
 
             Main.Content.Add(new ControlText(this)
             {
                 Text = measurementLog?.From.ToString("HH:mm:ss") + " - " + measurementLog?.Till.ToString("HH:mm:ss") + " Uhr",
-                Format = TypesTextFormat.Paragraph,
-                Color = TypesTextColor.Dark
+                Format = TypeFormatText.Paragraph,
+                TextColor = new PropertyColorText(TypeColorText.Dark)
             });
 
             Main.Content.Add(new ControlCanvas(this, "canvas")
             {
-                Class = "mr-4"
+                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None)
             });
 
             var builder = new StringBuilder();
@@ -80,17 +82,17 @@ namespace ViLa.Pages
                 new ControlButtonLink(this)
                 {
                     Text = "Datei herunterladen",
-                    Layout = TypesLayoutButton.Primary,
-                    Icon = Icon.Download,
-                    Color = TypesTextColor.Light,
+                    Color = new PropertyColorButton(TypeColorButton.Primary),
+                    Icon = new PropertyIcon(TypeIcon.Download),
+                    TextColor = new PropertyColorText(TypeColorText.Light),
                     Uri = Uri.Root.Append("measurements/" + id + ".xml")
                 },
                 new ControlButtonLink(this)
                 {
                     Text = "Datei archivieren",
-                    Layout = TypesLayoutButton.Primary,
-                    Icon = Icon.Clock,
-                    Color = TypesTextColor.Light,
+                    Color = new PropertyColorButton(TypeColorButton.Primary),
+                    Icon = new PropertyIcon(TypeIcon.Clock),
+                    TextColor = new PropertyColorText(TypeColorText.Light),
                     Modal = new ControlModal
                     (
                         this,
@@ -103,9 +105,9 @@ namespace ViLa.Pages
                         new ControlButton(this)
                         {
                             Text = "Archivieren",
-                            Icon = Icon.Clock,
-                            Class = "m-1",
-                            Layout = TypesLayoutButton.Success,
+                            Icon = new PropertyIcon(TypeIcon.Clock),
+                            Classes = new List<string>(new[] { "m-1" }),
+                            Color = new PropertyColorButton(TypeColorButton.Success),
                             OnClick = "window.location.href = '" + Uri.Append("archive").ToString() + " '"
                         }
                     )
@@ -113,10 +115,10 @@ namespace ViLa.Pages
                 new ControlButtonLink(this)
                 {
                     Text = "Datei löschen",
-                    Layout = TypesLayoutButton.Danger,
-                    Icon = Icon.TrashAlt,
-                    HorizontalAlignment = TypesHorizontalAlignment.Right,
-                    Color = TypesTextColor.Light,
+                    Color = new PropertyColorButton(TypeColorButton.Danger),
+                    Icon = new PropertyIcon(TypeIcon.TrashAlt),
+                    HorizontalAlignment = TypeHorizontalAlignment.Right,
+                    TextColor = new PropertyColorText(TypeColorText.Light),
                     Modal = new ControlModal
                     (
                         this,
@@ -129,15 +131,15 @@ namespace ViLa.Pages
                         new ControlButton(this)
                         {
                             Text = "Löschen",
-                            Icon = Icon.TrashAlt,
-                            Class = "m-1",
-                            Layout = TypesLayoutButton.Danger,
+                            Icon = new PropertyIcon(TypeIcon.TrashAlt),
+                            Margin = new PropertySpacingMargin(PropertySpacing.Space.One),
+                            Color = new PropertyColorButton(TypeColorButton.Danger),
                             OnClick = "window.location.href = '" + Uri.Append("del").ToString() + " '"
                         }
                     )
                 })
             {
-                Class = "mr-4"
+                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None)
             });
         }
 

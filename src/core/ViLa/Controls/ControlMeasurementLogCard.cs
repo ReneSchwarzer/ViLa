@@ -40,18 +40,18 @@ namespace ViLa.Controls
             new ControlText(Page)
             {
                 Text = MeasurementLog?.From.ToString("HH:mm:ss") + " - " + MeasurementLog?.Till.ToString("HH:mm:ss") + " Uhr",
-                Format = TypesTextFormat.Small
+                Format = TypeFormatText.Small
             }.ToHtml() +
-            new HtmlElementBr() +
+            new HtmlElementTextSemanticsBr() +
             new ControlLink(Page)
             {
                 Text = "Details",
                 Uri = Page.Uri.Root.Append(MeasurementLog.ID)
             }.ToHtml();
             Value = string.Format("{0:F2} kWh", MeasurementLog?.Power) + " / " + string.Format("{0:F2} €", MeasurementLog?.Cost);
-            Icon = Icon.TachometerAlt;
-            Color = TypesTextColor.White;
-            Layout = TypesLayoutCard.Default;
+            Icon = new PropertyIcon(TypeIcon.TachometerAlt);
+            TextColor = new PropertyColorText(TypeColorText.Default);
+            BackgroundColor = new PropertyColorBackground(TypeColorBackground.Light);
             Progress = (int)MeasurementLog?.Power;
 
             return base.ToHtml();

@@ -23,47 +23,47 @@ namespace ViLa.Controls
         {
             var root = Page.Uri.Root;
 
-            Layout = TypesLayoutTab.Pill;
-            HorizontalAlignment = TypesTabHorizontalAlignment.Center;
+            Layout = TypeLayoutTab.Pill;
+            HorizontalAlignment = TypeHorizontalAlignmentTab.Center;
 
             Items.Add(new ControlLink(Page)
             {
                 Text = "Home",
                 Uri = root,
-                Class = (Page is PageDashboard || Page is PageDetails) && !Page.Uri.ContainsSegemtID("Verlauf") ? "active" : string.Empty,
-                Icon = Icon.Home
+                Active = (Page is PageDashboard || Page is PageDetails) && !Page.Uri.ContainsSegemtID("Verlauf") ? TypeActive.Active : TypeActive.None,
+                Icon = new PropertyIcon(TypeIcon.Home)
             });
 
             Items.Add(new ControlLink(Page)
             {
                 Text = "Verlauf",
                 Uri = root.Append("history"),
-                Class = Page is PageHistory || Page.Uri.ContainsSegemtID("Verlauf") ? "active" : string.Empty,
-                Icon = Icon.ChartBar
+                Active = Page is PageHistory || Page.Uri.ContainsSegemtID("Verlauf") ? TypeActive.Active : TypeActive.None,
+                Icon = new PropertyIcon(TypeIcon.ChartBar)
             });
 
             Items.Add(new ControlLink(Page)
             {
                 Text = "Einstellungen",
                 Uri = Page.Uri.Root.Append("settings"),
-                Class = Page is PageSettings ? "active" : string.Empty,
-                Icon = Icon.Cog
+                Active = Page is PageSettings ? TypeActive.Active : TypeActive.None,
+                Icon = new PropertyIcon(TypeIcon.Cog)
             });
 
             Items.Add(new ControlLink(Page)
             {
                 Text = "Logging",
                 Uri = Page.Uri.Root.Append("log"),
-                Class = Page is PageLog ? "active" : string.Empty,
-                Icon = Icon.Book
+                Active = Page is PageLog ? TypeActive.Active : TypeActive.None,
+                Icon = new PropertyIcon(TypeIcon.Book)
             });
 
             Items.Add(new ControlLink(Page)
             {
                 Text = "Hilfe",
                 Uri = Page.Uri.Root.Append("help"),
-                Class = Page is PageHelp ? "active" : string.Empty,
-                Icon = Icon.InfoCircle
+                Active = Page is PageHelp ? TypeActive.Active : TypeActive.None,
+                Icon = new PropertyIcon(TypeIcon.InfoCircle)
             });
         }
     }

@@ -35,13 +35,13 @@ namespace ViLa.Pages
             Main.Content.Add(new ControlText(this)
             {
                 Text = "Willkommen",
-                Format = TypesTextFormat.H1,
-                Class = "mb-5"
+                Format = TypeFormatText.H1,
+                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Five)
             });
 
             Main.Content.Add(new ControlChargingCard(this)
             {
-                Class = "ml-4 mr-4"
+                Margin = new PropertySpacingMargin(PropertySpacing.Space.Four, PropertySpacing.Space.None)
             });
 
             var history = ViewModel.Instance.GetHistoryMeasurementLogs(DateTime.Now.AddMonths(-1));
@@ -51,8 +51,8 @@ namespace ViLa.Pages
                 Main.Content.Add(new ControlText(this)
                 {
                     Text = "Letzte Ladungen",
-                    Format = TypesTextFormat.H1,
-                    Class = "mt-5"
+                    Format = TypeFormatText.H1,
+                    Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Five, PropertySpacing.Space.None)
                 });
 
                 var i = 0;

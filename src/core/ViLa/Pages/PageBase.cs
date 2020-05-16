@@ -1,4 +1,5 @@
-﻿using ViLa.Controls;
+﻿using System.Collections.Generic;
+using ViLa.Controls;
 using ViLa.Model;
 using WebExpress.Html;
 using WebExpress.UI.Controls;
@@ -22,7 +23,7 @@ namespace ViLa.Pages
                 Title += " - " + title;
             }
 
-            Favicons.Add(new Favicon("/Assets/img/Favicon.png", TypesFavicon.PNG));
+            Favicons.Add(new Favicon("/Assets/img/Favicon.png", TypeFavicon.PNG));
         }
 
         /// <summary>
@@ -31,37 +32,39 @@ namespace ViLa.Pages
         public override void Init()
         {
             base.Init();
-            Head.Style = "position: sticky; top: 0; z-index: 99;";
+            Head.Styles = new List<string>(new[] { "position: sticky; top: 0; z-index: 99;" });
             Head.Content.Add(HamburgerMenu);
-            HamburgerMenu.HorizontalAlignment = TypesHorizontalAlignment.Left;
+            HamburgerMenu.HorizontalAlignment = TypeHorizontalAlignment.Left;
             HamburgerMenu.Image = Uri?.Root.Append("Assets/img/Logo.png");
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Home", Icon = Icon.Home, Uri = Uri.Root });
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Verlauf", Icon = Icon.ChartBar, Uri = Uri.Root.Append("history") });
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Home", Icon = new PropertyIcon(TypeIcon.Home), Uri = Uri.Root });
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Verlauf", Icon = new PropertyIcon(TypeIcon.ChartBar), Uri = Uri.Root.Append("history") });
             HamburgerMenu.AddSeperator();
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Logging", Icon = Icon.Book, Uri = Uri.Root.Append("log") });
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Einstellungen", Icon = Icon.Cog, Uri = Uri.Root.Append("settings") });
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Logging", Icon = new PropertyIcon(TypeIcon.Book), Uri = Uri.Root.Append("log") });
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Einstellungen", Icon = new PropertyIcon(TypeIcon.Cog), Uri = Uri.Root.Append("settings") });
             HamburgerMenu.AddSeperator();
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Hilfe", Icon = Icon.InfoCircle, Uri = Uri.Root.Append("help") });
+            HamburgerMenu.Add(new ControlLink(this) { Text = "Hilfe", Icon = new PropertyIcon(TypeIcon.InfoCircle), Uri = Uri.Root.Append("help") });
 
             // SideBar
             ToolBar = new ControlToolBar(this)
             {
-                Class = "sidebar bg-success",
-                HorizontalAlignment = TypesHorizontalAlignment.Left
+                BackgroundColor = new PropertyColorBackground("#553322"),
+                HorizontalAlignment = TypeHorizontalAlignment.Left
             };
+            ToolBar.Classes.Add("sidebar");
 
             Head.Content.Add(new ControlPanelCenter(this, new ControlText(this)
             {
                 Text = Title,
-                Color = TypesTextColor.White,
-                Format = TypesTextFormat.H1,
-                Size = TypesSize.Default,
-                Class = "p-1 mb-0",
-                Style = "font-size:190%; height: 50px;"
-            }));
+                TextColor = new PropertyColorText(TypeColorText.White),
+                Format = TypeFormatText.H1,
+                Size = new PropertySizeText(TypeSizeText.Default),
+                Padding = new PropertySpacingPadding(PropertySpacing.Space.One),
+                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Null),
+                Styles = new List<string>(new[] { "font-size:190%; height: 50px;" })
+            })); ;
 
-            Main.Class = "content";
-            PathCtrl.Class = "content";
+            Main.Classes.Add("content");
+            PathCtrl.Classes.Add("content");
 
             Main.Content.Add(new ControlTabMenu(this));
             Main.Content.Add(new ControlLine(this));
@@ -69,9 +72,9 @@ namespace ViLa.Pages
             Foot.Content.Add(new ControlText(this, "now")
             {
                 Text = string.Format("{0}", ViewModel.Instance.Now),
-                Color = TypesTextColor.Muted,
-                Format = TypesTextFormat.Center,
-                Size = TypesSize.Small
+                TextColor = new PropertyColorText(TypeColorText.Muted),
+                Format = TypeFormatText.Center,
+                Size = new PropertySizeText(TypeSizeText.Small)
             });
         }
 

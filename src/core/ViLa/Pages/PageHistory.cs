@@ -35,14 +35,14 @@ namespace ViLa.Pages
             Main.Content.Add(new ControlText(this)
             {
                 Text = "Messprotokolle",
-                Format = TypesTextFormat.H1
+                Format = TypeFormatText.H1
             });
 
             var table = new ControlTable(this);
-            table.AddColumn("Datum", Icon.Calendar, TypesLayoutTableRow.Info);
-            table.AddColumn("Ladezeit", Icon.Stopwatch, TypesLayoutTableRow.Info);
-            table.AddColumn("Verbrauch", Icon.TachometerAlt, TypesLayoutTableRow.Info);
-            table.AddColumn("Kosten", Icon.EuroSign, TypesLayoutTableRow.Info);
+            table.AddColumn("Datum", new PropertyIcon(TypeIcon.Calendar), TypesLayoutTableRow.Info);
+            table.AddColumn("Ladezeit", new PropertyIcon(TypeIcon.Stopwatch), TypesLayoutTableRow.Info);
+            table.AddColumn("Verbrauch", new PropertyIcon(TypeIcon.TachometerAlt), TypesLayoutTableRow.Info);
+            table.AddColumn("Kosten", new PropertyIcon(TypeIcon.EuroSign), TypesLayoutTableRow.Info);
             table.AddColumn("");
 
             foreach (var measurementLog in history.OrderByDescending(x => x.From))

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ViLa.Model;
 using WebExpress.Pages;
 using WebExpress.UI.Controls;
@@ -48,7 +49,7 @@ namespace ViLa.Controls
         {
             Name = "settings";
             EnableCancelButton = false;
-            Class = "m-3";
+            Classes = new List<string>(new[] { "m-3"});
 
             ImpulsePerkWhCtrl = new ControlFormularItemTextBox(this)
             {
