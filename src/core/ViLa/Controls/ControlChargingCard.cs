@@ -12,10 +12,9 @@ namespace ViLa.Controls
         /// <summary>
         /// Konstruktor
         /// </summary>
-        /// <param name="page">Die zugehörige Seite</param>
         /// <param name="id">Die ID</param>
-        public ControlChargingCard(IPage page, string id = null)
-            : base(page, id)
+        public ControlChargingCard(string id = null)
+            : base(id)
         {
             Init();
         }
@@ -30,45 +29,47 @@ namespace ViLa.Controls
         /// <summary>
         /// In HTML konvertieren
         /// </summary>
+        /// <param name="context">Der Kontext, indem das Steuerelement dargestellt wird</param>
         /// <returns>Das Control als HTML</returns>
-        public override IHtmlNode ToHtml()
+        public override IHtmlNode Render(RenderContext context)
         {
-            var card = new ControlPanelCard(Page)
+            var card = new ControlPanelCard()
             {
                 BackgroundColor = new PropertyColorBackground(TypeColorBackground.Light)
             };
 
             if (!ViewModel.Instance.ActiveCharging)
             {
-                card.Content.Add(new ControlButtonLink(Page, "charging_btn")
+                card.Content.Add(new ControlButtonLink("charging_btn")
                 {
                     Text = "Ladevorgang starten",
                     Color = new PropertyColorButton(TypeColorButton.Success),
                     Icon = new PropertyIcon(TypeIcon.PlayCircle),
-                    Uri = Page.Uri.Root.Append("on")
+                    Uri = context.Page.Uri.Root.Append("on")
                 });
             }
             else
             {
-                card.Content.Add(new ControlButtonLink(Page, "charging_btn")
+                card.Content.Add(new ControlButtonLink("charging_btn")
                 {
                     Text = "Ladevorgang beenden",
                     Color = new PropertyColorButton(TypeColorButton.Success),
                     Icon = new PropertyIcon(TypeIcon.PowerOff),
-                    Uri = Page.Uri.Root.Append("off")
+                    Uri = context.Page.Uri.Root.Append("off")
                 });
             }
 
             if (ViewModel.Instance.ActiveCharging)
             {
-                card.Content.Add(new ControlPanelCard(Page,
-                    new ControlText(Page, "measurementtime")
+                card.Content.Add(new ControlPanelCard
+                (
+                    new ControlText("measurementtime")
                     {
                         Text = string.Format("Ladedauer: {0}", new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null))
-                    }, new ControlText(Page, "cost")
+                    }, new ControlText("cost")
                     {
                         Text = string.Format("Angefallene Kosten: {0:F2} €", ViewModel.Instance.CurrentMeasurementLog?.Cost)
-                    }, new ControlText(Page, "power")
+                    }, new ControlText("power")
                     {
                         Text = string.Format("Verbrauch: {0:F2} kWh", ViewModel.Instance.CurrentMeasurementLog?.Power)
                     })
@@ -77,12 +78,12 @@ namespace ViLa.Controls
                     Classes = new List<string>(new[] { "mt-5" })
                 });
 
-                card.Content.Add(new ControlCanvas(Page, "canvas"));
+                card.Content.Add(new ControlCanvas("canvas"));
             }
 
             Content.Add(card);
 
-            return base.ToHtml();
+            return base.Render(context);
         }
     }
 }

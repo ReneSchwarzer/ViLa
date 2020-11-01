@@ -6,38 +6,38 @@ using WebExpress.UI.Controls;
 
 namespace ViLa.Controls
 {
-    public class ControlSettingForm : ControlPanelFormular
+    public class ControlSettingForm : ControlFormular
     {
         /// <summary>
         /// Liefert oder setzt die Impulse pro kWh
         /// </summary>
-        private ControlFormularItemTextBox ImpulsePerkWhCtrl { get; set; }
+        private ControlFormularItemInputTextBox ImpulsePerkWhCtrl { get; set; }
 
         /// <summary>
         /// Liefert oder setzt den Strompreis pro kWh
         /// </summary>
-        private ControlFormularItemTextBox ElectricityPricePerkWhCtrl { get; set; }
+        private ControlFormularItemInputTextBox ElectricityPricePerkWhCtrl { get; set; }
 
         /// <summary>
         /// Liefert oder setzt die maximale Leistung in kWh
         /// </summary>
-        private ControlFormularItemTextBox MaxWattageCtrl { get; set; }
+        private ControlFormularItemInputTextBox MaxWattageCtrl { get; set; }
 
         /// <summary>
         /// Liefert oder setzt die minimale Leistung in kWh
         /// </summary>
-        private ControlFormularItemTextBox MinWattageCtrl { get; set; }
+        private ControlFormularItemInputTextBox MinWattageCtrl { get; set; }
 
         /// <summary>
         /// Liefert oder setzt die maximale Ladezeit in h
         /// </summary>
-        private ControlFormularItemTextBox MaxChargingTimeCtrl { get; set; }
+        private ControlFormularItemInputTextBox MaxChargingTimeCtrl { get; set; }
 
         /// <summary>
         /// Konstruktor
         /// </summary>
-        public ControlSettingForm(IPage page)
-            : base(page, "settings")
+        public ControlSettingForm()
+            : base("settings")
         {
             Init();
         }
@@ -51,35 +51,35 @@ namespace ViLa.Controls
             EnableCancelButton = false;
             Classes = new List<string>(new[] { "m-3"});
 
-            ImpulsePerkWhCtrl = new ControlFormularItemTextBox(this)
+            ImpulsePerkWhCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "ImpulsePerkWhCtrl",
                 Label = "Die Anzahl der Impulse pro kWh:",
                 Help = "Der Wert stammt vom Drehstromzähler."
             };
 
-            ElectricityPricePerkWhCtrl = new ControlFormularItemTextBox(this)
+            ElectricityPricePerkWhCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "ElectricityPricePerkWhCtrl",
                 Label = "Der Strompreis in € pro kWh:",
                 Help = ""
             };
 
-            MaxWattageCtrl = new ControlFormularItemTextBox(this)
+            MaxWattageCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "MaxWattageCtrl",
                 Label = "Der maximale Stromverbrauch in kWh:",
                 Help = "Abbruch des Ladevorganges erfolt, wenn vorgegebene Stromverbrauch überschritten wird. &le; 0 für kein Abbruch."
             };
 
-            MinWattageCtrl = new ControlFormularItemTextBox(this)
+            MinWattageCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "MinWattageCtrl",
                 Label = "Die minimale aktuelle Ladeleistung in kWh:",
                 Help = "Abbruch des Ladevorganges erfolt, wenn die minimale Ladeleistung unterschritten wird. Der Abbruch erfolgt nur, wenn der Gesammtstromverbrauch &ge; 0,5 kWh beträgt. -1 für kein Abbruch."
             };
 
-            MaxChargingTimeCtrl = new ControlFormularItemTextBox(this)
+            MaxChargingTimeCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "MaxChargingTime",
                 Label = "Die maximale Ladedauer in h:",

@@ -19,7 +19,7 @@ namespace ViLa.Pages
         {
             base.Init();
 
-            Main.Content.Add(new ControlSettingForm(this)
+            Main.Content.Add(new ControlSettingForm()
             {
 
             });

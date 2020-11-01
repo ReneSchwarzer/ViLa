@@ -17,8 +17,8 @@ namespace ViLa.Controls
         /// </summary>
         /// <param name="page">Die zugehörige Seite</param>
         /// <param name="id">Die ID</param>
-        public ControlMeasurementLogCard(IPage page, string id = null)
-            : base(page, id)
+        public ControlMeasurementLogCard(string id = null)
+            : base(id)
         {
             Init();
         }
@@ -33,28 +33,29 @@ namespace ViLa.Controls
         /// <summary>
         /// In HTML konvertieren
         /// </summary>
+        /// <param name="context">Der Kontext, indem das Steuerelement dargestellt wird</param>
         /// <returns>Das Control als HTML</returns>
-        public override IHtmlNode ToHtml()
+        public override IHtmlNode Render(RenderContext context)
         {
             Text = MeasurementLog?.From.ToString("dd.MM.yyyy") +
-            new ControlText(Page)
+            new ControlText()
             {
                 Text = MeasurementLog?.From.ToString("HH:mm:ss") + " - " + MeasurementLog?.Till.ToString("HH:mm:ss") + " Uhr",
                 Format = TypeFormatText.Small
-            }.ToHtml() +
+            }.Render(context) +
             new HtmlElementTextSemanticsBr() +
-            new ControlLink(Page)
+            new ControlLink()
             {
                 Text = "Details",
-                Uri = Page.Uri.Root.Append(MeasurementLog.ID)
-            }.ToHtml();
+                Uri = context.Page.Uri.Root.Append(MeasurementLog.ID)
+            }.Render(context);
             Value = string.Format("{0:F2} kWh", MeasurementLog?.Power) + " / " + string.Format("{0:F2} €", MeasurementLog?.Cost);
             Icon = new PropertyIcon(TypeIcon.TachometerAlt);
             TextColor = new PropertyColorText(TypeColorText.Default);
             BackgroundColor = new PropertyColorBackground(TypeColorBackground.Light);
             Progress = (int)MeasurementLog?.Power;
 
-            return base.ToHtml();
+            return base.Render(context);
         }
     }
 }

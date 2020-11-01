@@ -11,58 +11,59 @@ namespace ViLa.Controls
         /// </summary>
         /// <param name="page">Die zugehörige Seite</param>
         public ControlTabMenu(IPage page)
-            : base(page)
+            : base()
         {
-            Init();
+            Init(page);
         }
 
         /// <summary>
         /// Initialisierung
         /// </summary>
-        private void Init()
+        /// <param name="page">Die zugehörige Seite</param>
+        private void Init(IPage page)
         {
-            var root = Page.Uri.Root;
+            var root = page.Uri.Root;
 
             Layout = TypeLayoutTab.Pill;
             HorizontalAlignment = TypeHorizontalAlignmentTab.Center;
 
-            Items.Add(new ControlLink(Page)
+            Items.Add(new ControlLink()
             {
                 Text = "Home",
                 Uri = root,
-                Active = (Page is PageDashboard || Page is PageDetails) && !Page.Uri.ContainsSegemtID("Verlauf") ? TypeActive.Active : TypeActive.None,
+                Active = (page is PageDashboard || page is PageDetails) && !page.Uri.ContainsSegemtID("Verlauf") ? TypeActive.Active : TypeActive.None,
                 Icon = new PropertyIcon(TypeIcon.Home)
             });
 
-            Items.Add(new ControlLink(Page)
+            Items.Add(new ControlLink()
             {
                 Text = "Verlauf",
                 Uri = root.Append("history"),
-                Active = Page is PageHistory || Page.Uri.ContainsSegemtID("Verlauf") ? TypeActive.Active : TypeActive.None,
+                Active = page is PageHistory || page.Uri.ContainsSegemtID("Verlauf") ? TypeActive.Active : TypeActive.None,
                 Icon = new PropertyIcon(TypeIcon.ChartBar)
             });
 
-            Items.Add(new ControlLink(Page)
+            Items.Add(new ControlLink()
             {
                 Text = "Einstellungen",
-                Uri = Page.Uri.Root.Append("settings"),
-                Active = Page is PageSettings ? TypeActive.Active : TypeActive.None,
+                Uri = page.Uri.Root.Append("settings"),
+                Active = page is PageSettings ? TypeActive.Active : TypeActive.None,
                 Icon = new PropertyIcon(TypeIcon.Cog)
             });
 
-            Items.Add(new ControlLink(Page)
+            Items.Add(new ControlLink()
             {
                 Text = "Logging",
-                Uri = Page.Uri.Root.Append("log"),
-                Active = Page is PageLog ? TypeActive.Active : TypeActive.None,
+                Uri = page.Uri.Root.Append("log"),
+                Active = page is PageLog ? TypeActive.Active : TypeActive.None,
                 Icon = new PropertyIcon(TypeIcon.Book)
             });
 
-            Items.Add(new ControlLink(Page)
+            Items.Add(new ControlLink()
             {
                 Text = "Hilfe",
-                Uri = Page.Uri.Root.Append("help"),
-                Active = Page is PageHelp ? TypeActive.Active : TypeActive.None,
+                Uri = page.Uri.Root.Append("help"),
+                Active = page is PageHelp ? TypeActive.Active : TypeActive.None,
                 Icon = new PropertyIcon(TypeIcon.InfoCircle)
             });
         }

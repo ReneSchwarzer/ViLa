@@ -32,14 +32,14 @@ namespace ViLa.Pages
         {
             base.Process();
 
-            Main.Content.Add(new ControlText(this)
+            Main.Content.Add(new ControlText()
             {
                 Text = "Willkommen",
                 Format = TypeFormatText.H1,
                 Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Five)
             });
 
-            Main.Content.Add(new ControlChargingCard(this)
+            Main.Content.Add(new ControlChargingCard()
             {
                 Margin = new PropertySpacingMargin(PropertySpacing.Space.Four, PropertySpacing.Space.None)
             });
@@ -48,24 +48,24 @@ namespace ViLa.Pages
 
             if (history.Count > 0)
             {
-                Main.Content.Add(new ControlText(this)
+                Main.Content.Add(new ControlText()
                 {
                     Text = "Letzte Ladungen",
                     Format = TypeFormatText.H1,
                     Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Five, PropertySpacing.Space.None)
                 });
 
-                var i = 0;
-                var grid = new ControlGrid(this) { Fluid = false };
+                var grid = new ControlPanelGrid() { Fluid =  TypePanelContainer.Fluid };
 
                 foreach (var measurementLog in history)
                 {
-                    var card = new ControlMeasurementLogCard(this)
+                    var card = new ControlMeasurementLogCard()
                     {
-                        MeasurementLog = measurementLog
+                        MeasurementLog = measurementLog,
+                        GridColumn = new PropertyGrid(TypeDevice.Medium, 3)
                     };
 
-                    grid.Add(i++, card);
+                    grid.Content.Add(card);
                 }
 
                 Main.Content.Add(grid);

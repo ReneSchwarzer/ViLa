@@ -30,7 +30,7 @@ namespace ViLa.Pages
         {
             base.Process();
 
-            var table = new ControlTable(this);
+            var table = new ControlTable();
             table.AddColumn("Level", new PropertyIcon(TypeIcon.Hashtag), TypesLayoutTableRow.Info);
             table.AddColumn("Instanz", new PropertyIcon(TypeIcon.Code), TypesLayoutTableRow.Warning);
             table.AddColumn("Nachricht", new PropertyIcon(TypeIcon.CommentAlt), TypesLayoutTableRow.Danger);
@@ -64,17 +64,17 @@ namespace ViLa.Pages
 
             foreach (var v in log.OrderByDescending(x => x.Time))
             {
-                var row = new ControlTableRow(this) { };
-                row.Cells.Add(new ControlIcon(this) { Icon = func(v.Level) });
-                row.Cells.Add(new ControlText(this) { Text = string.Format("{0}", v.Instance) });
-                row.Cells.Add(new ControlText(this) { Text = string.Format("{0}", v.Massage) });
-                row.Cells.Add(new ControlText(this) { Text = string.Format("{0}", v.Time.ToString("dd.MM.yyyy HH.mm.ss.f")) });
+                var row = new ControlTableRow() { };
+                row.Cells.Add(new ControlIcon() { Icon = func(v.Level) });
+                row.Cells.Add(new ControlText() { Text = string.Format("{0}", v.Instance) });
+                row.Cells.Add(new ControlText() { Text = string.Format("{0}", v.Massage) });
+                row.Cells.Add(new ControlText() { Text = string.Format("{0}", v.Time.ToString("dd.MM.yyyy HH.mm.ss.f")) });
 
                 table.Rows.Add(row);
             }
 
             Main.Content.Add(table);
-            Main.Content.Add(new ControlPanelCenter(this, new ControlButtonLink(this)
+            Main.Content.Add(new ControlPanelCenter(new ControlButtonLink()
             {
                 Text = ViewModel.Instance.Settings.DebugMode ? "Debug-Ausgaben ausblenden" : "Debug-Ausgaben einblenden",
                 Icon = new PropertyIcon(TypeIcon.Bug),

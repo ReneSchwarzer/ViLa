@@ -36,23 +36,23 @@ namespace ViLa.Pages
             Head.Content.Add(HamburgerMenu);
             HamburgerMenu.HorizontalAlignment = TypeHorizontalAlignment.Left;
             HamburgerMenu.Image = Uri?.Root.Append("Assets/img/Logo.png");
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Home", Icon = new PropertyIcon(TypeIcon.Home), Uri = Uri.Root });
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Verlauf", Icon = new PropertyIcon(TypeIcon.ChartBar), Uri = Uri.Root.Append("history") });
+            HamburgerMenu.Add(new ControlLink() { Text = "Home", Icon = new PropertyIcon(TypeIcon.Home), Uri = Uri.Root });
+            HamburgerMenu.Add(new ControlLink() { Text = "Verlauf", Icon = new PropertyIcon(TypeIcon.ChartBar), Uri = Uri.Root.Append("history") });
             HamburgerMenu.AddSeperator();
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Logging", Icon = new PropertyIcon(TypeIcon.Book), Uri = Uri.Root.Append("log") });
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Einstellungen", Icon = new PropertyIcon(TypeIcon.Cog), Uri = Uri.Root.Append("settings") });
+            HamburgerMenu.Add(new ControlLink() { Text = "Logging", Icon = new PropertyIcon(TypeIcon.Book), Uri = Uri.Root.Append("log") });
+            HamburgerMenu.Add(new ControlLink() { Text = "Einstellungen", Icon = new PropertyIcon(TypeIcon.Cog), Uri = Uri.Root.Append("settings") });
             HamburgerMenu.AddSeperator();
-            HamburgerMenu.Add(new ControlLink(this) { Text = "Hilfe", Icon = new PropertyIcon(TypeIcon.InfoCircle), Uri = Uri.Root.Append("help") });
+            HamburgerMenu.Add(new ControlLink() { Text = "Hilfe", Icon = new PropertyIcon(TypeIcon.InfoCircle), Uri = Uri.Root.Append("help") });
 
             // SideBar
-            ToolBar = new ControlToolBar(this)
+            ToolBar = new ControlToolBar()
             {
                 BackgroundColor = new PropertyColorBackground("#553322"),
                 HorizontalAlignment = TypeHorizontalAlignment.Left
             };
             ToolBar.Classes.Add("sidebar");
 
-            Head.Content.Add(new ControlPanelCenter(this, new ControlText(this)
+            Head.Content.Add(new ControlPanelCenter(new ControlText()
             {
                 Text = Title,
                 TextColor = new PropertyColorText(TypeColorText.White),
@@ -67,9 +67,9 @@ namespace ViLa.Pages
             PathCtrl.Classes.Add("content");
 
             Main.Content.Add(new ControlTabMenu(this));
-            Main.Content.Add(new ControlLine(this));
+            Main.Content.Add(new ControlLine());
 
-            Foot.Content.Add(new ControlText(this, "now")
+            Foot.Content.Add(new ControlText("now")
             {
                 Text = string.Format("{0}", ViewModel.Instance.Now),
                 TextColor = new PropertyColorText(TypeColorText.Muted),

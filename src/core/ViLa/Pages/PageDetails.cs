@@ -39,27 +39,27 @@ namespace ViLa.Pages
             var chartLabels = measurementLog?.Measurements.Select(x => ((int)(x.MeasurementTimePoint - measurementLog.From).TotalMinutes).ToString()).ToArray();
             var chartData = measurementLog?.Measurements.Select(x => x.Power.ToString()).ToArray();
 
-            Main.Content.Add(new ControlText(this)
+            Main.Content.Add(new ControlText()
             {
                 Text = id + ".mxl",
                 TextColor = new PropertyColorText(TypeColorText.Muted)
             });
 
-            Main.Content.Add(new ControlText(this)
+            Main.Content.Add(new ControlText()
             {
                 Text = string.Format("{0:F2} kWh", measurementLog?.Power) + " / " + string.Format("{0:F2} €", measurementLog?.Cost),
                 Format = TypeFormatText.H1,
                 TextColor = new PropertyColorText(TypeColorText.Primary)
             });
 
-            Main.Content.Add(new ControlText(this)
+            Main.Content.Add(new ControlText()
             {
                 Text = measurementLog?.From.ToString("HH:mm:ss") + " - " + measurementLog?.Till.ToString("HH:mm:ss") + " Uhr",
                 Format = TypeFormatText.Paragraph,
                 TextColor = new PropertyColorText(TypeColorText.Dark)
             });
 
-            Main.Content.Add(new ControlCanvas(this, "canvas")
+            Main.Content.Add(new ControlCanvas("canvas")
             {
                 Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None)
             });
@@ -78,8 +78,7 @@ namespace ViLa.Pages
 
             Main.Content.Add(new ControlPanel
             (
-                this,
-                new ControlButtonLink(this)
+                new ControlButtonLink()
                 {
                     Text = "Datei herunterladen",
                     Color = new PropertyColorButton(TypeColorButton.Primary),
@@ -87,7 +86,7 @@ namespace ViLa.Pages
                     TextColor = new PropertyColorText(TypeColorText.Light),
                     Uri = Uri.Root.Append("measurements/" + id + ".xml")
                 },
-                new ControlButtonLink(this)
+                new ControlButtonLink()
                 {
                     Text = "Datei archivieren",
                     Color = new PropertyColorButton(TypeColorButton.Primary),
@@ -95,14 +94,13 @@ namespace ViLa.Pages
                     TextColor = new PropertyColorText(TypeColorText.Light),
                     Modal = new ControlModal
                     (
-                        this,
                         "archive",
                         "Archivieren",
-                        new ControlText(this)
+                        new ControlText()
                         {
                             Text = "Möchten Sie die Datei wirklich archivieren?"
                         },
-                        new ControlButton(this)
+                        new ControlButton()
                         {
                             Text = "Archivieren",
                             Icon = new PropertyIcon(TypeIcon.Clock),
@@ -112,7 +110,7 @@ namespace ViLa.Pages
                         }
                     )
                 },
-                new ControlButtonLink(this)
+                new ControlButtonLink()
                 {
                     Text = "Datei löschen",
                     Color = new PropertyColorButton(TypeColorButton.Danger),
@@ -121,14 +119,13 @@ namespace ViLa.Pages
                     TextColor = new PropertyColorText(TypeColorText.Light),
                     Modal = new ControlModal
                     (
-                        this,
                         "del",
                         "Löschen",
-                        new ControlText(this)
+                        new ControlText()
                         {
                             Text = "Möchten Sie die Datei wirklich löschen?"
                         },
-                        new ControlButton(this)
+                        new ControlButton()
                         {
                             Text = "Löschen",
                             Icon = new PropertyIcon(TypeIcon.TrashAlt),
