@@ -2,7 +2,7 @@
 
 namespace ViLa.Pages
 {
-    public sealed class PageSettings : PageBase
+    public sealed class PageSettings : PageBase, IPageSettings
     {
         /// <summary>
         /// Konstruktor
@@ -19,7 +19,7 @@ namespace ViLa.Pages
         {
             base.Init();
 
-            Main.Content.Add(new ControlSettingForm()
+            Content.Content.Add(new ControlSettingForm()
             {
 
             });

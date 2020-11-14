@@ -43,7 +43,7 @@ namespace ViLa.Controls
                 card.Content.Add(new ControlButtonLink("charging_btn")
                 {
                     Text = "Ladevorgang starten",
-                    Color = new PropertyColorButton(TypeColorButton.Success),
+                    BackgroundColor = new PropertyColorButton(TypeColorButton.Success),
                     Icon = new PropertyIcon(TypeIcon.PlayCircle),
                     Uri = context.Page.Uri.Root.Append("on")
                 });
@@ -53,7 +53,7 @@ namespace ViLa.Controls
                 card.Content.Add(new ControlButtonLink("charging_btn")
                 {
                     Text = "Ladevorgang beenden",
-                    Color = new PropertyColorButton(TypeColorButton.Success),
+                    BackgroundColor = new PropertyColorButton(TypeColorButton.Success),
                     Icon = new PropertyIcon(TypeIcon.PowerOff),
                     Uri = context.Page.Uri.Root.Append("off")
                 });

@@ -5,7 +5,7 @@ using WebExpress.UI.Controls;
 
 namespace ViLa.Pages
 {
-    public sealed class PageLog : PageBase
+    public sealed class PageLog : PageBase, IPageLogging
     {
         /// <summary>
         /// Konstruktor
@@ -73,8 +73,8 @@ namespace ViLa.Pages
                 table.Rows.Add(row);
             }
 
-            Main.Content.Add(table);
-            Main.Content.Add(new ControlPanelCenter(new ControlButtonLink()
+            Content.Content.Add(table);
+            Content.Content.Add(new ControlPanelCenter(new ControlButtonLink()
             {
                 Text = ViewModel.Instance.Settings.DebugMode ? "Debug-Ausgaben ausblenden" : "Debug-Ausgaben einblenden",
                 Icon = new PropertyIcon(TypeIcon.Bug),

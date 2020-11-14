@@ -28,57 +28,57 @@ namespace ViLa.Pages
         {
             base.Process();
 
-            Main.Content.Add(new ControlImage()
+            Content.Content.Add(new ControlImage()
             {
-                Source = Uri.Root.Append("Assets/StoreLogo.png"),
+                Uri = Uri.Root.Append("Assets/StoreLogo.png"),
                 Width = 200,
                 Height = 200,
                 HorizontalAlignment = TypeHorizontalAlignment.Right
             });
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = "ViLa - Visuelles Laden",
-                Format = TypeFormatText.H1
+                Format = TypeFormatText.H3
             });
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = "Mit ViLa verwalten Sie ihre Wallbox und behalten so den Überblick über die entstehenden Kosten.",
                 Format = TypeFormatText.Paragraph
             });
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = "Datenschutzrichtlinie",
-                Format = TypeFormatText.H4
+                Format = TypeFormatText.H3
             });
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = "Die während der Nutzung eingegebenen Daten werden lokal auf Ihrem Gerät gespeichert. Sie behalten jederzeit die Datenhoheit. Die Daten werden zu keiner Zeit an Dritte übermittelt. Persönliche Informationen und Standortinformationen werden nicht erhoben.",
                 Format = TypeFormatText.Paragraph
             });
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = "Haftungsausschluss",
-                Format = TypeFormatText.H4
+                Format = TypeFormatText.H3
             });
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = "Die Haftung für Schäden durch Sachmängel wird ausgeschlossen. Die Haftung auf Schadensersatz wegen Körperverletzung sowie bei grober Fahrlässigkeit oder Vorsatz bleibt unberührt.",
                 Format = TypeFormatText.Paragraph
             });
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = "Informationen über ViLa",
-                Format = TypeFormatText.H1
+                Format = TypeFormatText.H3
             });
 
-            Main.Content.Add
+            Content.Content.Add
             (
                 new ControlPanelCenter
                 (

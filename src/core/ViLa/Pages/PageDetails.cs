@@ -39,27 +39,27 @@ namespace ViLa.Pages
             var chartLabels = measurementLog?.Measurements.Select(x => ((int)(x.MeasurementTimePoint - measurementLog.From).TotalMinutes).ToString()).ToArray();
             var chartData = measurementLog?.Measurements.Select(x => x.Power.ToString()).ToArray();
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = id + ".mxl",
                 TextColor = new PropertyColorText(TypeColorText.Muted)
             });
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = string.Format("{0:F2} kWh", measurementLog?.Power) + " / " + string.Format("{0:F2} €", measurementLog?.Cost),
                 Format = TypeFormatText.H1,
                 TextColor = new PropertyColorText(TypeColorText.Primary)
             });
 
-            Main.Content.Add(new ControlText()
+            Content.Content.Add(new ControlText()
             {
                 Text = measurementLog?.From.ToString("HH:mm:ss") + " - " + measurementLog?.Till.ToString("HH:mm:ss") + " Uhr",
                 Format = TypeFormatText.Paragraph,
                 TextColor = new PropertyColorText(TypeColorText.Dark)
             });
 
-            Main.Content.Add(new ControlCanvas("canvas")
+            Content.Content.Add(new ControlCanvas("canvas")
             {
                 Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None)
             });
@@ -76,12 +76,12 @@ namespace ViLa.Pages
 
             AddScript("chart", builder.ToString());
 
-            Main.Content.Add(new ControlPanel
+            Content.Content.Add(new ControlPanel
             (
                 new ControlButtonLink()
                 {
                     Text = "Datei herunterladen",
-                    Color = new PropertyColorButton(TypeColorButton.Primary),
+                    BackgroundColor = new PropertyColorButton(TypeColorButton.Primary),
                     Icon = new PropertyIcon(TypeIcon.Download),
                     TextColor = new PropertyColorText(TypeColorText.Light),
                     Uri = Uri.Root.Append("measurements/" + id + ".xml")
@@ -89,7 +89,7 @@ namespace ViLa.Pages
                 new ControlButtonLink()
                 {
                     Text = "Datei archivieren",
-                    Color = new PropertyColorButton(TypeColorButton.Primary),
+                    BackgroundColor = new PropertyColorButton(TypeColorButton.Primary),
                     Icon = new PropertyIcon(TypeIcon.Clock),
                     TextColor = new PropertyColorText(TypeColorText.Light),
                     Modal = new ControlModal
@@ -105,7 +105,7 @@ namespace ViLa.Pages
                             Text = "Archivieren",
                             Icon = new PropertyIcon(TypeIcon.Clock),
                             Classes = new List<string>(new[] { "m-1" }),
-                            Color = new PropertyColorButton(TypeColorButton.Success),
+                            BackgroundColor = new PropertyColorButton(TypeColorButton.Success),
                             OnClick = "window.location.href = '" + Uri.Append("archive").ToString() + " '"
                         }
                     )
@@ -113,7 +113,7 @@ namespace ViLa.Pages
                 new ControlButtonLink()
                 {
                     Text = "Datei löschen",
-                    Color = new PropertyColorButton(TypeColorButton.Danger),
+                    BackgroundColor = new PropertyColorButton(TypeColorButton.Danger),
                     Icon = new PropertyIcon(TypeIcon.TrashAlt),
                     HorizontalAlignment = TypeHorizontalAlignment.Right,
                     TextColor = new PropertyColorText(TypeColorText.Light),
@@ -130,7 +130,7 @@ namespace ViLa.Pages
                             Text = "Löschen",
                             Icon = new PropertyIcon(TypeIcon.TrashAlt),
                             Margin = new PropertySpacingMargin(PropertySpacing.Space.One),
-                            Color = new PropertyColorButton(TypeColorButton.Danger),
+                            BackgroundColor = new PropertyColorButton(TypeColorButton.Danger),
                             OnClick = "window.location.href = '" + Uri.Append("del").ToString() + " '"
                         }
                     )

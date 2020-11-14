@@ -5,13 +5,13 @@ using WebExpress.UI.Controls;
 
 namespace ViLa.Pages
 {
-    public sealed class PageHistory : PageBase
+    public sealed class PageHistory : PageBase, IPageHistory
     {
         /// <summary>
         /// Konstruktor
         /// </summary>
         public PageHistory()
-            : base("Verlauf")
+            : base("Messprotokolle")
         {
         }
 
@@ -32,12 +32,6 @@ namespace ViLa.Pages
 
             var history = ViewModel.Instance.GetHistoryMeasurementLogs();
 
-            Main.Content.Add(new ControlText()
-            {
-                Text = "Messprotokolle",
-                Format = TypeFormatText.H1
-            });
-
             var table = new ControlTable();
             table.AddColumn("Datum", new PropertyIcon(TypeIcon.Calendar), TypesLayoutTableRow.Info);
             table.AddColumn("Ladezeit", new PropertyIcon(TypeIcon.Stopwatch), TypesLayoutTableRow.Info);
@@ -57,7 +51,7 @@ namespace ViLa.Pages
                 table.Rows.Add(row);
             }
 
-            Main.Content.Add(table);
+            Content.Content.Add(table);
         }
     }
 }

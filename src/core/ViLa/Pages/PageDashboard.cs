@@ -5,13 +5,13 @@ using WebExpress.UI.Controls;
 
 namespace ViLa.Pages
 {
-    public class PageDashboard : PageBase
+    public class PageDashboard : PageBase, IPageDashbord
     {
         /// <summary>
         /// Konstruktor
         /// </summary>
         public PageDashboard()
-            : base("Überblick")
+            : base("Dashboard")
         {
             HeaderScriptLinks.Add("/Assets/js/Chart.min.js");
             HeaderScriptLinks.Add("/Assets/js/vila.dashboard.js");
@@ -32,14 +32,7 @@ namespace ViLa.Pages
         {
             base.Process();
 
-            Main.Content.Add(new ControlText()
-            {
-                Text = "Willkommen",
-                Format = TypeFormatText.H1,
-                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Five)
-            });
-
-            Main.Content.Add(new ControlChargingCard()
+            Content.Content.Add(new ControlChargingCard()
             {
                 Margin = new PropertySpacingMargin(PropertySpacing.Space.Four, PropertySpacing.Space.None)
             });
@@ -48,7 +41,7 @@ namespace ViLa.Pages
 
             if (history.Count > 0)
             {
-                Main.Content.Add(new ControlText()
+                Content.Content.Add(new ControlText()
                 {
                     Text = "Letzte Ladungen",
                     Format = TypeFormatText.H1,
@@ -68,7 +61,7 @@ namespace ViLa.Pages
                     grid.Content.Add(card);
                 }
 
-                Main.Content.Add(grid);
+                Content.Content.Add(grid);
             }
         }
     }
