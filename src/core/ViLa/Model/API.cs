@@ -33,6 +33,11 @@
         public string Cost { get; set; }
 
         /// <summary>
+        /// Liefert oder setzt die aktuell gemessene Gesammtleistung in kWh
+        /// </summary>
+        public string CurrentPower { get; set; }
+
+        /// <summary>
         /// Liefert oder setzt die aktuelle Zeit
         /// </summary>
         public string Now { get; set; }

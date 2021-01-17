@@ -4,14 +4,23 @@ using System.Device.Gpio;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Xml.Serialization;
-using WebExpress.Plugins;
+using WebExpress.Plugin;
 
 namespace ViLa.Model
 {
     public class ViewModel
     {
+        /// <summary>
+        /// Die Größe des Autobuffers in minuten
+        /// </summary>
+        public const int AutoBufferSize = 5;
+        
+        /// <summary>
+        /// Der Schwellwert in Impulsen
+        /// </summary>
+        public const int AutoThreshold = 500;
+
         /// <summary>
         /// Impulsdauer im ms 
         /// </summary>
@@ -51,7 +60,7 @@ namespace ViLa.Model
         /// <summary>
         /// Liefert die aktuelle Zeit
         /// </summary>
-        public string Now => DateTime.Now.ToString("dd.MM.yyyy<br>HH:mm:ss");
+        public static string Now => DateTime.Now.ToString("dd.MM.yyyy<br>HH:mm:ss");
 
         /// <summary>
         /// Liefert oder setzt den Verweis auf den Kontext des Plugins
@@ -154,9 +163,19 @@ namespace ViLa.Model
         public bool ActiveCharging => CurrentMeasurementLog != null;
 
         /// <summary>
+        /// Puffer für automatische Messungen
+        /// </summary>
+        public MeasurementLog AutoMeasurementLog { get; } = new MeasurementLog()
+        {
+            ID = Guid.NewGuid().ToString(),
+            From = DateTime.Now,
+            Measurements = new List<MeasurementItem>() { new MeasurementItem() { MeasurementTimePoint = DateTime.Now } }
+        };
+
+        /// <summary>
         /// Liefert oder setzt die Settings
         /// </summary>
-        public Settings Settings { get; private set; } = new Settings();
+        public Settings Settings { get; private set; } = new Settings() { Currency = "€" };
 
         /// <summary>
         /// Konstruktor
@@ -196,26 +215,57 @@ namespace ViLa.Model
         /// </summary>
         public virtual void Update()
         {
-            if (CurrentMeasurementLog == null)
-            {
-                Thread.Sleep(ImpulseDuration);
-
-                return;
-            }
-
             try
             {
+                var delta = (DateTime.Now - _lastMetering).TotalMilliseconds;
+
+                if (delta > ImpulseDuration)
+                {
+                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format("Zeitspanne der S0-Schnittstelle um {0}ms überschritten", delta - ViewModel.ImpulseDuration)));
+                }
+
+                var newValue = PowerMeterStatus;
+                var pulse = newValue != LastPowerMeterStatus && newValue == true;
+
+                LastPowerMeterStatus = PowerMeterStatus;
+
+                if (pulse)
+                {
+                    AutoMeasurementLog.Impulse++;
+                    AutoMeasurementLog.Power = (float)AutoMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
+                    AutoMeasurementLog.Cost = AutoMeasurementLog.Power * Settings.ElectricityPricePerkWh;
+                    AutoMeasurementLog.CurrentMeasurement.Impulse++;
+                    AutoMeasurementLog.CurrentMeasurement.Power = (float)AutoMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
+                }
+
+                // Neuer Messwert
+                if ((DateTime.Now - AutoMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
+                {
+                    AutoMeasurementLog.Measurements.Add(new MeasurementItem() { MeasurementTimePoint = DateTime.Now });
+
+                    while (AutoMeasurementLog.Measurements.Count > AutoBufferSize)
+                    {
+                        AutoMeasurementLog.Measurements.RemoveAt(0);
+                    }
+                    var sum = AutoMeasurementLog.Measurements.Sum(x => x.Impulse);
+                    if (sum > AutoThreshold && !ActiveCharging)
+                    {
+                        StartsTheChargingProcess();
+                    }
+                    else if (sum <= AutoThreshold && ActiveCharging)
+                    {
+                        StopsCharging();
+                    }
+                }
+
+                if (CurrentMeasurementLog == null)
+                {
+                    return;
+                }
+
                 if (_lastMetering != DateTime.MinValue)
                 {
-                    var delta = (DateTime.Now - _lastMetering).TotalMilliseconds;
-
-                    if (delta > ImpulseDuration)
-                    {
-                        Log(new LogItem(LogItem.LogLevel.Warning, string.Format("Zeitspanne der S0-Schnittstelle um {0}ms überschritten", delta - ViewModel.ImpulseDuration)));
-                    }
-
-                    var newValue = PowerMeterStatus;
-                    if (newValue != LastPowerMeterStatus && newValue == true)
+                    if (pulse)
                     {
                         CurrentMeasurementLog.Impulse++;
                         CurrentMeasurementLog.Power = (float)CurrentMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
@@ -229,22 +279,23 @@ namespace ViLa.Model
                     // Neuer Messwert
                     if ((DateTime.Now - CurrentMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
                     {
+                        CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
+                        {
+                            MeasurementTimePoint = DateTime.Now
+                        });
+
                         if
                         (
-                            Settings.MinWattage >= 0 &&
-                            CurrentMeasurementLog?.Power >= 0.5 &&
-                            CurrentMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage)
+                           Settings.MinWattage >= 0 &&
+                           CurrentMeasurementLog?.Power >= 0.5 &&
+                           CurrentMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage
+                        )
                         {
                             Log(new LogItem(LogItem.LogLevel.Info, "Minimale Leistungsaufnahme wurde erreicht"));
 
                             StopsCharging();
                             return;
                         }
-
-                        CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
-                        {
-                            MeasurementTimePoint = DateTime.Now
-                        });
                     }
                 }
             }
@@ -304,7 +355,7 @@ namespace ViLa.Model
                     Context.Log.Error(logItem.Instance, logItem.Massage);
                     break;
                 case LogItem.LogLevel.Exception:
-                    Context.Log.Exception(logItem.Instance, logItem.Massage);
+                    Context.Log.Error(logItem.Instance, logItem.Massage);
                     break;
             }
         }
@@ -319,18 +370,16 @@ namespace ViLa.Model
             // Konfiguration speichern
             var serializer = new XmlSerializer(typeof(Settings));
 
-            using (var memoryStream = new System.IO.MemoryStream())
-            {
-                serializer.Serialize(memoryStream, Settings);
+            using var memoryStream = new MemoryStream();
+            serializer.Serialize(memoryStream, Settings);
 
-                var utf = new UTF8Encoding();
+            var utf = new UTF8Encoding();
 
-                File.WriteAllText
-                (
-                    Path.Combine(Context.ConfigBaseFolder, "settings.xml"),
-                    utf.GetString(memoryStream.ToArray())
-                );
-            }
+            File.WriteAllText
+            (
+                Path.Combine(Context.Host.ConfigPath, "vila.settings.xml"),
+                utf.GetString(memoryStream.ToArray())
+            );
         }
 
         /// <summary>
@@ -345,10 +394,8 @@ namespace ViLa.Model
 
             try
             {
-                using (var reader = File.OpenText(Path.Combine(Context.ConfigBaseFolder, "settings.xml")))
-                {
-                    Settings = serializer.Deserialize(reader) as Settings;
-                }
+                using var reader = File.OpenText(Path.Combine(Context.Host.ConfigPath, "vila.settings.xml"));
+                Settings = serializer.Deserialize(reader) as Settings;
             }
             catch
             {
@@ -398,7 +445,7 @@ namespace ViLa.Model
                 serializer.Serialize(memoryStream, CurrentMeasurementLog);
 
                 var utf = new UTF8Encoding();
-                var fileName = Path.Combine(Context.AssetBaseFolder, "measurements", string.Format("{0}.xml", CurrentMeasurementLog.ID));
+                var fileName = Path.Combine(Context.Host.AssetPath, "measurements", string.Format("{0}.xml", CurrentMeasurementLog.ID));
 
                 if (!Directory.Exists(Path.GetDirectoryName(fileName)))
                 {
@@ -423,29 +470,28 @@ namespace ViLa.Model
         /// <summary>
         /// Liefert die abgeschlossenen Messprotokolle
         /// </summary>
-        /// <param name="date">Die Zeitspanne, in welcher die Messprotokolle geliefert werden sollen</param>
-        public List<MeasurementLog> GetHistoryMeasurementLogs(DateTime date)
+        /// <param name="from">Die Anfang, in welcher die Messprotokolle geliefert werden sollen</param>
+        /// /// <param name="till">Das Ende, in welcher die Messprotokolle geliefert werden sollen</param>
+        public List<MeasurementLog> GetHistoryMeasurementLogs(DateTime from, DateTime till)
         {
             var list = new List<MeasurementLog>();
-            var directoryName = Path.Combine(Context.AssetBaseFolder, "measurements");
+            var directoryName = Path.Combine(Context.Host.AssetPath, "measurements");
 
             if (!Directory.Exists(directoryName))
             {
                 Directory.CreateDirectory(directoryName);
             }
 
-            var files = Directory.GetFiles(directoryName, "*.xml").Where(x => File.GetCreationTime(x) > date).OrderByDescending(x => File.GetCreationTime(x));
+            var files = Directory.GetFiles(directoryName, "*.xml");
             var serializer = new XmlSerializer(typeof(MeasurementLog));
 
             foreach (var file in files)
             {
-                using (var reader = File.OpenText(file))
-                {
-                    list.Add(serializer.Deserialize(reader) as MeasurementLog);
-                }
+                using var reader = File.OpenText(file);
+                list.Add(serializer.Deserialize(reader) as MeasurementLog);
             }
 
-            return list;
+            return list.Where(x => x.Till >= from && x.Till <= till).OrderByDescending(x => x.Till).ToList();
         }
 
         /// <summary>
@@ -455,16 +501,14 @@ namespace ViLa.Model
         public MeasurementLog GetHistoryMeasurementLogs(string id)
         {
             var list = new List<MeasurementLog>();
-            var directoryName = Path.Combine(Context.AssetBaseFolder, "measurements");
+            var directoryName = Path.Combine(Context.Host.AssetPath, "measurements");
             var files = Directory.GetFiles(directoryName, id + ".xml");
             var serializer = new XmlSerializer(typeof(MeasurementLog));
 
             foreach (var file in files)
             {
-                using (var reader = File.OpenText(file))
-                {
-                    list.Add(serializer.Deserialize(reader) as MeasurementLog);
-                }
+                using var reader = File.OpenText(file);
+                list.Add(serializer.Deserialize(reader) as MeasurementLog);
             }
 
             return list.FirstOrDefault();
@@ -476,16 +520,14 @@ namespace ViLa.Model
         public List<MeasurementLog> GetHistoryMeasurementLogs()
         {
             var list = new List<MeasurementLog>();
-            var directoryName = Path.Combine(Context.AssetBaseFolder, "measurements");
+            var directoryName = Path.Combine(Context.Host.AssetPath, "measurements");
             var files = Directory.GetFiles(directoryName, "*.xml");
             var serializer = new XmlSerializer(typeof(MeasurementLog));
 
             foreach (var file in files)
             {
-                using (var reader = File.OpenText(file))
-                {
-                    list.Add(serializer.Deserialize(reader) as MeasurementLog);
-                }
+                using var reader = File.OpenText(file);
+                list.Add(serializer.Deserialize(reader) as MeasurementLog);
             }
 
             return list;

@@ -1,0 +1,53 @@
+﻿# Englisch
+plugin.name=ViLa
+plugin.description=
+
+app.name=ViLa
+app.label=ViLa - Visual loading
+app.description=With ViLa, you can manage your wallbox and keep track of the costs involved.
+app.license.label=License 
+app.license.value=MIT 
+
+module.name=ViLa
+module.description=
+
+vila.dashboard.label=Dashboard
+vila.dashboard.charging.last=Last charges
+vila.archive.label=Archive
+vila.debug.label=Debug
+vila.del.label=Delete
+vila.details.label=Details
+vila.details.id={0}
+vila.help.label=Help
+vila.help.version.label=Version
+vila.help.contact.label=Contact
+vila.help.privacypolicy.label=Privacy policy
+vila.help.privacypolicy.description=The data entered during use is stored locally on your device. You retain the sovereignty of the data at all times. The data will not be transmitted to third parties at any time. Personal information and location information are not collected.
+vila.help.disclaimer.label=Disclaimer
+vila.help.disclaimer.description=Liability for damage caused by material defects is excluded. Liability for damages for personal injury as well as in the event of gross negligence or intent remains unaffected.
+vila.history.label=History
+vila.log.label=Logging
+vila.off.label=Off
+vila.on.label=On
+vila.setting.label=Settings
+vila.setting.submit.label=Save
+vila.setting.currency.label=Currency
+vila.setting.currency.description=
+vila.setting.currency.validation.null=No currency has been specified!
+vila.setting.currency.validation.tolong=The currency consists of too many characters!
+vila.setting.auto.label=Automatic mode
+vila.setting.auto.description=Determines whether the measurements should be made automatically.
+vila.charging.begin=Start charging
+vila.charging.stop=Stop charging
+vila.charging.duration=Charging duration: {0}
+vila.charging.cost=Costs incurred: {0:F2} {1}
+vila.charging.consumption=Consumption: {0:F2} kWh
+vila.charging.title.x=Time in minutes
+vila.charging.title.y=Consumption in kWh
+vila.charging.current=Current consumption
+vila.archive.label=Archive file
+vila.archive.description=Are you sure you want to archive the measurement log?
+vila.archive.move=Datei {0}.xml wurde in das Archiv verschoben!
+vila.delete.label=Delete file
+vila.delete.description=Are you sure you want to delete the measurement log?
+vila.download.label=Download file

@@ -1,0 +1,51 @@
+﻿# Deutsch
+plugin.name=ViLa
+plugin.description=
+
+app.name=ViLa
+app.label=ViLa - Visuelles Laden
+app.description=Mit ViLa verwalten Sie ihre Wallbox und behalten so den Überblick über die entstehenden Kosten.
+app.license.label=Lizenz 
+app.license.value=MIT 
+
+module.name=ViLa
+module.description=
+
+vila.dashboard.label=Dashboard
+vila.dashboard.charging.last=Letzte Ladungen
+vila.debug.label=Debug
+vila.details.label=Details
+vila.details.id={0}
+vila.help.label=Hilfe
+vila.help.version.label=Version
+vila.help.contact.label=Kontakt
+vila.help.privacypolicy.label=Datenschutzrichtlinie
+vila.help.privacypolicy.description=Die während der Nutzung eingegebenen Daten werden lokal auf Ihrem Gerät gespeichert. Sie behalten jederzeit die Datenhoheit. Die Daten werden zu keiner Zeit an Dritte übermittelt. Persönliche Informationen und Standortinformationen werden nicht erhoben.
+vila.help.disclaimer.label=Haftungsausschluss
+vila.help.disclaimer.description=Die Haftung für Schäden durch Sachmängel wird ausgeschlossen. Die Haftung auf Schadensersatz wegen Körperverletzung sowie bei grober Fahrlässigkeit oder Vorsatz bleibt unberührt.
+vila.history.label=Verlauf
+vila.log.label=Logging
+vila.off.label=Aus
+vila.on.label=An
+vila.setting.label=Einstellungen
+vila.setting.submit.label=Speichern
+vila.setting.currency.label=Währung
+vila.setting.currency.description=
+vila.setting.currency.validation.null=Es wurde keine Währung angegeben!
+vila.setting.currency.validation.tolong=Die Währung besteht aus zu vielen Zeichen!
+vila.setting.auto.label=Automatikmodus
+vila.setting.auto.description=Bestimmt, ob die Messungen automatisch erfolgen sollen.
+vila.charging.begin=Ladevorgang starten
+vila.charging.stop=Ladevorgang beenden
+vila.charging.duration=Ladedauer: {0}
+vila.charging.cost=Angefallene Kosten: {0:F2} {1}
+vila.charging.consumption=Verbrauch: {0:F2} kWh
+vila.charging.title.x=Zeit in Minuten
+vila.charging.title.y=Verbrauch in kWh
+vila.charging.current=Aktueller Verbrauch
+vila.archive.label=Datei archivieren
+vila.archive.description=Möchten Sie das Messprotokoll wirklich archivieren?
+vila.archive.move=Datei {0}.xml wurde in das Archiv verschoben!
+vila.delete.label=Datei löschen
+vila.delete.description=Möchten Sie das Messprotokoll wirklich löschen?
+vila.download.label=Datei herunterladen
