@@ -40,14 +40,14 @@ namespace ViLa.WebControl
                     Text = string.Format(context.Culture, context.I18N("vila.charging.duration"), ViewModel.Instance.ActiveCharging ? new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null) : "-")
                 }, new ControlText("cost")
                 {
-                    Text = string.Format(context.Culture, context.I18N("vila.charging.cost"), ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog?.Cost : 0f, ViewModel.Instance.Settings.Currency)
+                    Text = string.Format(context.Culture, context.I18N("vila.charging.cost"), ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog?.Cost : "-", ViewModel.Instance.Settings.Currency)
                 }, new ControlText("power")
                 {
-                    Text = string.Format(context.Culture, context.I18N("vila.charging.consumption"), ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog?.Power : 0f)
+                    Text = string.Format(context.Culture, context.I18N("vila.charging.consumption"), ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog?.Power : "-")
                 })
             {
                 HorizontalAlignment = TypeHorizontalAlignment.Default,
-                Classes = new List<string>(new[] { "mt-5" })
+                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
             });
 
             card.Content.Add(new ControlChart("chart")
@@ -57,7 +57,7 @@ namespace ViLa.WebControl
                 Data = new List<ControlChartDataset> { new ControlChartDataset() { Title = "Verlauf" } },
                 TitleX = context.I18N("vila.charging.title.x"),
                 TitleY = context.I18N("vila.charging.title.y"),
-                Styles = new List<string>() { "max-width: 80%;" },
+                Styles = new List<string>() { "max-width: 75%;" },
                 Minimum = 0
             });
 

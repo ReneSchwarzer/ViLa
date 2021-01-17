@@ -55,7 +55,7 @@ namespace ViLa.WebControl
                 },
                 new ControlAttribute("current")
                 {
-                    Name = $"{ Math.Round(ViewModel.Instance.AutoMeasurementLog.Measurements.Sum(x => x.Power), 2).ToString(context.Culture)} kWh",
+                    Name = $"{ string.Format(context.Culture, "{0:F2}", ViewModel.Instance.AutoMeasurementLog.Measurements.Sum(x => x.Power)) } kWh",
                     Icon = new PropertyIcon(TypeIcon.Bolt),
                     Value = "",
                     TextColor = new PropertyColorText(TypeColorText.Secondary)

@@ -51,7 +51,7 @@ namespace ViLa.WebResource
                 {
                     Text = $"{ yaer }",
                     Format = TypeFormatText.H3,
-                    Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Five, PropertySpacing.Space.None)
+                    Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
                 });
 
                 var grid = new ControlPanelGrid() { Fluid = TypePanelContainer.Fluid };

@@ -19,7 +19,7 @@ namespace ViLa.Model
         /// <summary>
         /// Der Schwellwert in Impulsen
         /// </summary>
-        public const int AutoThreshold = 500;
+        public const int AutoThreshold = 100;
 
         /// <summary>
         /// Impulsdauer im ms 
@@ -248,11 +248,11 @@ namespace ViLa.Model
                         AutoMeasurementLog.Measurements.RemoveAt(0);
                     }
                     var sum = AutoMeasurementLog.Measurements.Sum(x => x.Impulse);
-                    if (sum > AutoThreshold && !ActiveCharging)
+                    if (sum > AutoThreshold && !ActiveCharging && Settings.Auto)
                     {
                         StartsTheChargingProcess();
                     }
-                    else if (sum <= AutoThreshold && ActiveCharging)
+                    else if (sum <= AutoThreshold && ActiveCharging && Settings.Auto)
                     {
                         StopsCharging();
                     }

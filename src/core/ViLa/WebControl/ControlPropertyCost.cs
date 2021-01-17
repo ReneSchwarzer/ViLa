@@ -56,14 +56,14 @@ namespace ViLa.WebControl
                     },
                     new ControlAttribute()
                     {
-                        Name = $"{ Math.Round(value.Sum(x => x.Cost), 2).ToString(context.Culture) } { ViewModel.Instance.Settings.Currency }",
+                        Name = $"{ string.Format(context.Culture, "{0:F2}", value.Sum(x => x.Cost)) } { ViewModel.Instance.Settings.Currency }",
                         Icon = new PropertyIcon(TypeIcon.EuroSign),
                         Value = "",
                         TextColor = new PropertyColorText(TypeColorText.Secondary)
                     },
                     new ControlAttribute()
                     {
-                        Name = $"{ Math.Round(value.Sum(x => x.Power), 2).ToString(context.Culture)} kWh",
+                        Name = $"{ string.Format(context.Culture, "{0:F2}", value.Sum(x => x.Power)) } kWh",
                         Icon = new PropertyIcon(TypeIcon.Bolt),
                         Value = "",
                         TextColor = new PropertyColorText(TypeColorText.Secondary)

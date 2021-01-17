@@ -15,18 +15,22 @@
 				$('#submit_charging').removeClass('btn-success');
 				$('#submit_charging').removeClass('btn-danger');
                 $('#submit_charging').addClass('btn-danger');
-				$('#submit_charging').html("&nbsp;&nbsp;&nbsp;" + vila_charging_stop);
+				$('#submit_charging').html("&nbsp;&nbsp;" + vila_charging_stop);
 				var span = document.createElement('span');
-				span.setAttribute('class', 'fas fa-power-off');
+				span.setAttribute('class', 'fas fa-stop-circle');
+				var a = document.getElementById('submit_charging');
+				a.insertAdjacentElement('afterbegin', span);
 			}
 			else
 			{
 				$('#submit_charging').removeClass('btn-success');
 				$('#submit_charging').removeClass('btn-danger');
                 $('#submit_charging').addClass('btn-success');
-				$('#submit_charging').html("&nbsp;&nbsp;&nbsp;" + vila_charging_begin);
+				$('#submit_charging').html("&nbsp;&nbsp;" + vila_charging_begin);
 				var span = document.createElement('span');
 				span.setAttribute('class', 'fas fa-play-circle');
+				var a = document.getElementById('submit_charging');
+				a.insertAdjacentElement('afterbegin', span);
 			}
 
 			if  (config_chart != null)
