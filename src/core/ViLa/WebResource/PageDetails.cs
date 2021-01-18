@@ -77,7 +77,8 @@ namespace ViLa.WebResource
                 Title = "",
                 TitleX = this.I18N("vila.charging.title.x"),
                 TitleY = this.I18N("vila.charging.title.y"),
-                Styles = new List<string>() { "max-width: 80%;" }
+                Styles = new List<string>() { "max-width: 80%;" },
+                Minimum = 0
             });
         }
     }
