@@ -229,32 +229,35 @@ namespace ViLa.Model
 
                 LastPowerMeterStatus = PowerMeterStatus;
 
-                if (pulse)
+                if (_lastMetering != DateTime.MinValue)
                 {
-                    AutoMeasurementLog.Impulse++;
-                    AutoMeasurementLog.Power = (float)AutoMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
-                    AutoMeasurementLog.Cost = AutoMeasurementLog.Power * Settings.ElectricityPricePerkWh;
-                    AutoMeasurementLog.CurrentMeasurement.Impulse++;
-                    AutoMeasurementLog.CurrentMeasurement.Power = (float)AutoMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
-                }
-
-                // Neuer Messwert
-                if ((DateTime.Now - AutoMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
-                {
-                    AutoMeasurementLog.Measurements.Add(new MeasurementItem() { MeasurementTimePoint = DateTime.Now });
-
-                    while (AutoMeasurementLog.Measurements.Count > AutoBufferSize)
+                    if (pulse)
                     {
-                        AutoMeasurementLog.Measurements.RemoveAt(0);
+                        AutoMeasurementLog.Impulse++;
+                        AutoMeasurementLog.Power = (float)AutoMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
+                        AutoMeasurementLog.Cost = AutoMeasurementLog.Power * Settings.ElectricityPricePerkWh;
+                        AutoMeasurementLog.CurrentMeasurement.Impulse++;
+                        AutoMeasurementLog.CurrentMeasurement.Power = (float)AutoMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
-                    var sum = AutoMeasurementLog.Measurements.Sum(x => x.Impulse);
-                    if (sum > AutoThreshold && !ActiveCharging && Settings.Auto)
+
+                    // Neuer Messwert
+                    if ((DateTime.Now - AutoMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
                     {
-                        StartsTheChargingProcess();
-                    }
-                    else if (sum <= AutoThreshold && ActiveCharging && Settings.Auto)
-                    {
-                        StopsCharging();
+                        AutoMeasurementLog.Measurements.Add(new MeasurementItem() { MeasurementTimePoint = DateTime.Now });
+
+                        while (AutoMeasurementLog.Measurements.Count > AutoBufferSize)
+                        {
+                            AutoMeasurementLog.Measurements.RemoveAt(0);
+                        }
+                        var sum = AutoMeasurementLog.Measurements.Sum(x => x.Impulse);
+                        if (sum > AutoThreshold && !ActiveCharging && Settings.Auto)
+                        {
+                            StartsTheChargingProcess();
+                        }
+                        else if (sum <= AutoThreshold && ActiveCharging && Settings.Auto)
+                        {
+                            StopsCharging();
+                        }
                     }
                 }
 
@@ -304,8 +307,10 @@ namespace ViLa.Model
                 Log(new LogItem(LogItem.LogLevel.Error, "Fehler bei Ermittlung des aktuellen Verbrauchs"));
                 Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
-
-            _lastMetering = DateTime.Now;
+            finally
+            {
+                _lastMetering = DateTime.Now;
+            }
 
             if (ActiveCharging && Settings.MaxChargingTime > 0 && (DateTime.Now - CurrentMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
             {

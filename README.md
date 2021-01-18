@@ -17,7 +17,7 @@ ViLa ist eine WebApp, welche in C# speziell für den Raspberry Pi entwickelt wur
 # Voraussetzungen
 - Raspberry Pi 3B
 - Raspbian Buster Lite (https://downloads.raspberrypi.org/raspbian_lite_latest)
-- .NET Core 3.1 SDK - (https://dotnet.microsoft.com/download/dotnet-core)
+- .NET Core 5.0 SDK - (https://dotnet.microsoft.com/download/dotnet-core)
 - WebExpress (https://github.com/ReneSchwarzer/WebExpress.git)
 - WebExpressAgent (https://github.com/ReneSchwarzer/WebExpressAgent.git)
 
