@@ -253,6 +253,19 @@ namespace ViLa.Model
                         if (sum > AutoThreshold && !ActiveCharging && Settings.Auto)
                         {
                             StartsTheChargingProcess();
+
+                            // Bereits verbrauchte Energie welche zur Dedektierung der Autofunktion gemessen wurde, dem neuen Messprotokoll zuschreiben
+                            if (AutoMeasurementLog.Measurements.FirstOrDefault() != null)
+                            {
+                                CurrentMeasurementLog.From = AutoMeasurementLog.Measurements.FirstOrDefault().MeasurementTimePoint;
+                            }
+                            CurrentMeasurementLog.Power = AutoMeasurementLog.Measurements.Sum(x => x.Power);
+                            CurrentMeasurementLog.Impulse = AutoMeasurementLog.Measurements.Sum(x => x.Impulse);
+                            CurrentMeasurementLog.Cost = CurrentMeasurementLog.Power * Settings.ElectricityPricePerkWh;
+                            CurrentMeasurementLog.Measurements.Clear();
+                            CurrentMeasurementLog.Measurements.AddRange(AutoMeasurementLog.Measurements);
+
+                            AutoMeasurementLog.Reset();
                         }
                         else if (sum <= AutoThreshold && ActiveCharging && Settings.Auto)
                         {

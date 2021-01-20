@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using ViLa.Model;
 using WebExpress.Html;
@@ -28,6 +29,20 @@ namespace ViLa.WebControl
         {
             context.Page.HeaderScriptLinks.Add(context.Uri.Root.Append("/assets/js/vila.dashboard.js"));
 
+            static string[] createArray(int size)
+            {
+                var array = new string[size];
+                for (var i = 1; i <= size; i++)
+                {
+                    array[i - 1] = i.ToString();
+                }
+
+                return array;
+            }
+
+            var chartLabels = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() : createArray(ViewModel.Instance.AutoMeasurementLog.Measurements.Count);
+            var chartData = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power).ToArray() : ViewModel.Instance.AutoMeasurementLog.Measurements.Select(x => x.Power).ToArray();
+
             var card = new ControlPanelCard()
             {
                 BackgroundColor = new PropertyColorBackground(TypeColorBackground.Light)
@@ -54,7 +69,8 @@ namespace ViLa.WebControl
             {
                 Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None),
                 Title = "",
-                Data = new List<ControlChartDataset> { new ControlChartDataset() { Title = "Verlauf" } },
+                Labels = chartLabels,
+                Data = new List<ControlChartDataset> { new ControlChartDataset() { Data = chartData, Title = "Verlauf" } },
                 TitleX = context.I18N("vila.charging.title.x"),
                 TitleY = context.I18N("vila.charging.title.y"),
                 Styles = new List<string>() { "max-width: 75%;" },

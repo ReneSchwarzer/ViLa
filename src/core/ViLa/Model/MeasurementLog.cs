@@ -64,5 +64,16 @@ namespace ViLa.Model
         /// </summary>
         [XmlElement("measurements")]
         public List<MeasurementItem> Measurements { get; set; } = new List<MeasurementItem>();
+
+        /// <summary>
+        /// Setzt die Werte zurück
+        /// </summary>
+        public void Reset()
+        {
+            Impulse = 0;
+            Power = 0;
+            Cost = 0;
+            Measurements.Clear();
+        }
     }
 }
