@@ -123,7 +123,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Liefert oder setzt ob im S0-Impuls anliegt 
+        /// Liefert oder setzt ob ein S0-Impuls anliegt 
         /// </summary>
         protected virtual bool PowerMeterStatus
         {
@@ -219,9 +219,9 @@ namespace ViLa.Model
             {
                 var delta = (DateTime.Now - _lastMetering).TotalMilliseconds;
 
-                if (delta > ImpulseDuration)
+                if (delta > ImpulseDuration && _lastMetering != DateTime.MinValue)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format("Zeitspanne der S0-Schnittstelle um {0}ms überschritten", delta - ViewModel.ImpulseDuration)));
+                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format("Zeitspanne der S0-Schnittstelle um {0} ms überschritten", delta - ViewModel.ImpulseDuration)));
                 }
 
                 var newValue = PowerMeterStatus;
@@ -281,8 +281,6 @@ namespace ViLa.Model
                         CurrentMeasurementLog.CurrentMeasurement.Impulse++;
                         CurrentMeasurementLog.CurrentMeasurement.Power = (float)CurrentMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
-
-                    LastPowerMeterStatus = PowerMeterStatus;
 
                     // Neuer Messwert
                     if ((DateTime.Now - CurrentMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
