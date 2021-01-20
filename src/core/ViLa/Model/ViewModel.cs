@@ -131,7 +131,7 @@ namespace ViLa.Model
             {
                 try
                 {
-                    var value = GPIO.Read(_powerMeterPin);
+                    var value = GPIO?.Read(_powerMeterPin);
 
                     return value == PinValue.High;
 
@@ -221,7 +221,7 @@ namespace ViLa.Model
 
                 if (delta > ImpulseDuration && _lastMetering != DateTime.MinValue)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format("Zeitspanne der S0-Schnittstelle um {0} ms überschritten", delta - ViewModel.ImpulseDuration)));
+                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format(Context.Host.Culture, "Zeitspanne der S0-Schnittstelle um {0} ms überschritten", delta - ViewModel.ImpulseDuration)));
                 }
 
                 var newValue = PowerMeterStatus;
@@ -351,19 +351,19 @@ namespace ViLa.Model
             switch (logItem.Level)
             {
                 case LogItem.LogLevel.Info:
-                    Context.Log.Info(logItem.Instance, logItem.Massage);
+                    Context.Log.Info(logItem.Massage, logItem.Instance);
                     break;
                 case LogItem.LogLevel.Debug:
-                    Context.Log.Debug(logItem.Instance, logItem.Massage);
+                    Context.Log.Debug(logItem.Massage, logItem.Instance);
                     break;
                 case LogItem.LogLevel.Warning:
-                    Context.Log.Warning(logItem.Instance, logItem.Massage);
+                    Context.Log.Warning(logItem.Massage, logItem.Instance);
                     break;
                 case LogItem.LogLevel.Error:
-                    Context.Log.Error(logItem.Instance, logItem.Massage);
+                    Context.Log.Error(logItem.Massage, logItem.Instance);
                     break;
                 case LogItem.LogLevel.Exception:
-                    Context.Log.Error(logItem.Instance, logItem.Massage);
+                    Context.Log.Error(logItem.Massage, logItem.Instance);
                     break;
             }
         }
