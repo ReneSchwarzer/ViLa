@@ -25,7 +25,7 @@ namespace ViLa.Model
         /// Liefert oder setzt die gemessene Leistung in kWh
         /// </summary>
         [XmlAttribute("power")]
-        public float Power { get; set; }
+        public float Power { get; set; } // => (float)Impulse / Settings.ImpulsePerkWh
 
         /// <summary>
         /// Liefert oder setzt die Logitems

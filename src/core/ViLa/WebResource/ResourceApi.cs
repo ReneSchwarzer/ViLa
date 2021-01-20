@@ -55,7 +55,7 @@ namespace ViLa.WebResource
                 Impulse = string.Format("{0}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Impulse : 0),
                 Power = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Power : "-"),
                 Cost = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Cost : "-"),
-                CurrentPower = string.Format("{0:F2}", ViewModel.Instance.AutoMeasurementLog.Measurements.Sum(x => x.Power)),
+                CurrentPower = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Power : ViewModel.Instance.AutoMeasurementLog.Measurements.Sum(x => x.Power)),
                 Now = ViewModel.Now,
                 ChartLabels = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() : createArray(ViewModel.Instance.AutoMeasurementLog.Measurements.Count),
                 ChartData = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power.ToString()).ToArray() : ViewModel.Instance.AutoMeasurementLog.Measurements.Select(x => x.Power.ToString()).ToArray()

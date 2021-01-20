@@ -39,19 +39,19 @@ namespace ViLa.Model
         /// Liefert oder setzt die Anzahl der gemessenen Gesammtimpulse
         /// </summary>
         [XmlAttribute("counter")]
-        public long Impulse { get; set; }
+        public long Impulse => Measurements.Sum(x => x.Impulse);
 
         /// <summary>
         /// Liefert oder setzt die gemessene Gesammtleistung in kWh
         /// </summary>
-        [XmlAttribute("power")]
-        public float Power { get; set; }
+        [XmlIgnore]
+        public float Power => (float)Impulse / ViewModel.Instance.Settings.ImpulsePerkWh;
 
         /// <summary>
-        /// Liefert oder setzt die Kosten in €
+        /// Liefert oder setzt die Kosten in der angegebenen Währung
         /// </summary>
-        [XmlAttribute("cost")]
-        public float Cost { get; set; }
+        [XmlIgnore]
+        public float Cost => Power * ViewModel.Instance.Settings.ElectricityPricePerkWh;
 
         /// <summary>
         /// Liefert oder setzt den aktuellen Messwert
@@ -66,13 +66,22 @@ namespace ViLa.Model
         public List<MeasurementItem> Measurements { get; set; } = new List<MeasurementItem>();
 
         /// <summary>
+        /// Liefert oder setzt den finalen Verbrauch in kWh
+        /// </summary>
+        [XmlAttribute("power")]
+        public float FinalPower { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die finalen Kosten in der angegebenen Währung
+        /// </summary>
+        [XmlAttribute("cost")]
+        public float FinalCost { get; set; }
+
+        /// <summary>
         /// Setzt die Werte zurück
         /// </summary>
         public void Reset()
         {
-            Impulse = 0;
-            Power = 0;
-            Cost = 0;
             Measurements.Clear();
         }
     }

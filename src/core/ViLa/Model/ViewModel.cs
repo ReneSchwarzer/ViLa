@@ -233,9 +233,6 @@ namespace ViLa.Model
                 {
                     if (pulse)
                     {
-                        AutoMeasurementLog.Impulse++;
-                        AutoMeasurementLog.Power = (float)AutoMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
-                        AutoMeasurementLog.Cost = AutoMeasurementLog.Power * Settings.ElectricityPricePerkWh;
                         AutoMeasurementLog.CurrentMeasurement.Impulse++;
                         AutoMeasurementLog.CurrentMeasurement.Power = (float)AutoMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
@@ -257,15 +254,13 @@ namespace ViLa.Model
                             // Bereits verbrauchte Energie welche zur Dedektierung der Autofunktion gemessen wurde, dem neuen Messprotokoll zuschreiben
                             if (AutoMeasurementLog.Measurements.FirstOrDefault() != null)
                             {
-                                CurrentMeasurementLog.From = AutoMeasurementLog.Measurements.FirstOrDefault().MeasurementTimePoint;
+                                CurrentMeasurementLog.From = AutoMeasurementLog.Measurements.SkipWhile(x => x.Impulse == 0).FirstOrDefault().MeasurementTimePoint;
                             }
-                            CurrentMeasurementLog.Power = AutoMeasurementLog.Measurements.Sum(x => x.Power);
-                            CurrentMeasurementLog.Impulse = AutoMeasurementLog.Measurements.Sum(x => x.Impulse);
-                            CurrentMeasurementLog.Cost = CurrentMeasurementLog.Power * Settings.ElectricityPricePerkWh;
-                            CurrentMeasurementLog.Measurements.Clear();
-                            CurrentMeasurementLog.Measurements.AddRange(AutoMeasurementLog.Measurements);
 
-                            AutoMeasurementLog.Reset();
+                            CurrentMeasurementLog.Measurements.Clear();
+                            CurrentMeasurementLog.Measurements.AddRange(AutoMeasurementLog.Measurements.SkipWhile(x => x.Impulse == 0));
+
+                            //AutoMeasurementLog.Reset();
                         }
                         else if (sum <= AutoThreshold && ActiveCharging && Settings.Auto)
                         {
@@ -283,9 +278,6 @@ namespace ViLa.Model
                 {
                     if (pulse)
                     {
-                        CurrentMeasurementLog.Impulse++;
-                        CurrentMeasurementLog.Power = (float)CurrentMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
-                        CurrentMeasurementLog.Cost = CurrentMeasurementLog.Power * Settings.ElectricityPricePerkWh;
                         CurrentMeasurementLog.CurrentMeasurement.Impulse++;
                         CurrentMeasurementLog.CurrentMeasurement.Power = (float)CurrentMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
@@ -454,13 +446,17 @@ namespace ViLa.Model
             Log(new LogItem(LogItem.LogLevel.Info, "Beendet den Ladevorgang"));
 
             CurrentMeasurementLog.Till = DateTime.Now;
+            CurrentMeasurementLog.FinalPower = CurrentMeasurementLog.Power;
+            CurrentMeasurementLog.FinalCost = CurrentMeasurementLog.Cost;
 
             // Messung speichern
             var serializer = new XmlSerializer(typeof(MeasurementLog));
+            var xmlns = new XmlSerializerNamespaces();
+            xmlns.Add(string.Empty, string.Empty);
 
             using (var memoryStream = new MemoryStream())
             {
-                serializer.Serialize(memoryStream, CurrentMeasurementLog);
+                serializer.Serialize(memoryStream, CurrentMeasurementLog, xmlns);
 
                 var utf = new UTF8Encoding();
                 var fileName = Path.Combine(Context.Host.AssetPath, "measurements", string.Format("{0}.xml", CurrentMeasurementLog.ID));

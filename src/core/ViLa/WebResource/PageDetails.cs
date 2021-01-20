@@ -51,7 +51,7 @@ namespace ViLa.WebResource
 
             Content.Primary.Add(new ControlText()
             {
-                Text = id + ".mxl",
+                Text = id + ".xml",
                 TextColor = new PropertyColorText(TypeColorText.Muted)
             });
 
