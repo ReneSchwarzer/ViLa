@@ -47,15 +47,7 @@ namespace ViLa.WebControl
             form.ProcessFormular += (s, e) =>
             {
                 var id = context.Page.GetParamValue("id");
-                try
-                {
-                    File.Delete(System.IO.Path.Combine(ViewModel.Instance.Context.Host.AssetPath, "measurements", id + ".xml"));
-                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format("Datei {0}.xml wurde gelöscht!", id)));
-                }
-                catch (Exception ex)
-                {
-                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
-                }
+                ViewModel.Instance.RemoveHistoryMeasurementLog(id);
 
                 context.Page.Redirecting(context.Uri.Take(-1));
             };

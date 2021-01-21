@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ViLa.Model;
 using ViLa.WebControl;
 using WebExpress.Attribute;
@@ -43,9 +44,9 @@ namespace ViLa.WebResource
         {
             base.Process();
 
-            void item(List<MeasurementLog> value, string yaer)
+            void item(IEnumerable<MeasurementLog> value, string yaer)
             {
-                if (value.Count == 0) return;
+                if (!value.Any()) return;
 
                 Content.Secondary.Add(new ControlText()
                 {

@@ -42,9 +42,9 @@ namespace ViLa.WebControl
         /// <returns>Das Control als HTML</returns>
         public override IHtmlNode Render(RenderContext context)
         {
-            void item(List<MeasurementLog> value, string yaer)
+            void item(IEnumerable<MeasurementLog> value, string yaer)
             {
-                if (value.Count == 0) return;
+                if (!value.Any()) return;
 
                 Items.Add(new ControlListItem
                 (

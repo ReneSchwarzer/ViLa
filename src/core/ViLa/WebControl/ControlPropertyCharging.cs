@@ -60,11 +60,11 @@ namespace ViLa.WebControl
             {
                 if (!ViewModel.Instance.ActiveCharging)
                 {
-                    ViewModel.Instance.StartsTheChargingProcess();
+                    ViewModel.Instance.StartCharging();
                 }
                 else
                 {
-                    ViewModel.Instance.StopsCharging();
+                    ViewModel.Instance.StopCharging();
                 }
 
                 context.Page.Redirecting(context.Uri);

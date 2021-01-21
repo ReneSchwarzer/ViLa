@@ -32,16 +32,19 @@ namespace ViLa.WebControl
             static string[] createArray(int size)
             {
                 var array = new string[size];
-                for (var i = 1; i <= size; i++)
+                for (var i = size * -1; i < 0; i++)
                 {
-                    array[i - 1] = i.ToString();
+                    array[size + i] = (i + 1).ToString();
                 }
 
                 return array;
             }
 
-            var chartLabels = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() : createArray(ViewModel.Instance.AutoMeasurementLog.Measurements.Count);
-            var chartData = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power).ToArray() : ViewModel.Instance.AutoMeasurementLog.Measurements.Select(x => x.Power).ToArray();
+            var chartLabels = ViewModel.Instance.ActiveCharging ? 
+                ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() : 
+                createArray(ViewModel.Instance.CurrentMeasurementLog.Measurements.Count);
+                
+            var chartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power).ToArray();
 
             var card = new ControlPanelCard()
             {
@@ -53,10 +56,12 @@ namespace ViLa.WebControl
                 new ControlText("measurementtime")
                 {
                     Text = string.Format(context.Culture, context.I18N("vila.charging.duration"), ViewModel.Instance.ActiveCharging ? new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null) : "-")
-                }, new ControlText("cost")
+                }, 
+                new ControlText("cost")
                 {
                     Text = string.Format(context.Culture, context.I18N("vila.charging.cost"), ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog?.Cost : "-", ViewModel.Instance.Settings.Currency)
-                }, new ControlText("power")
+                }, 
+                new ControlText("power")
                 {
                     Text = string.Format(context.Culture, context.I18N("vila.charging.consumption"), ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog?.Power : "-")
                 })
@@ -73,7 +78,7 @@ namespace ViLa.WebControl
                 Data = new List<ControlChartDataset> { new ControlChartDataset() { Data = chartData, Title = "Verlauf" } },
                 TitleX = context.I18N("vila.charging.title.x"),
                 TitleY = context.I18N("vila.charging.title.y"),
-                Styles = new List<string>() { "max-width: 75%;" },
+                Styles = new List<string>() { "max-width: 85%;" },
                 Minimum = 0
             });
 

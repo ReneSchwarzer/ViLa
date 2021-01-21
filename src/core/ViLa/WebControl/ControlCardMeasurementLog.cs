@@ -1,5 +1,6 @@
 ﻿using ViLa.Model;
 using WebExpress.Html;
+using WebExpress.Internationalization;
 using WebExpress.UI.WebControl;
 
 namespace ViLa.WebControl
@@ -40,13 +41,13 @@ namespace ViLa.WebControl
             Text = MeasurementLog?.From.ToString(context.Culture.DateTimeFormat.ShortDatePattern) +
             new ControlText()
             {
-                Text = MeasurementLog?.From.ToString(context.Culture.DateTimeFormat.ShortTimePattern) + " - " + MeasurementLog?.Till.ToString(context.Culture.DateTimeFormat.ShortTimePattern) + " Uhr",
+                Text = $"{ MeasurementLog?.From.ToString(context.Culture.DateTimeFormat.LongTimePattern) } - { MeasurementLog?.Till.ToString(context.Culture.DateTimeFormat.LongTimePattern) } { context.I18N("vila.charging.time")}",
                 Format = TypeFormatText.Small
             }.Render(context) +
             new HtmlElementTextSemanticsBr() +
             new ControlLink()
             {
-                Text = "Details",
+                Text = context.I18N("vila.charging.details"),
                 Uri = context.Page.Uri.Root.Append(MeasurementLog.ID)
             }.Render(context);
             Value = $"{ string.Format("{0:F2} kWh", MeasurementLog?.Power) } / { string.Format("{0:F2} {1}", MeasurementLog?.Cost, ViewModel.Instance.Settings.Currency) }";

@@ -45,7 +45,7 @@ namespace ViLa.WebResource
             base.Process();
 
             var id = GetParamValue("id");
-            var measurementLog = ViewModel.Instance.GetHistoryMeasurementLogs(id);
+            var measurementLog = ViewModel.Instance.GetHistoryMeasurementLog(id);
             var chartLabels = measurementLog?.Measurements.Select(x => ((int)(x.MeasurementTimePoint - measurementLog.From).TotalMinutes).ToString()).ToArray();
             var chartData = measurementLog?.Measurements.Select(x => x.Power).ToArray();
 

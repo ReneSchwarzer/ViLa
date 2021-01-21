@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using ViLa.Model;
 using WebExpress.Attribute;
 using WebExpress.Html;
@@ -55,9 +53,15 @@ namespace ViLa.WebControl
                 },
                 new ControlAttribute("current")
                 {
-                    Name = $"{ string.Format(context.Culture, "{0:F2}", ViewModel.Instance.AutoMeasurementLog.Measurements.Sum(x => x.Power)) } kWh",
+                    Name = $"{ string.Format(context.Culture, "{0:F2}", ViewModel.Instance.CurrentPower) } kWh",
                     Icon = new PropertyIcon(TypeIcon.Bolt),
                     Value = "",
+                    TextColor = new PropertyColorText(TypeColorText.Secondary)
+                },
+                new ControlText()
+                {
+                    Text = context.I18N("vila.charging.current.description"),
+                    Format = TypeFormatText.Small,
                     TextColor = new PropertyColorText(TypeColorText.Secondary)
                 }
             ));

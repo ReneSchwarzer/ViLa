@@ -49,37 +49,7 @@ namespace ViLa.WebControl
             form.ProcessFormular += (s, e) =>
             {
                 var id = context.Page.GetParamValue("id");
-                try
-                {
-                    var archive = Path.Combine(ViewModel.Instance.Context.Host.AssetPath, "archive");
-
-                    if (!Directory.Exists(archive))
-                    {
-                        Directory.CreateDirectory(archive);
-                    }
-
-                    var year = Path.Combine(archive, DateTime.Now.Year.ToString());
-                    if (!Directory.Exists(year))
-                    {
-                        Directory.CreateDirectory(year);
-                    }
-
-                    var month = Path.Combine(year, DateTime.Now.ToString("MM"));
-                    if (!Directory.Exists(month))
-                    {
-                        Directory.CreateDirectory(month);
-                    }
-
-                    var source = Path.Combine(ViewModel.Instance.Context.Host.AssetPath, "measurements", id + ".xml");
-                    var destination = Path.Combine(month, id + ".xml");
-
-                    File.Move(source, destination);
-                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format(context.I18N("vila.archive.move"), id)));
-                }
-                catch (Exception ex)
-                {
-                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
-                }
+                ViewModel.Instance.ArchiveHistoryMeasurementLog(id);
 
                 context.Page.Redirecting(context.Uri.Take(-1));
             };

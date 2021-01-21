@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using ViLa.Model;
@@ -38,9 +39,9 @@ namespace ViLa.WebResource
             static string[] createArray(int size)
             {
                 var array = new string[size];
-                for (var i = 1; i <= size; i++)
+                for (var i = size * -1; i < 0; i++)
                 {
-                    array[i - 1] = i.ToString();
+                    array[size + i] = (i + 1).ToString();
                 }
 
                 return array;
@@ -55,10 +56,12 @@ namespace ViLa.WebResource
                 Impulse = string.Format("{0}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Impulse : 0),
                 Power = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Power : "-"),
                 Cost = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Cost : "-"),
-                CurrentPower = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Power : ViewModel.Instance.AutoMeasurementLog.Measurements.Sum(x => x.Power)),
                 Now = ViewModel.Now,
-                ChartLabels = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() : createArray(ViewModel.Instance.AutoMeasurementLog.Measurements.Count),
-                ChartData = ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power.ToString()).ToArray() : ViewModel.Instance.AutoMeasurementLog.Measurements.Select(x => x.Power.ToString()).ToArray()
+                CurrentPower = string.Format("{0:F2}", ViewModel.Instance.CurrentPower),
+                ChartLabels = ViewModel.Instance.ActiveCharging ? 
+                    ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() :
+                    createArray(ViewModel.Instance.CurrentMeasurementLog.Measurements.Count),
+                ChartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power.ToString(CultureInfo.InvariantCulture)).ToArray()
             };
 
             var options = new JsonSerializerOptions
