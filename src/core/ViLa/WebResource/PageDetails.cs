@@ -57,14 +57,14 @@ namespace ViLa.WebResource
 
             Content.Primary.Add(new ControlText()
             {
-                Text = string.Format("{0:F2} kWh", measurementLog?.Power) + " / " + string.Format("{0:F2} {1}", measurementLog?.Cost, ViewModel.Instance.Settings.Currency),
+                Text = string.Format("{0:F2} kWh", measurementLog?.FinalPower) + " / " + string.Format("{0:F2} {1}", measurementLog?.FinalCost, ViewModel.Instance.Settings.Currency),
                 Format = TypeFormatText.H1,
                 TextColor = new PropertyColorText(TypeColorText.Primary)
             });
 
             Content.Primary.Add(new ControlText()
             {
-                Text = $"{ measurementLog?.From.ToString("HH:mm:ss", Culture) } - { measurementLog?.Till.ToString("HH:mm:ss", Culture) } {this.I18N("vila.charging.time")} ",
+                Text = $"{ measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongDatePattern) } - { measurementLog?.FinalTill.ToString(Culture.DateTimeFormat.LongDatePattern) } {this.I18N("vila.charging.time")} ",
                 Format = TypeFormatText.Paragraph,
                 TextColor = new PropertyColorText(TypeColorText.Dark)
             });
