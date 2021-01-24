@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using ViLa.Model;
 using WebExpress.Attribute;
@@ -27,6 +28,9 @@ namespace ViLa
         {
             ViewModel.Instance.Context = context;
             ViewModel.Instance.Init();
+
+            // Priorität erhohen
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
         }
 
         /// <summary>
@@ -47,7 +51,7 @@ namespace ViLa
                     }
                     finally
                     {
-                        Thread.Sleep(5);
+                        Thread.Sleep(10);
                     }
                 }
             });

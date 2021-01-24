@@ -50,14 +50,15 @@ namespace ViLa.WebControl
         public ControlFormSetting()
             : base("settings")
         {
-            Init();
         }
 
         /// <summary>
         /// Initialisierung
         /// </summary>
-        public void Init()
+        public override void Initialize(RenderContext context)
         {
+            base.Initialize(context);
+
             Name = "settings";
             EnableCancelButton = false;
             Classes = new List<string>(new[] { "m-3" });
@@ -65,36 +66,36 @@ namespace ViLa.WebControl
             ImpulsePerkWhCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "ImpulsePerkWhCtrl",
-                Label = "Die Anzahl der Impulse pro kWh:",
-                Help = "Der Wert stammt vom Drehstromzähler."
+                Label = "vila.setting.form.impulseperkwhctrl.label",
+                Help = "vila.setting.form.impulseperkwhctrl.description"
             };
 
             ElectricityPricePerkWhCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "ElectricityPricePerkWhCtrl",
-                Label = "Der Strompreis in € pro kWh:",
-                Help = ""
+                Label = string.Format(context.I18N("vila.setting.form.electricitypriceperkwhctrl.label"), ViewModel.Instance.Settings.Currency),
+                Help = "vila.setting.form.electricitypriceperkwhctrl.description"
             };
 
             MaxWattageCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "MaxWattageCtrl",
-                Label = "Der maximale Stromverbrauch in kWh:",
-                Help = "Abbruch des Ladevorganges erfolt, wenn vorgegebene Stromverbrauch überschritten wird. &le; 0 für kein Abbruch."
+                Label = "vila.setting.form.maxwattagectrl.label",
+                Help = "vila.setting.form.maxwattagectrl.description"
             };
 
             MinWattageCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "MinWattageCtrl",
-                Label = "Die minimale aktuelle Ladeleistung in kWh:",
-                Help = "Abbruch des Ladevorganges erfolt, wenn die minimale Ladeleistung unterschritten wird. Der Abbruch erfolgt nur, wenn der Gesammtstromverbrauch &ge; 0,5 kWh beträgt. -1 für kein Abbruch."
+                Label = "vila.setting.form.minwattagectrl.label",
+                Help = "vila.setting.form.minwattagectrl.description"
             };
 
             MaxChargingTimeCtrl = new ControlFormularItemInputTextBox()
             {
                 Name = "MaxChargingTime",
-                Label = "Die maximale Ladedauer in h:",
-                Help = "Abbruch des Ladevorganges erfolt, wenn die Ladedauer überschritten wird. &le; 0 für kein Abbruch."
+                Label = "vila.setting.form.maxchargingtime.label",
+                Help = "vila.setting.form.maxchargingtime.description"
             };
 
             Currency = new ControlFormularItemInputTextBox("currency")
@@ -154,160 +155,163 @@ namespace ViLa.WebControl
                 ViewModel.Instance.SaveSettings();
             };
 
-            ImpulsePerkWhCtrl.Validation += (s, e) =>
+            InitializeFormular += (s, e) =>
             {
-                try
+                ImpulsePerkWhCtrl.Validation += (s, e) =>
                 {
-                    Convert.ToInt32(e.Value);
-                }
-                catch (Exception ex)
-                {
-                    e.Results.Add(new ValidationResult()
+                    try
                     {
-                        Text = ex.Message,
-                        Type = TypesInputValidity.Error
-                    });
-                }
-            };
-
-            ElectricityPricePerkWhCtrl.Validation += (s, e) =>
-            {
-                try
-                {
-                    var value = Convert.ToDouble(e.Value);
-
-                    if (value < 0)
+                        Convert.ToInt32(e.Value);
+                    }
+                    catch (Exception ex)
                     {
                         e.Results.Add(new ValidationResult()
                         {
-                            Text = "Der Strompreis darf nicht negativ sein",
+                            Text = ex.Message,
                             Type = TypesInputValidity.Error
                         });
                     }
-                }
-                catch (Exception ex)
-                {
-                    e.Results.Add(new ValidationResult()
-                    {
-                        Text = ex.Message,
-                        Type = TypesInputValidity.Error
-                    });
-                }
-            };
+                };
 
-            MaxWattageCtrl.Validation += (s, e) =>
-            {
-                try
+                ElectricityPricePerkWhCtrl.Validation += (s, e) =>
                 {
-                    if (!string.IsNullOrWhiteSpace(e.Value))
-                    {
-                        var value = Convert.ToInt32(e.Value);
-
-                        if (value < -1)
-                        {
-                            e.Results.Add(new ValidationResult()
-                            {
-                                Text = "Der Wert ist zu klein",
-                                Type = TypesInputValidity.Error
-                            });
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    e.Results.Add(new ValidationResult()
-                    {
-                        Text = ex.Message,
-                        Type = TypesInputValidity.Error
-                    });
-                }
-            };
-
-            MinWattageCtrl.Validation += (s, e) =>
-            {
-                try
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Value))
+                    try
                     {
                         var value = Convert.ToDouble(e.Value);
 
-                        if (value < 0 && value != -1)
+                        if (value < 0)
                         {
                             e.Results.Add(new ValidationResult()
                             {
-                                Text = "Der Wert ist zu klein",
+                                Text = context.I18N("vila.setting.form.electricitypriceperkwhctrl.validation.negative"),
                                 Type = TypesInputValidity.Error
                             });
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    e.Results.Add(new ValidationResult()
+                    catch (Exception ex)
                     {
-                        Text = ex.Message,
-                        Type = TypesInputValidity.Error
-                    });
-                }
-            };
+                        e.Results.Add(new ValidationResult()
+                        {
+                            Text = ex.Message,
+                            Type = TypesInputValidity.Error
+                        });
+                    }
+                };
 
-            MaxChargingTimeCtrl.Validation += (s, e) =>
-            {
-                try
+                MaxWattageCtrl.Validation += (s, e) =>
                 {
-                    if (!string.IsNullOrWhiteSpace(e.Value))
+                    try
                     {
-                        var value = Convert.ToInt32(e.Value);
+                        if (!string.IsNullOrWhiteSpace(e.Value))
+                        {
+                            var value = Convert.ToInt32(e.Value);
 
-                        if (value < -1)
+                            if (value < -1)
+                            {
+                                e.Results.Add(new ValidationResult()
+                                {
+                                    Text = context.I18N("vila.setting.form.validation.low"),
+                                    Type = TypesInputValidity.Error
+                                });
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        e.Results.Add(new ValidationResult()
+                        {
+                            Text = ex.Message,
+                            Type = TypesInputValidity.Error
+                        });
+                    }
+                };
+
+                MinWattageCtrl.Validation += (s, e) =>
+                {
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(e.Value))
+                        {
+                            var value = Convert.ToDouble(e.Value);
+
+                            if (value < 0 && value != -1)
+                            {
+                                e.Results.Add(new ValidationResult()
+                                {
+                                    Text = context.I18N("vila.setting.form.validation.low"),
+                                    Type = TypesInputValidity.Error
+                                });
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        e.Results.Add(new ValidationResult()
+                        {
+                            Text = ex.Message,
+                            Type = TypesInputValidity.Error
+                        });
+                    }
+                };
+
+                MaxChargingTimeCtrl.Validation += (s, e) =>
+                {
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(e.Value))
+                        {
+                            var value = Convert.ToInt32(e.Value);
+
+                            if (value < -1)
+                            {
+                                e.Results.Add(new ValidationResult()
+                                {
+                                    Text = context.I18N("vila.setting.form.validation.low"),
+                                    Type = TypesInputValidity.Error
+                                });
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        e.Results.Add(new ValidationResult()
+                        {
+                            Text = ex.Message,
+                            Type = TypesInputValidity.Error
+                        });
+                    }
+                };
+
+                Currency.Validation += (s, e) =>
+                {
+                    try
+                    {
+                        if (string.IsNullOrWhiteSpace(e.Value))
                         {
                             e.Results.Add(new ValidationResult()
                             {
-                                Text = "Der Wert ist zu klein",
+                                Text = context.I18N("vila.setting.currency.validation.null"),
+                                Type = TypesInputValidity.Error
+                            });
+                        }
+                        else if (e.Value.Length > 10)
+                        {
+                            e.Results.Add(new ValidationResult()
+                            {
+                                Text = context.I18N("vila.setting.currency.validation.tolong"),
                                 Type = TypesInputValidity.Error
                             });
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    e.Results.Add(new ValidationResult()
-                    {
-                        Text = ex.Message,
-                        Type = TypesInputValidity.Error
-                    });
-                }
-            };
-
-            Currency.Validation += (s, e) =>
-            {
-                try
-                {
-                    if (string.IsNullOrWhiteSpace(e.Value))
+                    catch (Exception ex)
                     {
                         e.Results.Add(new ValidationResult()
                         {
-                            Text = context.I18N("vila.setting.currency.validation.null"),
+                            Text = ex.Message,
                             Type = TypesInputValidity.Error
                         });
                     }
-                    else if (e.Value.Length > 10)
-                    {
-                        e.Results.Add(new ValidationResult()
-                        {
-                            Text = context.I18N("vila.setting.currency.validation.tolong"),
-                            Type = TypesInputValidity.Error
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    e.Results.Add(new ValidationResult()
-                    {
-                        Text = ex.Message,
-                        Type = TypesInputValidity.Error
-                    });
-                }
+                };
             };
 
             return base.Render(context);

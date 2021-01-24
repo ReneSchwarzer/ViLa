@@ -61,7 +61,7 @@ namespace ViLa.WebResource
                 ChartLabels = ViewModel.Instance.ActiveCharging ? 
                     ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() :
                     createArray(ViewModel.Instance.CurrentMeasurementLog.Measurements.Count),
-                ChartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power.ToString(CultureInfo.InvariantCulture)).ToArray()
+                ChartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => (x.Power * 60).ToString(CultureInfo.InvariantCulture)).ToArray()
             };
 
             var options = new JsonSerializerOptions

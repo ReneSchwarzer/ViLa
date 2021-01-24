@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using ViLa.Model;
 using ViLa.WebControl;
 using WebExpress.Attribute;
 using WebExpress.Html;
-using WebExpress.Internationalization;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebResource;
 
@@ -44,31 +42,46 @@ namespace ViLa.WebResource
         {
             base.Process();
 
-            void item(IEnumerable<MeasurementLog> value, string yaer)
+            void item(int year)
             {
-                if (!value.Any()) return;
-
-                Content.Secondary.Add(new ControlText()
+                if (ViewModel.Instance.GetHistoryMeasurementLogs(new DateTime(year, 1, 1), new DateTime(year, 12, 31)).Any())
                 {
-                    Text = $"{ yaer }",
-                    Format = TypeFormatText.H3,
-                    Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
-                });
-
-                var grid = new ControlPanelGrid() { Fluid = TypePanelContainer.Fluid };
-
-                foreach (var measurementLog in value)
-                {
-                    var card = new ControlCardMeasurementLog()
+                    Content.Secondary.Add(new ControlText()
                     {
-                        MeasurementLog = measurementLog,
-                        GridColumn = new PropertyGrid(TypeDevice.Medium, 3)
-                    };
+                        Text = $"{ year }",
+                        Format = TypeFormatText.H3,
+                        Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
+                    });
 
-                    grid.Content.Add(card);
+                    for (var i = 12; i > 0; i--)
+                    {
+                        var m = ViewModel.Instance.GetHistoryMeasurementLogs(new DateTime(year, i, 1), new DateTime(year, i, DateTime.DaysInMonth(year, i)));
+                        if (m.Any())
+                        {
+                            Content.Secondary.Add(new ControlText()
+                            {
+                                Text = $"{ Culture.DateTimeFormat.GetMonthName(i) }",
+                                Format = TypeFormatText.H4,
+                                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
+                            });
+
+                            var grid = new ControlPanelGrid() { Fluid = TypePanelContainer.Fluid };
+
+                            foreach (var measurementLog in m)
+                            {
+                                var card = new ControlCardMeasurementLog()
+                                {
+                                    MeasurementLog = measurementLog,
+                                    GridColumn = new PropertyGrid(TypeDevice.Medium, 3)
+                                };
+
+                                grid.Content.Add(card);
+                            }
+
+                            Content.Secondary.Add(grid);
+                        }
+                    }
                 }
-
-                Content.Secondary.Add(grid);
             }
 
             Content.Primary.Add(new ControlCardCharging()
@@ -76,9 +89,9 @@ namespace ViLa.WebResource
                 Margin = new PropertySpacingMargin(PropertySpacing.Space.Four, PropertySpacing.Space.None)
             });
 
-            item(ViewModel.Instance.GetHistoryMeasurementLogs(new DateTime(DateTime.Now.Year, 1, 1), DateTime.Now), DateTime.Now.Year.ToString());
-            item(ViewModel.Instance.GetHistoryMeasurementLogs(new DateTime(DateTime.Now.Year - 1, 1, 1), new DateTime(DateTime.Now.Year - 1, 12, 31)), (DateTime.Now.Year - 1).ToString());
-            item(ViewModel.Instance.GetHistoryMeasurementLogs(new DateTime(DateTime.Now.Year - 2, 1, 1), new DateTime(DateTime.Now.Year - 2, 12, 31)), (DateTime.Now.Year - 2).ToString());
+            item(DateTime.Now.Year);
+            item(DateTime.Now.Year - 1);
+            item(DateTime.Now.Year - 2);
         }
     }
 }

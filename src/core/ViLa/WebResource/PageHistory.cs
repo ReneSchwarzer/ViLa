@@ -52,10 +52,10 @@ namespace ViLa.WebResource
             foreach (var measurementLog in history.OrderByDescending(x => x.From))
             {
                 var row = new ControlTableRow() { };
-                row.Cells.Add(new ControlText() { Text = string.Format("{0}", measurementLog.From.ToString("dd.MM.yyyy")) });
-                row.Cells.Add(new ControlText() { Text = string.Format("{0} - {1} Uhr", measurementLog.From.ToShortTimeString(), measurementLog.Till.ToShortTimeString()) });
-                row.Cells.Add(new ControlText() { Text = string.Format("{0:F2} kWh", measurementLog.Power) });
-                row.Cells.Add(new ControlText() { Text = string.Format("{0:F2} €", measurementLog.Cost) });
+                row.Cells.Add(new ControlText() { Text = string.Format("{0}", measurementLog.FinalFrom.ToString(Culture.DateTimeFormat.ShortDatePattern)) });
+                row.Cells.Add(new ControlText() { Text = string.Format("{0} - {1} Uhr", measurementLog.FinalFrom.ToString(Culture.DateTimeFormat.LongTimePattern), measurementLog.FinalTill.ToString(Culture.DateTimeFormat.LongTimePattern)) });
+                row.Cells.Add(new ControlText() { Text = string.Format("{0:F2} kWh", measurementLog.FinalPower) });
+                row.Cells.Add(new ControlText() { Text = string.Format("{0:F2} {1}", measurementLog.FinalCost, measurementLog.Currency) });
                 row.Cells.Add(new ControlLink() { Text = "Details", Uri = Uri.Append(measurementLog.ID) });
 
                 table.Rows.Add(row);

@@ -58,7 +58,7 @@ namespace ViLa.Model
         /// </summary>
         public float CurrentPower => Measurements.Count < 2 ? 
             Measurements.FirstOrDefault().Power : 
-            Measurements.SkipLast(1).Take(1).FirstOrDefault().Power;
+            Measurements.TakeLast(2).Take(1).FirstOrDefault().Power;
 
         /// <summary>
         /// Liefert oder setzt den aktuellen Messwert
@@ -88,13 +88,31 @@ namespace ViLa.Model
         /// Liefert oder setzt den finalen Startzeitpunkt
         /// </summary>
         [XmlAttribute("from")]
-        public string FinalFrom { get; set; }
+        public DateTime FinalFrom { get; set; }
 
         /// <summary>
         /// Liefert oder setzt die finalen Endzeitpunkt
         /// </summary>
         [XmlAttribute("till")]
-        public string FinalTill { get; set; }
+        public DateTime FinalTill { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt den Strompreis pro kWh
+        /// </summary>
+        [XmlAttribute("pricePerkWh")]
+        public float ElectricityPricePerkWh { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die Anzahl der Impulse pro kWh
+        /// </summary>
+        [XmlAttribute("impulsePerkWh")]
+        public int ImpulsePerkWh { get; set; }
+
+        /// <summary>
+        /// Liefert oder setzt die Währung
+        /// </summary>
+        [XmlAttribute("currency")]
+        public string Currency { get; set; }
 
         /// <summary>
         /// Setzt die Werte zurück

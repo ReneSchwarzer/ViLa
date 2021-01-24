@@ -219,45 +219,46 @@ namespace ViLa.Model
                 Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
 
-            try
+
+            // Alte Messprotokolle laden
+            var directoryName = Path.Combine(Context.Host.AssetPath, "measurements");
+
+            if (!Directory.Exists(directoryName))
             {
-                // Alte Messprotokolle laden
-                var directoryName = Path.Combine(Context.Host.AssetPath, "measurements");
+                Directory.CreateDirectory(directoryName);
+            }
 
-                if (!Directory.Exists(directoryName))
-                {
-                    Directory.CreateDirectory(directoryName);
-                }
-
-                var files = Directory.GetFiles(directoryName, "*.xml");
-                var serializer = new XmlSerializer(typeof(MeasurementLog));
-
-                foreach (var file in files)
+            var files = Directory.GetFiles(directoryName, "*.xml");
+            var serializer = new XmlSerializer(typeof(MeasurementLog));
+            foreach (var file in files)
+            {
+                try
                 {
                     using var reader = File.OpenText(file);
                     HistoryMeasurementLog.Add(serializer.Deserialize(reader) as MeasurementLog);
                 }
-
-                // ganz alte Messprotokolle archivieren (zyklisch)
-                Task.Run(() =>
+                catch (Exception ex)
                 {
-                    while (true)
-                    {
-                        foreach (var his in HistoryMeasurementLog.Where(x => x.Till < DateTime.Now.AddYears(-1)).ToList())
-                        {
-                            ArchiveHistoryMeasurementLog(his.ID);
-                        }
-
-                        Thread.Sleep(1000 * 60 * 60 * 24);
-                    }
-                });
-
-                Culture = Context.Host.Culture;
+                    Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
+                }
             }
-            catch (Exception ex)
+
+            // ganz alte Messprotokolle archivieren (zyklisch)
+            Task.Run(() =>
             {
-                Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
-            }
+                while (true)
+                {
+                    foreach (var his in HistoryMeasurementLog.Where(x => x.Till < DateTime.Now.AddYears(-1)).ToList())
+                    {
+                        ArchiveHistoryMeasurementLog(his.ID);
+                    }
+
+                    Thread.Sleep(1000 * 60 * 60 * 24);
+                }
+            });
+
+            Culture = Context.Host.Culture;
+
 
             ResetSettings();
         }
@@ -338,7 +339,7 @@ namespace ViLa.Model
                            ActiveMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage
                         )
                         {
-                            Log(new LogItem(LogItem.LogLevel.Info, "Minimale Leistungsaufnahme wurde erreicht"));
+                            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.min")));
 
                             StopCharging();
                             return;
@@ -348,7 +349,7 @@ namespace ViLa.Model
 
                 if (ActiveCharging && Settings.MaxChargingTime > 0 && (DateTime.Now - ActiveMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, "Maximale Ladedauer wurde erreicht"));
+                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.time.max")));
 
                     StopCharging();
                     return;
@@ -356,7 +357,7 @@ namespace ViLa.Model
 
                 if (ActiveCharging && Settings.MaxWattage > 0 && ActiveMeasurementLog.Power > Settings.MaxWattage)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, "Maximaler Stromverbrauch wurde erreicht"));
+                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.consumption.max")));
 
                     StopCharging();
                     return;
@@ -364,7 +365,7 @@ namespace ViLa.Model
             }
             catch (Exception ex)
             {
-                Log(new LogItem(LogItem.LogLevel.Error, "Fehler bei Ermittlung des aktuellen Verbrauchs"));
+                Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila.charging.error")));
                 Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
             finally
@@ -414,7 +415,7 @@ namespace ViLa.Model
         /// </summary>
         public void SaveSettings()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, "Einstellungen werden gespeichert"));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.setting.save")));
 
             // Konfiguration speichern
             var serializer = new XmlSerializer(typeof(Settings));
@@ -436,7 +437,7 @@ namespace ViLa.Model
         /// </summary>
         public void ResetSettings()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, "Einstellungen werden geladen"));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.setting.load")));
 
             // Konfiguration laden
             var serializer = new XmlSerializer(typeof(Settings));
@@ -448,7 +449,7 @@ namespace ViLa.Model
             }
             catch
             {
-                Log(new LogItem(LogItem.LogLevel.Warning, "Datei mit den Einstellungen wurde nicht gefunden!"));
+                Log(new LogItem(LogItem.LogLevel.Warning, this.I18N("vila.setting.warning")));
             }
 
             Log(new LogItem(LogItem.LogLevel.Debug, "ImpulsePerkWh = " + Settings.ImpulsePerkWh));
@@ -459,7 +460,7 @@ namespace ViLa.Model
         /// </summary>
         public void StartCharging()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, "Startet den Ladevorgang"));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.begin")));
 
             ActiveMeasurementLog = new MeasurementLog()
             {
@@ -481,12 +482,15 @@ namespace ViLa.Model
         /// </summary>
         public void StopCharging()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, "Beendet den Ladevorgang"));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.stop")));
 
             ActiveMeasurementLog.FinalPower = ActiveMeasurementLog.Power;
             ActiveMeasurementLog.FinalCost = ActiveMeasurementLog.Cost;
-            ActiveMeasurementLog.FinalFrom = ActiveMeasurementLog.From.ToString(Context.Host.Culture);
-            ActiveMeasurementLog.FinalTill = ActiveMeasurementLog.Till.ToString(Context.Host.Culture);
+            ActiveMeasurementLog.FinalFrom = ActiveMeasurementLog.From;
+            ActiveMeasurementLog.FinalTill = DateTime.Now;
+            ActiveMeasurementLog.ElectricityPricePerkWh = Settings.ElectricityPricePerkWh;
+            ActiveMeasurementLog.ImpulsePerkWh = Settings.ImpulsePerkWh;
+            ActiveMeasurementLog.Currency = Settings.Currency;
 
             // Messung speichern
             var serializer = new XmlSerializer(typeof(MeasurementLog));
@@ -513,7 +517,7 @@ namespace ViLa.Model
 
                 HistoryMeasurementLog.Add(ActiveMeasurementLog);
 
-                Log(new LogItem(LogItem.LogLevel.Info, string.Format("Messprotokoll wurde unter {0} gespeichert", fileName)));
+                Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.charging.save"), fileName)));
             }
 
             ActiveMeasurementLog = null;
@@ -564,13 +568,13 @@ namespace ViLa.Model
                 if (measurementLog != null)
                 {
                     File.Delete(System.IO.Path.Combine(Context.Host.AssetPath, "measurements", $"{measurementLog.ID}.xml"));
-                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format("Datei {0}.xml wurde gelöscht!", id)));
+                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.delete.file"), id)));
 
                     HistoryMeasurementLog.Remove(measurementLog);
                 }
                 else
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format("Datei {0}.xml wurde nicht gefunden!", id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.delete.error"), id)));
                 }
             }
             catch (Exception ex)
@@ -620,7 +624,7 @@ namespace ViLa.Model
                 }
                 else
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format("Datei {0}.xml wurde nicht gefunden!", id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.archive.error"), id)));
                 }
             }
             catch (Exception ex)
