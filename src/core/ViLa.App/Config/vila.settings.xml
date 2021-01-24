@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <debug>false</debug>
+  <ImpulsePerkWh>500</ImpulsePerkWh>
+  <ElectricityPricePerkWh>0.28</ElectricityPricePerkWh>
+  <MaxWattage>40</MaxWattage>
+  <MaxChargingTime>24</MaxChargingTime>
+  <Currency>€</Currency>
+  <Auto>true</Auto>
+</settings>

@@ -1,24 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Device.Gpio;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
-using WebExpress.Plugins;
+using WebExpress.Internationalization;
+using WebExpress.Plugin;
 
 namespace ViLa.Model
 {
-    public class ViewModel
+    public class ViewModel : II18N
     {
+        /// <summary>
+        /// Die Größe des Autobuffers in Minuten
+        /// </summary>
+        public const int ContinuousLogSize = 5;
+
+        /// <summary>
+        /// Der Schwellwert in Impulsen
+        /// </summary>
+        public const int ContinuousThreshold = 50;
+
         /// <summary>
         /// Impulsdauer im ms 
         /// </summary>
         public const int ImpulseDuration = 30;
 
         /// <summary>
-        /// Der GPIO-Pin, welcher die S0-Schnittstelle des Strommeßgerät ausließt
+        /// Der GPIO-Pin, welcher die GPIO-Schnittstelle des Strommeßgerät ausließt
         /// </summary>
         private const int _powerMeterPin = 3;
 
@@ -28,30 +42,14 @@ namespace ViLa.Model
         private const int _electricContactorPin = 13;
 
         /// <summary>
-        /// Instanz des einzigen Modells
-        /// </summary>
-        private static ViewModel _this = null;
-
-        /// <summary>
         /// Lifert die einzige Instanz der Modell-Klasse
         /// </summary>
-        public static ViewModel Instance
-        {
-            get
-            {
-                if (_this == null)
-                {
-                    _this = new ViewModel();
-                }
-
-                return _this;
-            }
-        }
+        public static ViewModel Instance { get; } = new ViewModel();
 
         /// <summary>
         /// Liefert die aktuelle Zeit
         /// </summary>
-        public string Now => DateTime.Now.ToString("dd.MM.yyyy<br>HH:mm:ss");
+        public static string Now => DateTime.Now.ToString("dd.MM.yyyy<br>HH:mm:ss");
 
         /// <summary>
         /// Liefert oder setzt den Verweis auf den Kontext des Plugins
@@ -72,7 +70,7 @@ namespace ViLa.Model
         /// <summary>
         /// Liefert oder setzt die Zeit des letzen auslesen der Temperatur
         /// </summary>
-        private DateTime _lastMetering = DateTime.MinValue;
+        private Stopwatch Stopwatch { get; } = new Stopwatch();
 
         /// <summary>
         /// Der Zustand des GPIO-Pins, welcher den Schütz steuert
@@ -94,12 +92,12 @@ namespace ViLa.Model
                         if (!value)
                         {
                             GPIO.Write(_electricContactorPin, PinValue.High);
-                            Log(new LogItem(LogItem.LogLevel.Debug, "Status des Schütz wurde auf HIGH geändert"));
+                            Log(new LogItem(LogItem.LogLevel.Debug, this.I18N("vila.log.electriccontactorstatus.high")));
                         }
                         else
                         {
                             GPIO.Write(_electricContactorPin, PinValue.Low);
-                            Log(new LogItem(LogItem.LogLevel.Debug, "Status des Schütz wurde auf LOW geändert"));
+                            Log(new LogItem(LogItem.LogLevel.Debug, "vila.log.electriccontactorstatus.low"));
                         }
 
                         _electricContactorStatus = value;
@@ -107,14 +105,14 @@ namespace ViLa.Model
                 }
                 catch (Exception ex)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Error, "Status des Schütz konnte nicht ermittelt werden"));
+                    Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila.log.electriccontactorstatus.error")));
                     Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
                 }
             }
         }
 
         /// <summary>
-        /// Liefert oder setzt ob im S0-Impuls anliegt 
+        /// Liefert oder setzt ob ein GPIO-Impuls anliegt 
         /// </summary>
         protected virtual bool PowerMeterStatus
         {
@@ -122,41 +120,74 @@ namespace ViLa.Model
             {
                 try
                 {
-                    var value = GPIO.Read(_powerMeterPin);
+                    var value = GPIO?.Read(_powerMeterPin);
 
                     return value == PinValue.High;
 
                 }
                 catch (Exception ex)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Error, "Status der S0-Schnittstelle konnte nicht ermittelt werden"));
+                    Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila.log.powermeterstatus.error")));
                     Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
                 }
 
                 return false;
             }
-
         }
 
         /// <summary>
-        /// Liefert oder setzt den letzten Status der S0-Schnittstelle
+        /// Liefert oder setzt den letzten Status der GPIO-Schnittstelle
         /// </summary>
         private bool LastPowerMeterStatus { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt das aktuelle Messprotokoll
+        /// Liefert oder setzt das aktive Messprotokoll
         /// </summary>
-        public MeasurementLog CurrentMeasurementLog { get; private set; }
+        private MeasurementLog ActiveMeasurementLog { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt, ob der Ladevorgang aktiv ist
+        /// Bestimmt, ob der Ladevorgang aktiv ist
         /// </summary>
-        public bool ActiveCharging => CurrentMeasurementLog != null;
+        public bool ActiveCharging => ActiveMeasurementLog != null;
+
+        /// <summary>
+        /// Messprotokoll der ständigen Messung
+        /// </summary>
+        private MeasurementLog ContinuousMeasurementLog { get; } = new MeasurementLog()
+        {
+            ID = Guid.NewGuid().ToString(),
+            Measurements = new List<MeasurementItem>() { new MeasurementItem() { MeasurementTimePoint = DateTime.Now } }
+        };
+
+        /// <summary>
+        /// Aktuelles Messprotokoll
+        /// </summary>
+        public MeasurementLog CurrentMeasurementLog => ActiveCharging ? ActiveMeasurementLog : ContinuousMeasurementLog;
+
+        /// <summary>
+        /// Ermittelt die aktuell ermittelte Leistung der letzen Minute in kWh
+        /// </summary>
+        public float CurrentPower => CurrentMeasurementLog.CurrentPower;
+
+        /// <summary>
+        /// Liefert die bereits abgeschlossene Messprotokolle
+        /// </summary>
+        private List<MeasurementLog> HistoryMeasurementLog { get; } = new List<MeasurementLog>();
 
         /// <summary>
         /// Liefert oder setzt die Settings
         /// </summary>
-        public Settings Settings { get; private set; } = new Settings();
+        public Settings Settings { get; private set; } = new Settings() { Currency = "€" };
+
+        /// <summary>
+        /// Liefert die Kultur
+        /// </summary>
+        public CultureInfo Culture { get; set; }
+
+        /// <summary>
+        /// Liefert den I18N-Key
+        /// </summary>
+        public string I18N_PluginID => Context.PluginID;
 
         /// <summary>
         /// Konstruktor
@@ -180,13 +211,54 @@ namespace ViLa.Model
                 GPIO.Write(_electricContactorPin, PinValue.High);
                 _electricContactorStatus = false;
 
-                Log(new LogItem(LogItem.LogLevel.Info, "GpioController gestartet"));
+                Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.log.init.gpio")));
                 Log(new LogItem(LogItem.LogLevel.Debug, "ElectricContactorPin " + _electricContactorPin));
             }
             catch (Exception ex)
             {
                 Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
+
+
+            // Alte Messprotokolle laden
+            var directoryName = Path.Combine(Context.Host.AssetPath, "measurements");
+
+            if (!Directory.Exists(directoryName))
+            {
+                Directory.CreateDirectory(directoryName);
+            }
+
+            var files = Directory.GetFiles(directoryName, "*.xml");
+            var serializer = new XmlSerializer(typeof(MeasurementLog));
+            foreach (var file in files)
+            {
+                try
+                {
+                    using var reader = File.OpenText(file);
+                    HistoryMeasurementLog.Add(serializer.Deserialize(reader) as MeasurementLog);
+                }
+                catch (Exception ex)
+                {
+                    Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
+                }
+            }
+
+            // ganz alte Messprotokolle archivieren (zyklisch)
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    foreach (var his in HistoryMeasurementLog.Where(x => x.Till < DateTime.Now.AddYears(-1)).ToList())
+                    {
+                        ArchiveHistoryMeasurementLog(his.ID);
+                    }
+
+                    Thread.Sleep(1000 * 60 * 60 * 24);
+                }
+            });
+
+            Culture = Context.Host.Culture;
+
 
             ResetSettings();
         }
@@ -196,80 +268,109 @@ namespace ViLa.Model
         /// </summary>
         public virtual void Update()
         {
-            if (CurrentMeasurementLog == null)
-            {
-                Thread.Sleep(ImpulseDuration);
-
-                return;
-            }
-
             try
             {
-                if (_lastMetering != DateTime.MinValue)
+                var delta = Stopwatch.ElapsedMilliseconds;
+                var newValue = PowerMeterStatus;
+                var pulse = newValue != LastPowerMeterStatus && newValue == true;
+
+                if (delta > ImpulseDuration)
                 {
-                    var delta = (DateTime.Now - _lastMetering).TotalMilliseconds;
+                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format(Context.Host.Culture, this.I18N("vila.log.update.exceeding"), delta - ViewModel.ImpulseDuration)));
+                }
 
-                    if (delta > ImpulseDuration)
+                LastPowerMeterStatus = PowerMeterStatus;
+
+                if (Stopwatch.IsRunning)
+                {
+                    if (pulse)
                     {
-                        Log(new LogItem(LogItem.LogLevel.Warning, string.Format("Zeitspanne der S0-Schnittstelle um {0}ms überschritten", delta - ViewModel.ImpulseDuration)));
+                        ContinuousMeasurementLog.CurrentMeasurement.Impulse++;
+                        ContinuousMeasurementLog.CurrentMeasurement.Power = (float)ContinuousMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
-
-                    var newValue = PowerMeterStatus;
-                    if (newValue != LastPowerMeterStatus && newValue == true)
-                    {
-                        CurrentMeasurementLog.Impulse++;
-                        CurrentMeasurementLog.Power = (float)CurrentMeasurementLog?.Impulse / Settings.ImpulsePerkWh;
-                        CurrentMeasurementLog.Cost = CurrentMeasurementLog.Power * Settings.ElectricityPricePerkWh;
-                        CurrentMeasurementLog.CurrentMeasurement.Impulse++;
-                        CurrentMeasurementLog.CurrentMeasurement.Power = (float)CurrentMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
-                    }
-
-                    LastPowerMeterStatus = PowerMeterStatus;
 
                     // Neuer Messwert
-                    if ((DateTime.Now - CurrentMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
+                    if ((DateTime.Now - ContinuousMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
                     {
-                        if
-                        (
-                            Settings.MinWattage >= 0 &&
-                            CurrentMeasurementLog?.Power >= 0.5 &&
-                            CurrentMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage)
-                        {
-                            Log(new LogItem(LogItem.LogLevel.Info, "Minimale Leistungsaufnahme wurde erreicht"));
+                        ContinuousMeasurementLog.Measurements.Add(new MeasurementItem() { MeasurementTimePoint = DateTime.Now });
 
-                            StopsCharging();
-                            return;
+                        while (ContinuousMeasurementLog.Measurements.Count > ContinuousLogSize)
+                        {
+                            ContinuousMeasurementLog.Measurements.RemoveAt(0);
                         }
 
-                        CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
+                        var impulse = ContinuousMeasurementLog.Impulse;
+                        if (impulse > ContinuousThreshold && !ActiveCharging && Settings.Auto)
+                        {
+                            StartCharging();
+
+                            // Bereits verbrauchte Energie welche zur Dedektierung der Autofunktion gemessen wurde, dem neuen Messprotokoll zuschreiben
+                            var measurements = ContinuousMeasurementLog.Measurements.SkipWhile(x => x.Impulse == 0);
+                            ActiveMeasurementLog.Measurements.Clear();
+                            ActiveMeasurementLog.Measurements.AddRange(measurements);
+                        }
+                        else if (impulse <= ContinuousThreshold && ActiveCharging && Settings.Auto)
+                        {
+                            StopCharging();
+                        }
+                    }
+                }
+
+                if (Stopwatch.IsRunning && ActiveCharging)
+                {
+                    if (pulse)
+                    {
+                        ActiveMeasurementLog.CurrentMeasurement.Impulse++;
+                        ActiveMeasurementLog.CurrentMeasurement.Power = (float)ActiveMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
+                    }
+
+                    // Neuer Messwert
+                    if ((DateTime.Now - ActiveMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
+                    {
+                        ActiveMeasurementLog.Measurements.Add(new MeasurementItem()
                         {
                             MeasurementTimePoint = DateTime.Now
                         });
+
+                        if
+                        (
+                           Settings.MinWattage >= 0 &&
+                           ActiveMeasurementLog?.Power >= 0.5 &&
+                           ActiveMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage
+                        )
+                        {
+                            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.min")));
+
+                            StopCharging();
+                            return;
+                        }
                     }
+                }
+
+                if (ActiveCharging && Settings.MaxChargingTime > 0 && (DateTime.Now - ActiveMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
+                {
+                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.time.max")));
+
+                    StopCharging();
+                    return;
+                }
+
+                if (ActiveCharging && Settings.MaxWattage > 0 && ActiveMeasurementLog.Power > Settings.MaxWattage)
+                {
+                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.consumption.max")));
+
+                    StopCharging();
+                    return;
                 }
             }
             catch (Exception ex)
             {
-                Log(new LogItem(LogItem.LogLevel.Error, "Fehler bei Ermittlung des aktuellen Verbrauchs"));
+                Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila.charging.error")));
                 Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
-
-            _lastMetering = DateTime.Now;
-
-            if (ActiveCharging && Settings.MaxChargingTime > 0 && (DateTime.Now - CurrentMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
+            finally
             {
-                Log(new LogItem(LogItem.LogLevel.Info, "Maximale Ladedauer wurde erreicht"));
-
-                StopsCharging();
-                return;
-            }
-
-            if (ActiveCharging && Settings.MaxWattage > 0 && CurrentMeasurementLog.Power > Settings.MaxWattage)
-            {
-                Log(new LogItem(LogItem.LogLevel.Info, "Maximaler Stromverbrauch wurde erreicht"));
-
-                StopsCharging();
-                return;
+                Stopwatch.Restart();
             }
         }
 
@@ -285,26 +386,26 @@ namespace ViLa.Model
                 logItem.Level != LogItem.LogLevel.Info &&
                 logItem.Level != LogItem.LogLevel.Debug)
             {
-                var current = CurrentMeasurementLog?.CurrentMeasurement;
+                var current = ActiveMeasurementLog?.CurrentMeasurement;
                 current.Logitems.Add(logItem);
             }
 
             switch (logItem.Level)
             {
                 case LogItem.LogLevel.Info:
-                    Context.Log.Info(logItem.Instance, logItem.Massage);
+                    Context.Log.Info(logItem.Massage, logItem.Instance);
                     break;
                 case LogItem.LogLevel.Debug:
-                    Context.Log.Debug(logItem.Instance, logItem.Massage);
+                    Context.Log.Debug(logItem.Massage, logItem.Instance);
                     break;
                 case LogItem.LogLevel.Warning:
-                    Context.Log.Warning(logItem.Instance, logItem.Massage);
+                    Context.Log.Warning(logItem.Massage, logItem.Instance);
                     break;
                 case LogItem.LogLevel.Error:
-                    Context.Log.Error(logItem.Instance, logItem.Massage);
+                    Context.Log.Error(logItem.Massage, logItem.Instance);
                     break;
                 case LogItem.LogLevel.Exception:
-                    Context.Log.Exception(logItem.Instance, logItem.Massage);
+                    Context.Log.Error(logItem.Massage, logItem.Instance);
                     break;
             }
         }
@@ -314,23 +415,21 @@ namespace ViLa.Model
         /// </summary>
         public void SaveSettings()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, "Einstellungen werden gespeichert"));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.setting.save")));
 
             // Konfiguration speichern
             var serializer = new XmlSerializer(typeof(Settings));
 
-            using (var memoryStream = new System.IO.MemoryStream())
-            {
-                serializer.Serialize(memoryStream, Settings);
+            using var memoryStream = new MemoryStream();
+            serializer.Serialize(memoryStream, Settings);
 
-                var utf = new UTF8Encoding();
+            var utf = new UTF8Encoding();
 
-                File.WriteAllText
-                (
-                    Path.Combine(Context.ConfigBaseFolder, "settings.xml"),
-                    utf.GetString(memoryStream.ToArray())
-                );
-            }
+            File.WriteAllText
+            (
+                Path.Combine(Context.Host.ConfigPath, "vila.settings.xml"),
+                utf.GetString(memoryStream.ToArray())
+            );
         }
 
         /// <summary>
@@ -338,21 +437,19 @@ namespace ViLa.Model
         /// </summary>
         public void ResetSettings()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, "Einstellungen werden geladen"));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.setting.load")));
 
             // Konfiguration laden
             var serializer = new XmlSerializer(typeof(Settings));
 
             try
             {
-                using (var reader = File.OpenText(Path.Combine(Context.ConfigBaseFolder, "settings.xml")))
-                {
-                    Settings = serializer.Deserialize(reader) as Settings;
-                }
+                using var reader = File.OpenText(Path.Combine(Context.Host.ConfigPath, "vila.settings.xml"));
+                Settings = serializer.Deserialize(reader) as Settings;
             }
             catch
             {
-                Log(new LogItem(LogItem.LogLevel.Warning, "Datei mit den Einstellungen wurde nicht gefunden!"));
+                Log(new LogItem(LogItem.LogLevel.Warning, this.I18N("vila.setting.warning")));
             }
 
             Log(new LogItem(LogItem.LogLevel.Debug, "ImpulsePerkWh = " + Settings.ImpulsePerkWh));
@@ -361,19 +458,18 @@ namespace ViLa.Model
         /// <summary>
         /// Startet den Ladevorgang.
         /// </summary>
-        public void StartsTheChargingProcess()
+        public void StartCharging()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, "Startet den Ladevorgang"));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.begin")));
 
-            CurrentMeasurementLog = new MeasurementLog()
+            ActiveMeasurementLog = new MeasurementLog()
             {
                 ID = Guid.NewGuid().ToString(),
-                From = DateTime.Now,
                 Measurements = new List<MeasurementItem>()
             };
 
             // Initialer Messwert
-            CurrentMeasurementLog.Measurements.Add(new MeasurementItem()
+            ActiveMeasurementLog.Measurements.Add(new MeasurementItem()
             {
                 MeasurementTimePoint = DateTime.Now
             });
@@ -384,21 +480,29 @@ namespace ViLa.Model
         /// <summary>
         /// Beendet den Ladevorgang.
         /// </summary>
-        public void StopsCharging()
+        public void StopCharging()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, "Beendet den Ladevorgang"));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.stop")));
 
-            CurrentMeasurementLog.Till = DateTime.Now;
+            ActiveMeasurementLog.FinalPower = ActiveMeasurementLog.Power;
+            ActiveMeasurementLog.FinalCost = ActiveMeasurementLog.Cost;
+            ActiveMeasurementLog.FinalFrom = ActiveMeasurementLog.From;
+            ActiveMeasurementLog.FinalTill = DateTime.Now;
+            ActiveMeasurementLog.ElectricityPricePerkWh = Settings.ElectricityPricePerkWh;
+            ActiveMeasurementLog.ImpulsePerkWh = Settings.ImpulsePerkWh;
+            ActiveMeasurementLog.Currency = Settings.Currency;
 
             // Messung speichern
             var serializer = new XmlSerializer(typeof(MeasurementLog));
+            var xmlns = new XmlSerializerNamespaces();
+            xmlns.Add(string.Empty, string.Empty);
 
             using (var memoryStream = new MemoryStream())
             {
-                serializer.Serialize(memoryStream, CurrentMeasurementLog);
+                serializer.Serialize(memoryStream, ActiveMeasurementLog, xmlns);
 
                 var utf = new UTF8Encoding();
-                var fileName = Path.Combine(Context.AssetBaseFolder, "measurements", string.Format("{0}.xml", CurrentMeasurementLog.ID));
+                var fileName = Path.Combine(Context.Host.AssetPath, "measurements", string.Format("{0}.xml", ActiveMeasurementLog.ID));
 
                 if (!Directory.Exists(Path.GetDirectoryName(fileName)))
                 {
@@ -411,84 +515,122 @@ namespace ViLa.Model
                     utf.GetString(memoryStream.ToArray())
                 );
 
-                Log(new LogItem(LogItem.LogLevel.Info, string.Format("Messprotokoll wurde unter {0} gespeichert", fileName)));
+                HistoryMeasurementLog.Add(ActiveMeasurementLog);
+
+                Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.charging.save"), fileName)));
             }
 
-            CurrentMeasurementLog = null;
-            _lastMetering = DateTime.MinValue;
-
+            ActiveMeasurementLog = null;
             ElectricContactorStatus = false;
+
+            Stopwatch.Restart();
         }
 
         /// <summary>
         /// Liefert die abgeschlossenen Messprotokolle
         /// </summary>
-        /// <param name="date">Die Zeitspanne, in welcher die Messprotokolle geliefert werden sollen</param>
-        public List<MeasurementLog> GetHistoryMeasurementLogs(DateTime date)
+        /// <param name="from">Die Anfang, in welcher die Messprotokolle geliefert werden sollen</param>
+        /// <param name="till">Das Ende, in welcher die Messprotokolle geliefert werden sollen</param>
+        /// <return>Messprotokolle, welche sich innerhalb der gegebenen Zeitspanne befinden</return>
+        public IEnumerable<MeasurementLog> GetHistoryMeasurementLogs(DateTime from, DateTime till)
         {
-            var list = new List<MeasurementLog>();
-            var directoryName = Path.Combine(Context.AssetBaseFolder, "measurements");
-
-            if (!Directory.Exists(directoryName))
-            {
-                Directory.CreateDirectory(directoryName);
-            }
-
-            var files = Directory.GetFiles(directoryName, "*.xml").Where(x => File.GetCreationTime(x) > date).OrderByDescending(x => File.GetCreationTime(x));
-            var serializer = new XmlSerializer(typeof(MeasurementLog));
-
-            foreach (var file in files)
-            {
-                using (var reader = File.OpenText(file))
-                {
-                    list.Add(serializer.Deserialize(reader) as MeasurementLog);
-                }
-            }
-
-            return list;
+            return HistoryMeasurementLog.Where(x => x.Till >= from && x.Till <= till).OrderByDescending(x => x.Till);
         }
 
         /// <summary>
-        /// Liefert die abgeschlossenen Messprotokolle
+        /// Liefert alle abgeschlossenen Messprotokolle
+        /// </summary>
+        /// <return>Alle gespeicherten Messprotokoll</return>
+        public IEnumerable<MeasurementLog> GetHistoryMeasurementLogs()
+        {
+            return HistoryMeasurementLog;
+        }
+
+        /// <summary>
+        /// Liefert ein abgeschlossenes Messprotokoll
         /// </summary>
         /// <param name="id">Die ID des Messprotokolls</param>
-        public MeasurementLog GetHistoryMeasurementLogs(string id)
+        /// <return>Das Messprokoll oder null</return>
+        public MeasurementLog GetHistoryMeasurementLog(string id)
         {
-            var list = new List<MeasurementLog>();
-            var directoryName = Path.Combine(Context.AssetBaseFolder, "measurements");
-            var files = Directory.GetFiles(directoryName, id + ".xml");
-            var serializer = new XmlSerializer(typeof(MeasurementLog));
-
-            foreach (var file in files)
-            {
-                using (var reader = File.OpenText(file))
-                {
-                    list.Add(serializer.Deserialize(reader) as MeasurementLog);
-                }
-            }
-
-            return list.FirstOrDefault();
+            return HistoryMeasurementLog.Where(x => x.ID.Equals(id)).FirstOrDefault();
         }
 
         /// <summary>
-        /// Liefert die abgeschlossenen Messprotokolle
+        /// Löscht ein abgeschlossenes Messprotokoll
         /// </summary>
-        public List<MeasurementLog> GetHistoryMeasurementLogs()
+        /// <param name="id">Die ID des Messprotokolls</param>
+        public void RemoveHistoryMeasurementLog(string id)
         {
-            var list = new List<MeasurementLog>();
-            var directoryName = Path.Combine(Context.AssetBaseFolder, "measurements");
-            var files = Directory.GetFiles(directoryName, "*.xml");
-            var serializer = new XmlSerializer(typeof(MeasurementLog));
-
-            foreach (var file in files)
+            try
             {
-                using (var reader = File.OpenText(file))
+                var measurementLog = GetHistoryMeasurementLog(id);
+                if (measurementLog != null)
                 {
-                    list.Add(serializer.Deserialize(reader) as MeasurementLog);
+                    File.Delete(System.IO.Path.Combine(Context.Host.AssetPath, "measurements", $"{measurementLog.ID}.xml"));
+                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.delete.file"), id)));
+
+                    HistoryMeasurementLog.Remove(measurementLog);
+                }
+                else
+                {
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.delete.error"), id)));
                 }
             }
+            catch (Exception ex)
+            {
+                Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
+            }
+        }
 
-            return list;
+        /// <summary>
+        /// Archiviert ein abgeschlossenes Messprotokoll
+        /// </summary>
+        /// <param name="id">Die ID des Messprotokolls</param>
+        public void ArchiveHistoryMeasurementLog(string id)
+        {
+            try
+            {
+                var measurementLog = GetHistoryMeasurementLog(id);
+                if (measurementLog != null)
+                {
+                    var archive = Path.Combine(ViewModel.Instance.Context.Host.AssetPath, "archive");
+
+                    if (!Directory.Exists(archive))
+                    {
+                        Directory.CreateDirectory(archive);
+                    }
+
+                    var year = Path.Combine(archive, DateTime.Now.Year.ToString());
+                    if (!Directory.Exists(year))
+                    {
+                        Directory.CreateDirectory(year);
+                    }
+
+                    var month = Path.Combine(year, DateTime.Now.ToString("MM"));
+                    if (!Directory.Exists(month))
+                    {
+                        Directory.CreateDirectory(month);
+                    }
+
+                    var source = Path.Combine(Context.Host.AssetPath, "measurements", id + ".xml");
+                    var destination = Path.Combine(month, id + ".xml");
+
+                    File.Move(source, destination);
+
+                    HistoryMeasurementLog.Remove(measurementLog);
+
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.archive.move"), id)));
+                }
+                else
+                {
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.archive.error"), id)));
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
+            }
         }
     }
 }

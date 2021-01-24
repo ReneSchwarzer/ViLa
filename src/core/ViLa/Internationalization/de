@@ -1,0 +1,89 @@
+﻿# Deutsch
+plugin.name=ViLa
+plugin.description=
+
+app.name=ViLa
+app.label=ViLa - Visuelles Laden
+app.description=Mit ViLa verwalten Sie ihre Wallbox und behalten so den Überblick über die entstehenden Kosten.
+app.license.label=Lizenz 
+app.license.value=MIT 
+
+module.name=ViLa
+module.description=
+
+vila.dashboard.label=Dashboard
+vila.dashboard.charging.last=Letzte Ladungen
+vila.debug.label=Debug
+vila.details.label=Details
+vila.details.id={0}
+vila.help.label=Hilfe
+vila.help.version.label=Version
+vila.help.contact.label=Kontakt
+vila.help.privacypolicy.label=Datenschutzrichtlinie
+vila.help.privacypolicy.description=Die während der Nutzung eingegebenen Daten werden lokal auf Ihrem Gerät gespeichert. Sie behalten jederzeit die Datenhoheit. Die Daten werden zu keiner Zeit an Dritte übermittelt. Persönliche Informationen und Standortinformationen werden nicht erhoben.
+vila.help.disclaimer.label=Haftungsausschluss
+vila.help.disclaimer.description=Die Haftung für Schäden durch Sachmängel wird ausgeschlossen. Die Haftung auf Schadensersatz wegen Körperverletzung sowie bei grober Fahrlässigkeit oder Vorsatz bleibt unberührt.
+vila.history.label=Verlauf
+vila.log.label=Logging
+vila.off.label=Aus
+vila.on.label=An
+
+vila.setting.label=Einstellungen
+vila.setting.submit.label=Speichern
+vila.setting.currency.label=Währung
+vila.setting.currency.description=
+vila.setting.currency.validation.null=Es wurde keine Währung angegeben!
+vila.setting.currency.validation.tolong=Die Währung besteht aus zu vielen Zeichen!
+vila.setting.auto.label=Automatikmodus
+vila.setting.auto.description=Bestimmt, ob die Messungen automatisch erfolgen sollen.
+vila.setting.save=Einstellungen werden gespeichert.
+vila.setting.load=Einstellungen werden geladen.
+vila.setting.warning=Datei mit den Einstellungen wurde nicht gefunden!
+vila.setting.form.impulseperkwhctrl.label=Die Anzahl der Impulse pro kWh:
+vila.setting.form.impulseperkwhctrl.description=Der Wert stammt vom Drehstromzähler.
+vila.setting.form.electricitypriceperkwhctrl.label=Der Strompreis in {0} pro kWh:
+vila.setting.form.electricitypriceperkwhctrl.description=
+vila.setting.form.electricitypriceperkwhctrl.validation.negative=Der Strompreis darf nicht negativ sein!
+vila.setting.form.maxwattagectrl.label=Der maximale Stromverbrauch in kWh:
+vila.setting.form.maxwattagectrl.description=Abbruch des Ladevorganges erfolgt, wenn vorgegebene Stromverbrauch überschritten wird. &le; 0 für kein Abbruch.
+vila.setting.form.minwattagectrl.label=Die minimale aktuelle Ladeleistung in kWh:
+vila.setting.form.minwattagectrl.description=Abbruch des Ladevorganges erfolgt, wenn die minimale Ladeleistung unterschritten wird. Der Abbruch erfolgt nur, wenn der Gesamtstromverbrauch &ge; 0,5 kWh beträgt. -1 für kein Abbruch.
+vila.setting.form.maxchargingtime.label=Die maximale Ladedauer in h:
+vila.setting.form.maxchargingtime.description=Abbruch des Ladevorganges erfolgt, wenn die Ladedauer überschritten wird. &le; 0 für kein Abbruch.
+vila.setting.form.validation.low=Der Wert ist zu klein.
+
+vila.charging.begin=Ladevorgang starten
+vila.charging.stop=Ladevorgang beenden
+vila.charging.duration=Ladedauer: {0}
+vila.charging.cost=Angefallene Kosten: {0:F2} {1}
+vila.charging.consumption=Verbrauch: {0:F2} kWh
+vila.charging.title.x=Zeit in Minuten
+vila.charging.title.y=Leistung in kW
+vila.charging.current=Aktueller Verbrauch*
+vila.charging.current.description=* Innerhalb der letzten Minute.
+vila.charging.time=Uhr
+vila.charging.details=Details
+vila.charging.min=Minimale Leistungsaufnahme wurde erreicht.
+vila.charging.time.max=Maximale Ladedauer wurde erreicht.
+vila.charging.consumption.max=Maximaler Stromverbrauch wurde erreicht.
+vila.charging.error=Fehler bei Ermittlung des aktuellen Verbrauchs.
+vila.charging.save=Das Messprotokoll wurde unter '{0}' gespeichert.
+
+vila.archive.label=Datei archivieren
+vila.archive.description=Möchten Sie das Messprotokoll wirklich archivieren?
+vila.archive.move=Datei '{0}.xml' wurde in das Archiv verschoben!
+vila.archive.error=Datei '{0}.xml' wurde nicht gefunden!
+
+vila.delete.label=Datei löschen
+vila.delete.description=Möchten Sie das Messprotokoll wirklich löschen?
+vila.delete.file=Datei '{0}.xml' wurde gelöscht!
+vila.delete.error=Datei '{0}.xml' wurde nicht gefunden!
+
+vila.download.label=Datei herunterladen
+
+vila.log.electriccontactorstatus.high=Status des Schütz wurde auf HIGH geändert.
+vila.log.electriccontactorstatus.low=Status des Schütz wurde auf LOW geändert.
+vila.log.electriccontactorstatus.error=Status des Schütz konnte nicht ermittelt werden.
+vila.log.powermeterstatus.error=Status der GPIO-Schnittstelle konnte nicht ermittelt werden.
+vila.log.init.gpio=GpioController wurde gestartet.
+vila.log.update.exceeding=Die Zeitspanne der GPIO-Schnittstelle wurde um {0} ms überschritten.

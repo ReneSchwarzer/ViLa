@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace ViLa.Model
 {
@@ -42,41 +43,11 @@ namespace ViLa.Model
         /// </summary>
         /// <param name="level">Das Loglevel</param>
         /// <param name="massage">Die Lognachricht</param>
-        public LogItem(LogLevel level, string massage)
+        public LogItem(LogLevel level, string massage, [CallerMemberName] string instance = null)
         {
             Level = level;
             Massage = massage;
-
             Time = DateTime.Now;
-
-            var stackTrace = new StackTrace();
-            var stackFrames = stackTrace.GetFrames();
-
-            var callingFrame = stackFrames[1];
-            var method = callingFrame.GetMethod();
-
-            Instance = string.Format("{0}.{1}", method.DeclaringType.Name, method.Name);
-        }
-
-        /// <summary>
-        /// Konstruktor
-        /// </summary>
-        /// <param name="level">Das Loglevel</param>
-        /// <param name="massage">Die Lognachricht</param>
-        /// <param name="instance">Die Instanz</param>
-        public LogItem(LogLevel level, string massage, string instance)
-        {
-            Level = level;
-            Massage = massage;
-
-            Time = DateTime.Now;
-
-            var stackTrace = new StackTrace();
-            var stackFrames = stackTrace.GetFrames();
-
-            var callingFrame = stackFrames[1];
-            var method = callingFrame.GetMethod();
-
             Instance = instance;
         }
     }

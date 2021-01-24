@@ -1,0 +1,91 @@
+﻿# Englisch
+plugin.name=ViLa
+plugin.description=
+
+app.name=ViLa
+app.label=ViLa - Visual loading
+app.description=With ViLa, you can manage your wallbox and keep track of the costs involved.
+app.license.label=License 
+app.license.value=MIT 
+
+module.name=ViLa
+module.description=
+
+vila.dashboard.label=Dashboard
+vila.dashboard.charging.last=Last charges
+vila.archive.label=Archive
+vila.debug.label=Debug
+vila.del.label=Delete
+vila.details.label=Details
+vila.details.id={0}
+vila.help.label=Help
+vila.help.version.label=Version
+vila.help.contact.label=Contact
+vila.help.privacypolicy.label=Privacy policy
+vila.help.privacypolicy.description=The data entered during use is stored locally on your device. You retain the sovereignty of the data at all times. The data will not be transmitted to third parties at any time. Personal information and location information are not collected.
+vila.help.disclaimer.label=Disclaimer
+vila.help.disclaimer.description=Liability for damage caused by material defects is excluded. Liability for damages for personal injury as well as in the event of gross negligence or intent remains unaffected.
+vila.history.label=History
+vila.log.label=Logging
+vila.off.label=Off
+vila.on.label=On
+
+vila.setting.label=Settings
+vila.setting.submit.label=Save
+vila.setting.currency.label=Currency
+vila.setting.currency.description=
+vila.setting.currency.validation.null=No currency has been specified!
+vila.setting.currency.validation.tolong=The currency consists of too many characters!
+vila.setting.auto.label=Automatic mode
+vila.setting.auto.description=Determines whether the measurements should be made automatically.
+vila.setting.save=Settings are saved.
+vila.setting.load=Loading settings.
+vila.setting.warning=File with the settings could not be found!
+vila.setting.form.impulseperkwhctrl.label=The number of pulses per kWh:
+vila.setting.form.impulseperkwhctrl.description=The value comes from the three-phase counter.
+vila.setting.form.electricitypriceperkwhctrl.label=The price of electricity in {0} per kWh:
+vila.setting.form.electricitypriceperkwhctrl.description=
+vila.setting.form.electricitypriceperkwhctrl.validation.negative=The price of electricity must not be negative!
+vila.setting.form.maxwattagectrl.label=The maximum power consumption in kWh:
+vila.setting.form.maxwattagectrl.description=The charging process is cancelled when predetermined power consumption is exceeded. &le; 0 for no cancellation.
+vila.setting.form.minwattagectrl.label=The minimum current charging capacity in kWh:
+vila.setting.form.minwattagectrl.description=The charging process is cancelled when the minimum charging capacity is exceeded. Cancellation occurs only if the total power consumption is &ge; 0.5 kWh. -1 for no cancellation.
+vila.setting.form.maxchargingtime.label=The maximum charging time in h:
+vila.setting.form.maxchargingtime.description=The charging process is cancelled when the charging time is exceeded. &le; 0 for no cancellation.
+
+vila.setting.form.validation.low=The value is too low.
+vila.charging.begin=Start charging
+vila.charging.stop=Stop charging
+vila.charging.duration=Charging duration: {0}
+vila.charging.cost=Costs incurred: {0:F2} {1}
+vila.charging.consumption=Consumption: {0:F2} kWh
+vila.charging.title.x=Time in minutes
+vila.charging.title.y=Power in kW
+vila.charging.current=Current consumption
+vila.charging.current.description=* Within the last minute.
+vila.charging.time=
+vila.charging.details=Details
+vila.charging.min=Minimum power consumption has been achieved.
+vila.charging.time.max=Maximum charging time has been reached.
+vila.charging.consumption.max=Maximum power consumption has been achieved.
+vila.charging.error=Failed to determine current consumption.
+vila.charging.save=The measurement log has been saved under '{0}'.
+
+vila.archive.label=Archive file
+vila.archive.description=Are you sure you want to archive the measurement log?
+vila.archive.move=File '{0}.xml' has been moved to the archive!
+vila.archive.error=File '{0}.xml' could not be found!
+
+vila.delete.label=Delete file
+vila.delete.description=Are you sure you want to delete the measurement log?
+vila.delete.file=File '{0}.xml' has been deleted!
+vila.delete.error=File '{0}.xml' could not be found!
+
+vila.download.label=Download file
+
+vila.log.electriccontactorstatus.high=The status of the contactor has been changed to HIGH.
+vila.log.electriccontactorstatus.low=The status of the contactor has been changed to LOW.
+vila.log.electriccontactorstatus.error=StatusStatus of the contactor could not be determined
+vila.log.powermeterstatus.error=Status of the GPIO interface could not be determined.
+vila.log.init.gpio=GpioController has started.
+vila.log.update.exceeding=The gout of the GPIO interface has been exceeded by {0} ms.

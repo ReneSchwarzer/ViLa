@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<measurementlog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="44afd754-406e-44b2-ae5b-818f455cc7cc" from="2020-10-30T17:36:08.8680346+01:00" till="2020-10-30T17:43:56.2551075+01:00" counter="91" power="0.0182" cost="0.005096">
+  <measurements mtp="2020-10-30T17:36:08.8701974+01:00" impulse="1" power="0.0002" />
+  <measurements mtp="2020-10-30T17:37:08.8703883+01:00" impulse="0" power="0" />
+  <measurements mtp="2020-10-30T17:38:08.8765431+01:00" impulse="0" power="0" />
+  <measurements mtp="2020-10-30T17:39:08.8773374+01:00" impulse="0" power="0" />
+  <measurements mtp="2020-10-30T17:40:08.877759+01:00" impulse="17" power="0.0034" />
+  <measurements mtp="2020-10-30T17:41:08.8782517+01:00" impulse="37" power="0.0074" />
+  <measurements mtp="2020-10-30T17:42:08.8784061+01:00" impulse="36" power="0.0072" />
+  <measurements mtp="2020-10-30T17:43:08.8786322+01:00" impulse="0" power="0" />
+</measurementlog>
