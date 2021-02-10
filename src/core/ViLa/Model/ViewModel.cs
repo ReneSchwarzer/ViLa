@@ -292,6 +292,11 @@ namespace ViLa.Model
                     // Neuer Messwert
                     if ((DateTime.Now - ContinuousMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
                     {
+                        if (ActiveCharging)
+                        {
+                            ActiveMeasurementLog.Measurements.Add(ContinuousMeasurementLog.Measurements.Last());
+                        }
+                        
                         ContinuousMeasurementLog.Measurements.Add(new MeasurementItem() { MeasurementTimePoint = DateTime.Now });
 
                         while (ContinuousMeasurementLog.Measurements.Count > ContinuousLogSize)
@@ -306,7 +311,7 @@ namespace ViLa.Model
 
                             // Bestimme den ersten Meßwert mit Werten
                             var skip = 0;
-                            for (var i = 0; i < ContinuousLogSize; i++)
+                            for (var i = 0; i < ContinuousMeasurementLog.Measurements.Count; i++)
                             {
                                 if (ContinuousMeasurementLog.Measurements[i].Impulse > 0)
                                 {
@@ -327,27 +332,9 @@ namespace ViLa.Model
                             StopCharging();
                             return;
                         }
-                    }
-                }
-
-                if (Stopwatch.IsRunning && ActiveCharging)
-                {
-                    if (pulse)
-                    {
-                        ActiveMeasurementLog.CurrentMeasurement.Impulse++;
-                        ActiveMeasurementLog.CurrentMeasurement.Power = (float)ActiveMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
-                    }
-
-                    // Neuer Messwert
-                    if ((DateTime.Now - ActiveMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
-                    {
-                        ActiveMeasurementLog.Measurements.Add(new MeasurementItem()
-                        {
-                            MeasurementTimePoint = DateTime.Now
-                        });
-
-                        if
+                        else if
                         (
+                            ActiveCharging &&
                            Settings.MinWattage >= 0 &&
                            ActiveMeasurementLog?.Power >= 0.5 &&
                            ActiveMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage
