@@ -64,7 +64,14 @@ namespace ViLa.WebResource
 
             Content.Primary.Add(new ControlText()
             {
-                Text = $"{ measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongDatePattern) } - { measurementLog?.FinalTill.ToString(Culture.DateTimeFormat.LongDatePattern) } {this.I18N("vila.charging.time")} ",
+                Text = $"{ measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongDatePattern) }",
+                Format = TypeFormatText.H5,
+                TextColor = new PropertyColorText(TypeColorText.Primary)
+            });
+
+            Content.Primary.Add(new ControlText()
+            {
+                Text = $"{ measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongTimePattern) } - { measurementLog?.FinalTill.ToString(Culture.DateTimeFormat.LongTimePattern) } {this.I18N("vila.charging.time")}",
                 Format = TypeFormatText.Paragraph,
                 TextColor = new PropertyColorText(TypeColorText.Dark)
             });
