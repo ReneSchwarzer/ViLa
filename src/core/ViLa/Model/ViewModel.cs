@@ -304,14 +304,28 @@ namespace ViLa.Model
                         {
                             StartCharging();
 
+                            // Bestimme den ersten Meßwert mit Werten
+                            var skip = 0;
+                            for (var i = 0; i < ContinuousLogSize; i++)
+                            {
+                                if (ContinuousMeasurementLog.Measurements[i].Impulse > 0)
+                                {
+                                    skip = i;
+                                    break;
+                                }
+                            }
+
                             // Bereits verbrauchte Energie welche zur Dedektierung der Autofunktion gemessen wurde, dem neuen Messprotokoll zuschreiben
-                            var measurements = ContinuousMeasurementLog.Measurements.SkipWhile(x => x.Impulse == 0);
+                            var measurements = ContinuousMeasurementLog.Measurements.Skip(skip);
                             ActiveMeasurementLog.Measurements.Clear();
                             ActiveMeasurementLog.Measurements.AddRange(measurements);
+
+                            return;
                         }
                         else if (impulse <= ContinuousThreshold && ActiveCharging && Settings.Auto)
                         {
                             StopCharging();
+                            return;
                         }
                     }
                 }
