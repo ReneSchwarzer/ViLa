@@ -32,14 +32,14 @@ namespace ViLa.Model
         public const int ImpulseDuration = 30;
 
         /// <summary>
-        /// Der GPIO-Pin, welcher die GPIO-Schnittstelle des Strommeßgerät ausließt
+        /// Der GPIO-Pin, welcher die S0-Schnittstelle des Strommeßgerät ausließt
         /// </summary>
-        private const int _powerMeterPin = 3;
+        private const int PowerMeterPin = 3;
 
         /// <summary>
         /// Der GPIO-Pin, welcher den Schütz steuert
         /// </summary>
-        private const int _electricContactorPin = 13;
+        private const int ElectricContactorPin = 13;
 
         /// <summary>
         /// Lifert die einzige Instanz der Modell-Klasse
@@ -91,12 +91,12 @@ namespace ViLa.Model
                     {
                         if (!value)
                         {
-                            GPIO.Write(_electricContactorPin, PinValue.High);
+                            GPIO.Write(ElectricContactorPin, PinValue.High);
                             Log(new LogItem(LogItem.LogLevel.Debug, this.I18N("vila.log.electriccontactorstatus.high")));
                         }
                         else
                         {
-                            GPIO.Write(_electricContactorPin, PinValue.Low);
+                            GPIO.Write(ElectricContactorPin, PinValue.Low);
                             Log(new LogItem(LogItem.LogLevel.Debug, "vila.log.electriccontactorstatus.low"));
                         }
 
@@ -120,7 +120,7 @@ namespace ViLa.Model
             {
                 try
                 {
-                    var value = GPIO?.Read(_powerMeterPin);
+                    var value = GPIO?.Read(PowerMeterPin);
 
                     return value == PinValue.High;
 
@@ -205,14 +205,14 @@ namespace ViLa.Model
             {
                 // Initialisierung des Controllers
                 GPIO = new GpioController(PinNumberingScheme.Logical);
-                GPIO.OpenPin(_powerMeterPin, PinMode.InputPullUp);
-                GPIO.OpenPin(_electricContactorPin, PinMode.Output);
+                GPIO.OpenPin(PowerMeterPin, PinMode.InputPullUp);
+                GPIO.OpenPin(ElectricContactorPin, PinMode.Output);
 
-                GPIO.Write(_electricContactorPin, PinValue.High);
+                GPIO.Write(ElectricContactorPin, PinValue.High);
                 _electricContactorStatus = false;
 
                 Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.log.init.gpio")));
-                Log(new LogItem(LogItem.LogLevel.Debug, "ElectricContactorPin " + _electricContactorPin));
+                Log(new LogItem(LogItem.LogLevel.Debug, "ElectricContactorPin " + ElectricContactorPin));
             }
             catch (Exception ex)
             {
@@ -279,7 +279,7 @@ namespace ViLa.Model
                     Log(new LogItem(LogItem.LogLevel.Warning, string.Format(Context.Host.Culture, this.I18N("vila.log.update.exceeding"), delta - ViewModel.ImpulseDuration)));
                 }
 
-                LastPowerMeterStatus = PowerMeterStatus;
+                LastPowerMeterStatus = newValue;
 
                 if (Stopwatch.IsRunning)
                 {
@@ -294,7 +294,7 @@ namespace ViLa.Model
                     {
                         if (ActiveCharging)
                         {
-                            ActiveMeasurementLog.Measurements.Add(ContinuousMeasurementLog.Measurements.Last());
+                            ActiveMeasurementLog.Measurements.Add(ContinuousMeasurementLog.CurrentMeasurement);
                         }
                         
                         ContinuousMeasurementLog.Measurements.Add(new MeasurementItem() { MeasurementTimePoint = DateTime.Now });
@@ -335,9 +335,9 @@ namespace ViLa.Model
                         else if
                         (
                             ActiveCharging &&
-                           Settings.MinWattage >= 0 &&
-                           ActiveMeasurementLog?.Power >= 0.5 &&
-                           ActiveMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage
+                            Settings.MinWattage >= 0 &&
+                            ActiveMeasurementLog?.Power >= 0.5 &&
+                            ActiveMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage
                         )
                         {
                             Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.min")));
