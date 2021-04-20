@@ -40,8 +40,8 @@ namespace ViLa.WebControl
                 return array;
             }
 
-            var chartLabels = ViewModel.Instance.ActiveCharging ? 
-                ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() : 
+            var chartLabels = ViewModel.Instance.ActiveCharging ?
+                ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ViewModel.Instance.CurrentMeasurementLog.Measurements.IndexOf(x).ToString()).ToArray() :
                 createArray(ViewModel.Instance.CurrentMeasurementLog.Measurements.Count);
                 
             var chartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power).ToArray();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ViLa.Model;
@@ -46,7 +47,7 @@ namespace ViLa.WebResource
 
             var id = GetParamValue("id");
             var measurementLog = ViewModel.Instance.GetHistoryMeasurementLog(id);
-            var chartLabels = measurementLog?.Measurements.Select(x => ((int)(x.MeasurementTimePoint - measurementLog.From).TotalMinutes).ToString()).ToArray();
+            var chartLabels = measurementLog?.Measurements.Select(x => measurementLog?.Measurements.IndexOf(x).ToString()).ToArray();
             var chartData = measurementLog?.Measurements.Select(x => x.Power * 60).ToArray();
 
             Content.Primary.Add(new ControlText()

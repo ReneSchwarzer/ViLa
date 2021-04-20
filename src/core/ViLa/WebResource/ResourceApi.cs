@@ -59,7 +59,7 @@ namespace ViLa.WebResource
                 Now = ViewModel.Now,
                 CurrentPower = string.Format("{0:F2}", ViewModel.Instance.CurrentPower),
                 ChartLabels = ViewModel.Instance.ActiveCharging ? 
-                    ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ((int)(x.MeasurementTimePoint - ViewModel.Instance.CurrentMeasurementLog.From).TotalMinutes).ToString()).ToArray() :
+                    ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ViewModel.Instance.CurrentMeasurementLog.Measurements.IndexOf(x).ToString()).ToArray() :
                     createArray(ViewModel.Instance.CurrentMeasurementLog.Measurements.Count),
                 ChartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => (x.Power * 60).ToString(CultureInfo.InvariantCulture)).ToArray()
             };
