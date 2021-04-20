@@ -68,9 +68,14 @@ namespace ViLa.Model
         private GpioController GPIO { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Zeit des letzen auslesen der Temperatur
+        /// Liefert oder setzt die Zeit des letzen Auslesens
         /// </summary>
         private Stopwatch Stopwatch { get; } = new Stopwatch();
+
+        /// <summary>
+        /// Liefert oder setzt Startzeitpunkt
+        /// </summary>
+        private DateTime StartTime { get; set; }
 
         /// <summary>
         /// Der Zustand des GPIO-Pins, welcher den Schütz steuert
@@ -141,11 +146,6 @@ namespace ViLa.Model
         private bool LastPowerMeterStatus { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt das aktive Messprotokoll
-        /// </summary>
-        private MeasurementLog ActiveMeasurementLog { get; set; }
-
-        /// <summary>
         /// Bestimmt, ob der Ladevorgang aktiv ist
         /// </summary>
         public bool ActiveCharging => ActiveMeasurementLog != null;
@@ -168,6 +168,11 @@ namespace ViLa.Model
         /// Ermittelt die aktuell ermittelte Leistung der letzen Minute in kWh
         /// </summary>
         public float CurrentPower => CurrentMeasurementLog.CurrentPower;
+
+        /// <summary>
+        /// Liefert oder setzt das aktive Messprotokoll
+        /// </summary>
+        private MeasurementLog ActiveMeasurementLog { get; set; }
 
         /// <summary>
         /// Liefert die bereits abgeschlossene Messprotokolle
@@ -259,8 +264,9 @@ namespace ViLa.Model
 
             Culture = Context.Host.Culture;
 
-
             ResetSettings();
+
+            StartTime = DateTime.Now;
         }
 
         /// <summary>
@@ -273,13 +279,12 @@ namespace ViLa.Model
                 var delta = Stopwatch.ElapsedMilliseconds;
                 var newValue = PowerMeterStatus;
                 var pulse = newValue != LastPowerMeterStatus && newValue == true;
+                LastPowerMeterStatus = newValue;
 
                 if (delta > ImpulseDuration)
                 {
                     Log(new LogItem(LogItem.LogLevel.Warning, string.Format(Context.Host.Culture, this.I18N("vila.log.update.exceeding"), delta - ViewModel.ImpulseDuration)));
                 }
-
-                LastPowerMeterStatus = newValue;
 
                 if (Stopwatch.IsRunning)
                 {
@@ -290,7 +295,7 @@ namespace ViLa.Model
                     }
 
                     // Neuer Messwert
-                    if ((DateTime.Now - ContinuousMeasurementLog.CurrentMeasurement.MeasurementTimePoint).TotalMilliseconds > 60000)
+                    if ((DateTime.Now - StartTime).TotalMilliseconds >= 60000)
                     {
                         if (ActiveCharging)
                         {
@@ -298,7 +303,7 @@ namespace ViLa.Model
                         }
                         
                         ContinuousMeasurementLog.Measurements.Add(new MeasurementItem() { MeasurementTimePoint = DateTime.Now });
-
+                        
                         while (ContinuousMeasurementLog.Measurements.Count > ContinuousLogSize)
                         {
                             ContinuousMeasurementLog.Measurements.RemoveAt(0);
@@ -323,7 +328,7 @@ namespace ViLa.Model
                             // Bereits verbrauchte Energie welche zur Dedektierung der Autofunktion gemessen wurde, dem neuen Messprotokoll zuschreiben
                             var measurements = ContinuousMeasurementLog.Measurements.Skip(skip);
                             ActiveMeasurementLog.Measurements.Clear();
-                            ActiveMeasurementLog.Measurements.AddRange(measurements);
+                            ActiveMeasurementLog.Measurements.AddRange(measurements.SkipLast(1));
 
                             return;
                         }
