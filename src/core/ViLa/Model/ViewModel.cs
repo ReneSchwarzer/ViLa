@@ -78,6 +78,11 @@ namespace ViLa.Model
         private DateTime StartTime { get; set; }
 
         /// <summary>
+        /// Liefert oder setzt die vergangenen Minuten
+        /// </summary>
+        private long PastMinutes { get; set; } = 0;
+
+        /// <summary>
         /// Der Zustand des GPIO-Pins, welcher den Schütz steuert
         /// </summary>
         private bool _electricContactorStatus;
@@ -288,15 +293,19 @@ namespace ViLa.Model
 
                 if (Stopwatch.IsRunning)
                 {
+                    var minutes = (DateTime.Now - StartTime).Minutes;
+
                     if (pulse)
                     {
                         ContinuousMeasurementLog.CurrentMeasurement.Impulse++;
                         ContinuousMeasurementLog.CurrentMeasurement.Power = (float)ContinuousMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
-
+                                                   
                     // Neuer Messwert
-                    if ((DateTime.Now - StartTime).TotalMilliseconds >= 60000)
+                    if (minutes > PastMinutes)
                     {
+                        PastMinutes = minutes;
+
                         if (ActiveCharging)
                         {
                             ActiveMeasurementLog.Measurements.Add(ContinuousMeasurementLog.CurrentMeasurement);
