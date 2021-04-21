@@ -55,15 +55,15 @@ namespace ViLa.WebControl
             (
                 new ControlText("measurementtime")
                 {
-                    Text = string.Format(context.Culture, context.I18N("vila.charging.duration"), ViewModel.Instance.ActiveCharging ? new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null) : "-")
+                    Text = string.Format(context.Culture, context.I18N("vila.charging.duration"), ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null) : "-")
                 }, 
                 new ControlText("cost")
                 {
-                    Text = string.Format(context.Culture, context.I18N("vila.charging.cost"), ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog?.Cost : "-", ViewModel.Instance.Settings.Currency)
+                    Text = string.Format(context.Culture, context.I18N("vila.charging.cost"), ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? ViewModel.Instance.CurrentMeasurementLog?.Cost : "-", ViewModel.Instance.Settings.Currency)
                 }, 
                 new ControlText("power")
                 {
-                    Text = string.Format(context.Culture, context.I18N("vila.charging.consumption"), ViewModel.Instance.ActiveCharging ? ViewModel.Instance.CurrentMeasurementLog?.Power : "-")
+                    Text = string.Format(context.Culture, context.I18N("vila.charging.consumption"), ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? ViewModel.Instance.CurrentMeasurementLog?.Power : "-")
                 })
             {
                 HorizontalAlignment = TypeHorizontalAlignment.Default,

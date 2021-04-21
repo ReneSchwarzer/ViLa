@@ -172,7 +172,7 @@ namespace ViLa.Model
         /// <summary>
         /// Ermittelt die aktuell ermittelte Leistung der letzen Minute in kWh
         /// </summary>
-        public float CurrentPower => CurrentMeasurementLog.CurrentPower;
+        public float CurrentPower => CurrentMeasurementLog.Measurements.Count > 0 ? CurrentMeasurementLog.CurrentPower : 0;
 
         /// <summary>
         /// Liefert oder setzt das aktive Messprotokoll
@@ -402,7 +402,7 @@ namespace ViLa.Model
                 logItem.Level != LogItem.LogLevel.Debug)
             {
                 var current = ActiveMeasurementLog?.CurrentMeasurement;
-                current.Logitems.Add(logItem);
+                current?.Logitems.Add(logItem);
             }
 
             switch (logItem.Level)
@@ -484,10 +484,10 @@ namespace ViLa.Model
             };
 
             // Initialer Messwert
-            ActiveMeasurementLog.Measurements.Add(new MeasurementItem()
-            {
-                MeasurementTimePoint = DateTime.Now
-            });
+            //ActiveMeasurementLog.Measurements.Add(new MeasurementItem()
+            //{
+            //    MeasurementTimePoint = DateTime.Now
+            //});
 
             ElectricContactorStatus = true;
         }
