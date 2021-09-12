@@ -293,7 +293,7 @@ namespace ViLa.Model
 
                 if (Stopwatch.IsRunning)
                 {
-                    var minutes = (DateTime.Now - StartTime).Minutes;
+                    var minutes = (long)Math.Floor((DateTime.Now - StartTime).TotalMinutes);
 
                     if (pulse)
                     {
