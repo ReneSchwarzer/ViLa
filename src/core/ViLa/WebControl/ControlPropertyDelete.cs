@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using ViLa.Model;
+﻿using ViLa.Model;
 using WebExpress.Attribute;
 using WebExpress.Html;
 using WebExpress.Internationalization;
@@ -8,6 +6,7 @@ using WebExpress.UI.Attribute;
 using WebExpress.UI.Component;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.Components;
+using WebExpress.WebApp.WebControl;
 
 namespace ViLa.WebControl
 {
@@ -31,6 +30,9 @@ namespace ViLa.WebControl
         private void Init()
         {
             Margin = new PropertySpacingMargin(PropertySpacing.Space.Two);
+            BackgroundColor = new PropertyColorButton(TypeColorButton.Danger);
+            Icon = new PropertyIcon(TypeIcon.Trash);
+            TextColor = new PropertyColorText(TypeColorText.Light);
         }
 
         /// <summary>
@@ -40,11 +42,16 @@ namespace ViLa.WebControl
         /// <returns>Das Control als HTML</returns>
         public override IHtmlNode Render(RenderContext context)
         {
-            var form = new ControlFormular("del") { EnableSubmitAndNextButton = false, EnableCancelButton = false, RedirectUri = Uri };
-            form.SubmitButton.Text = context.Page.I18N("vila.delete.label");
-            form.SubmitButton.Icon = new PropertyIcon(TypeIcon.TrashAlt);
-            form.SubmitButton.Color = new PropertyColorButton(TypeColorButton.Danger);
-            form.ProcessFormular += (s, e) =>
+            Text = context.I18N("vila.delete.label");
+
+            var modal = new ControlModalFormConfirmDelete()
+            {
+                Header = context.Page.I18N("vila.delete.label"),
+                Content = new ControlFormularItemStaticText() { Text = context.I18N("vila.delete.description") },
+                RedirectUri = context.Uri.Take(-1)
+            };
+
+            modal.Confirm += (s, e) =>
             {
                 var id = context.Page.GetParamValue("id");
                 ViewModel.Instance.RemoveHistoryMeasurementLog(id);
@@ -52,20 +59,7 @@ namespace ViLa.WebControl
                 context.Page.Redirecting(context.Uri.Take(-1));
             };
 
-            Text = context.I18N("vila.delete.label");
-            BackgroundColor = new PropertyColorButton(TypeColorButton.Danger);
-            Icon = new PropertyIcon(TypeIcon.Trash);
-            TextColor = new PropertyColorText(TypeColorText.Light);
-            Modal = new ControlModal
-            (
-                "delete",
-                context.Page.I18N("vila.delete.label"),
-                new ControlText()
-                {
-                    Text = context.Page.I18N("vila.delete.description")
-                },
-                form
-            );
+            Modal = modal;
 
             return base.Render(context);
         }
