@@ -37,19 +37,76 @@
     <None Update="Config\webexpress.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="measurements\0ed482da-0da8-4fc0-96d4-b086ab57f4e4.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\163dc5c3-22da-4e25-b1b1-7bb30965c16f.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\291c808a-eda1-45e0-b6c5-86d076ce466c.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\2bdbd8fc-6a30-4cb2-8a98-da2ff9269c5e.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="measurements\2f79a08e-131b-48b0-9b9d-f9a4ca03b12f.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\3cf58c05-d546-491e-8f48-3b2b4f74c3a7.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\434ba241-d273-4509-a281-b195615ce2e7.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="measurements\44afd754-406e-44b2-ae5b-818f455cc7cc.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="measurements\66669dbb-c0d1-4a2a-8737-96da867ccf6e.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\68aabc8d-c464-4ab1-ae07-cd713420b8e6.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\7082e44f-d9fa-4288-8e71-ae8c76a3e1ab.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="measurements\7ecb4b74-baa0-4aea-9168-92edd10397b1.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\8d42547b-606c-47ab-8758-49ec317141f9.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="measurements\91279013-1f89-45bc-9a89-e7621fedd79e.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="measurements\989a09de-40cb-41c6-abd4-27fd138e2619.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\b11e7b95-43b1-4f07-bc11-ddc7ee10f194.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\c9256c1e-a4a1-4141-b02b-0347946b84db.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\d380f146-5f1f-452b-b119-df94aa8822aa.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\d9fabeed-b397-4317-8183-bfe303c01459.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\df122d20-9e33-49e1-b74d-2f0fb71e970d.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="measurements\e60ead05-80ab-47af-a88d-9085abf9cf2f.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\eb81883e-0880-434a-9a8a-5420cdc5931c.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\ef2550c7-6de4-4b01-8622-bab2227bb529.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="measurements\f830cada-d455-4e2b-8a88-633caf48663c.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
 

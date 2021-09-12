@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<measurementlog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="3cf58c05-d546-491e-8f48-3b2b4f74c3a7" from="2021-01-20T17:47:57.0037369+01:00" till="2021-01-20T17:52:57.0063737+01:00" counter="145" power="0.29" cost="0.081199996">
+  <measurements mtp="2021-01-20T17:47:57.0045727+01:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-01-20T17:48:57.0052795+01:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-01-20T17:49:57.005339+01:00" impulse="26" power="0.052" />
+  <measurements mtp="2021-01-20T17:50:57.0060275+01:00" impulse="0" power="0" />
+  <measurements mtp="2021-01-20T17:51:57.0061961+01:00" impulse="0" power="0" />
+</measurementlog>

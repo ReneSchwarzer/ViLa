@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<measurementlog id="f830cada-d455-4e2b-8a88-633caf48663c" power="3.27" cost="0.9156" from="2021-04-11T16:27:56.6760051+02:00" till="2021-04-11T16:59:56.8814595+02:00" pricePerkWh="0.28" impulsePerkWh="500" currency="€">
+  <measurements mtp="2021-04-11T16:27:56.6760051+02:00" impulse="45" power="0.09" />
+  <measurements mtp="2021-04-11T16:28:56.680218+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-04-11T16:29:56.6836447+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-04-11T16:29:56.6836447+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-04-11T16:30:56.692328+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-04-11T16:31:56.6956768+02:00" impulse="58" power="0.116" />
+  <measurements mtp="2021-04-11T16:32:56.7019256+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-04-11T16:33:56.7086656+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-04-11T16:34:56.71569+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-04-11T16:35:56.7253455+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-04-11T16:36:56.7345453+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-04-11T16:37:56.7467919+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-04-11T16:38:56.7510699+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-04-11T16:39:56.7588077+02:00" impulse="58" power="0.116" />
+  <measurements mtp="2021-04-11T16:40:56.7639919+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-04-11T16:41:56.7681699+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-04-11T16:42:56.7782834+02:00" impulse="58" power="0.116" />
+  <measurements mtp="2021-04-11T16:43:56.7820757+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-04-11T16:44:56.7824664+02:00" impulse="58" power="0.116" />
+  <measurements mtp="2021-04-11T16:45:56.7880208+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-04-11T16:46:56.7921914+02:00" impulse="57" power="0.114" />
+  <measurements mtp="2021-04-11T16:47:56.798782+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-04-11T16:48:56.8041604+02:00" impulse="62" power="0.124" />
+  <measurements mtp="2021-04-11T16:49:56.8108644+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-04-11T16:50:56.8216989+02:00" impulse="33" power="0.066" />
+  <measurements mtp="2021-04-11T16:51:56.8292774+02:00" impulse="11" power="0.022" />
+  <measurements mtp="2021-04-11T16:52:56.8362746+02:00" impulse="53" power="0.106" />
+  <measurements mtp="2021-04-11T16:53:56.8379282+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-04-11T16:54:56.8486408+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-04-11T16:55:56.8584536+02:00" impulse="7" power="0.014" />
+  <measurements mtp="2021-04-11T16:56:56.8610788+02:00" impulse="0" power="0" />
+  <measurements mtp="2021-04-11T16:57:56.8691668+02:00" impulse="0" power="0" />
+  <measurements mtp="2021-04-11T16:58:56.8726732+02:00" impulse="0" power="0" />
+</measurementlog>
