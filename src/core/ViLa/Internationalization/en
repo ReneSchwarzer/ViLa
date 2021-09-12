@@ -31,6 +31,7 @@ vila.off.label=Off
 vila.on.label=On
 
 vila.setting.label=Settings
+vila.setting.general.label=General
 vila.setting.submit.label=Save
 vila.setting.currency.label=Currency
 vila.setting.currency.description=
@@ -52,6 +53,10 @@ vila.setting.form.minwattagectrl.label=The minimum current charging capacity in 
 vila.setting.form.minwattagectrl.description=The charging process is cancelled when the minimum charging capacity is exceeded. Cancellation occurs only if the total power consumption is &ge; 0.5 kWh. -1 for no cancellation.
 vila.setting.form.maxchargingtime.label=The maximum charging time in h:
 vila.setting.form.maxchargingtime.description=The charging process is cancelled when the charging time is exceeded. &le; 0 for no cancellation.
+vila.setting.system.label=System
+vila.setting.plugin.label=Plugins
+vila.setting.systeminformation.label=System information
+vila.setting.log.label=Log
 
 vila.setting.form.validation.low=The value is too low.
 vila.charging.begin=Start charging

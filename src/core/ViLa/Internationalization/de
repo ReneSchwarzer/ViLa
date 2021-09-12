@@ -29,6 +29,7 @@ vila.off.label=Aus
 vila.on.label=An
 
 vila.setting.label=Einstellungen
+vila.setting.general.label=Allgemein
 vila.setting.submit.label=Speichern
 vila.setting.currency.label=Währung
 vila.setting.currency.description=
@@ -51,6 +52,10 @@ vila.setting.form.minwattagectrl.description=Abbruch des Ladevorganges erfolgt, 
 vila.setting.form.maxchargingtime.label=Die maximale Ladedauer in h:
 vila.setting.form.maxchargingtime.description=Abbruch des Ladevorganges erfolgt, wenn die Ladedauer überschritten wird. &le; 0 für kein Abbruch.
 vila.setting.form.validation.low=Der Wert ist zu klein.
+vila.setting.system.label=System
+vila.setting.plugin.label=Plugins
+vila.setting.systeminformation.label=Systeminformationen
+vila.setting.log.label=Log
 
 vila.charging.begin=Ladevorgang starten
 vila.charging.stop=Ladevorgang beenden
