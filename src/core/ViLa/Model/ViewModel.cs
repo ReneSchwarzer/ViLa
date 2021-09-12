@@ -107,7 +107,7 @@ namespace ViLa.Model
                         else
                         {
                             GPIO.Write(ElectricContactorPin, PinValue.Low);
-                            Log(new LogItem(LogItem.LogLevel.Debug, "vila.log.electriccontactorstatus.low"));
+                            Log(new LogItem(LogItem.LogLevel.Debug, this.I18N("vila.log.electriccontactorstatus.low")));
                         }
 
                         _electricContactorStatus = value;
