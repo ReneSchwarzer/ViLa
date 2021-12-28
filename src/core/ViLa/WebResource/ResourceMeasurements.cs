@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using ViLa.Model;
 using WebExpress.Attribute;
+using WebExpress.WebResource;
 
 namespace ViLa.WebResource
 {
@@ -26,9 +27,10 @@ namespace ViLa.WebResource
         /// <summary>
         /// Initialisierung
         /// </summary>
-        public override void Initialization()
+        /// <param name="context">Der Kontext</param>
+        public override void Initialization(IResourceContext context)
         {
-            base.Initialization();
+            base.Initialization(context);
         }
     }
 }

@@ -102,12 +102,12 @@ namespace ViLa.Model
                         if (!value)
                         {
                             GPIO.Write(ElectricContactorPin, PinValue.High);
-                            Log(new LogItem(LogItem.LogLevel.Debug, this.I18N("vila.log.electriccontactorstatus.high")));
+                            Log(new LogItem(LogItem.LogLevel.Debug, this.I18N("vila:vila.log.electriccontactorstatus.high")));
                         }
                         else
                         {
                             GPIO.Write(ElectricContactorPin, PinValue.Low);
-                            Log(new LogItem(LogItem.LogLevel.Debug, this.I18N("vila.log.electriccontactorstatus.low")));
+                            Log(new LogItem(LogItem.LogLevel.Debug, this.I18N("vila:vila.log.electriccontactorstatus.low")));
                         }
 
                         _electricContactorStatus = value;
@@ -115,7 +115,7 @@ namespace ViLa.Model
                 }
                 catch (Exception ex)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila.log.electriccontactorstatus.error")));
+                    Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila:vila.log.electriccontactorstatus.error")));
                     Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
                 }
             }
@@ -137,7 +137,7 @@ namespace ViLa.Model
                 }
                 catch (Exception ex)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila.log.powermeterstatus.error")));
+                    Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila:vila.log.powermeterstatus.error")));
                     Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
                 }
 
@@ -221,7 +221,7 @@ namespace ViLa.Model
                 GPIO.Write(ElectricContactorPin, PinValue.High);
                 _electricContactorStatus = false;
 
-                Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.log.init.gpio")));
+                Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.log.init.gpio")));
                 Log(new LogItem(LogItem.LogLevel.Debug, "ElectricContactorPin " + ElectricContactorPin));
             }
             catch (Exception ex)
@@ -288,7 +288,7 @@ namespace ViLa.Model
 
                 if (delta > ImpulseDuration)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format(Context.Host.Culture, this.I18N("vila.log.update.exceeding"), delta - ViewModel.ImpulseDuration)));
+                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format(Context.Host.Culture, this.I18N("vila:vila.log.update.exceeding"), delta - ViewModel.ImpulseDuration)));
                 }
 
                 if (Stopwatch.IsRunning)
@@ -300,7 +300,7 @@ namespace ViLa.Model
                         ContinuousMeasurementLog.CurrentMeasurement.Impulse++;
                         ContinuousMeasurementLog.CurrentMeasurement.Power = (float)ContinuousMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
-                                                   
+
                     // Neuer Messwert
                     if (minutes > PastMinutes)
                     {
@@ -310,16 +310,16 @@ namespace ViLa.Model
                         {
                             ActiveMeasurementLog.Measurements.Add(ContinuousMeasurementLog.CurrentMeasurement);
                         }
-                        
+
                         ContinuousMeasurementLog.Measurements.Add(new MeasurementItem() { MeasurementTimePoint = DateTime.Now });
-                        
+
                         while (ContinuousMeasurementLog.Measurements.Count > ContinuousLogSize)
                         {
                             ContinuousMeasurementLog.Measurements.RemoveAt(0);
                         }
 
                         var impulse = ContinuousMeasurementLog.Impulse;
-                        if (impulse > ContinuousThreshold && !ActiveCharging && Settings.Auto)
+                        if (impulse > ContinuousThreshold && !ActiveCharging && Settings.Mode == Mode.AutomaticControlled)
                         {
                             StartCharging();
 
@@ -341,7 +341,7 @@ namespace ViLa.Model
 
                             return;
                         }
-                        else if (impulse <= ContinuousThreshold && ActiveCharging && Settings.Auto)
+                        else if (impulse <= ContinuousThreshold && ActiveCharging && Settings.Mode == Mode.AutomaticControlled)
                         {
                             StopCharging();
                             return;
@@ -354,7 +354,7 @@ namespace ViLa.Model
                             ActiveMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage
                         )
                         {
-                            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.min")));
+                            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.min")));
 
                             StopCharging();
                             return;
@@ -364,7 +364,7 @@ namespace ViLa.Model
 
                 if (ActiveCharging && Settings.MaxChargingTime > 0 && (DateTime.Now - ActiveMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.time.max")));
+                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.time.max")));
 
                     StopCharging();
                     return;
@@ -372,7 +372,7 @@ namespace ViLa.Model
 
                 if (ActiveCharging && Settings.MaxWattage > 0 && ActiveMeasurementLog.Power > Settings.MaxWattage)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.consumption.max")));
+                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.consumption.max")));
 
                     StopCharging();
                     return;
@@ -380,7 +380,7 @@ namespace ViLa.Model
             }
             catch (Exception ex)
             {
-                Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila.charging.error")));
+                Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila:vila.charging.error")));
                 Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
             finally
@@ -430,7 +430,7 @@ namespace ViLa.Model
         /// </summary>
         public void SaveSettings()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.setting.save")));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.setting.save")));
 
             // Konfiguration speichern
             var serializer = new XmlSerializer(typeof(Settings));
@@ -452,7 +452,7 @@ namespace ViLa.Model
         /// </summary>
         public void ResetSettings()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.setting.load")));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.setting.load")));
 
             // Konfiguration laden
             var serializer = new XmlSerializer(typeof(Settings));
@@ -464,7 +464,7 @@ namespace ViLa.Model
             }
             catch
             {
-                Log(new LogItem(LogItem.LogLevel.Warning, this.I18N("vila.setting.warning")));
+                Log(new LogItem(LogItem.LogLevel.Warning, this.I18N("vila:vila.setting.warning")));
             }
 
             Log(new LogItem(LogItem.LogLevel.Debug, "ImpulsePerkWh = " + Settings.ImpulsePerkWh));
@@ -475,7 +475,7 @@ namespace ViLa.Model
         /// </summary>
         public void StartCharging()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.begin")));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.begin")));
 
             ActiveMeasurementLog = new MeasurementLog()
             {
@@ -497,7 +497,7 @@ namespace ViLa.Model
         /// </summary>
         public void StopCharging()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila.charging.stop")));
+            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.stop")));
 
             ActiveMeasurementLog.FinalPower = ActiveMeasurementLog.Power;
             ActiveMeasurementLog.FinalCost = ActiveMeasurementLog.Cost;
@@ -532,7 +532,7 @@ namespace ViLa.Model
 
                 HistoryMeasurementLog.Add(ActiveMeasurementLog);
 
-                Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.charging.save"), fileName)));
+                Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.charging.save"), fileName)));
             }
 
             ActiveMeasurementLog = null;
@@ -583,13 +583,13 @@ namespace ViLa.Model
                 if (measurementLog != null)
                 {
                     File.Delete(System.IO.Path.Combine(Context.Host.AssetPath, "measurements", $"{measurementLog.ID}.xml"));
-                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.delete.file"), id)));
+                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.delete.file"), id)));
 
                     HistoryMeasurementLog.Remove(measurementLog);
                 }
                 else
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.delete.error"), id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.delete.error"), id)));
                 }
             }
             catch (Exception ex)
@@ -635,11 +635,11 @@ namespace ViLa.Model
 
                     HistoryMeasurementLog.Remove(measurementLog);
 
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.archive.move"), id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.archive.move"), id)));
                 }
                 else
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila.archive.error"), id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.archive.error"), id)));
                 }
             }
             catch (Exception ex)

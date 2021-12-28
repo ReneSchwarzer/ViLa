@@ -2,6 +2,7 @@
 using WebExpress.Html;
 using WebExpress.Internationalization;
 using WebExpress.UI.WebControl;
+using WebExpress.WebPage;
 
 namespace ViLa.WebControl
 {
@@ -41,14 +42,14 @@ namespace ViLa.WebControl
             Text = MeasurementLog?.From.ToString(context.Culture.DateTimeFormat.ShortDatePattern) +
             new ControlText()
             {
-                Text = $"{ MeasurementLog?.FinalFrom.ToString(context.Culture.DateTimeFormat.LongTimePattern) } - { MeasurementLog?.FinalTill.ToString(context.Culture.DateTimeFormat.LongTimePattern) } { context.I18N("vila.charging.time")}",
+                Text = $"{ MeasurementLog?.FinalFrom.ToString(context.Culture.DateTimeFormat.LongTimePattern) } - { MeasurementLog?.FinalTill.ToString(context.Culture.DateTimeFormat.LongTimePattern) } { context.I18N("vila:vila.charging.time")}",
                 Format = TypeFormatText.Small
             }.Render(context) +
             new HtmlElementTextSemanticsBr() +
             new ControlLink()
             {
-                Text = context.I18N("vila.charging.details"),
-                Uri = context.Page.Uri.Root.Append(MeasurementLog.ID)
+                Text = "vila:vila.charging.details",
+                Uri = context.Request.Uri.Root.Append(MeasurementLog.ID)
             }.Render(context);
             Value = $"{ string.Format("{0:F2} kWh", MeasurementLog?.FinalPower) } / { string.Format("{0:F2} {1}", MeasurementLog?.FinalCost, MeasurementLog?.Currency) }";
             Icon = new PropertyIcon(TypeIcon.TachometerAlt);

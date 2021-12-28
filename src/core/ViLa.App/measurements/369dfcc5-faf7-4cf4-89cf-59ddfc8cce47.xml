@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<measurementlog id="369dfcc5-faf7-4cf4-89cf-59ddfc8cce47" power="0.418" cost="0.11704" from="2021-12-22T05:51:57.354414+01:00" till="2021-12-22T05:58:57.3548417+01:00" pricePerkWh="0.28" impulsePerkWh="500" currency="€">
+  <measurements mtp="2021-12-22T05:51:57.354414+01:00" impulse="58" power="0.116" />
+  <measurements mtp="2021-12-22T05:52:57.3581737+01:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-12-22T05:53:57.3552459+01:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-12-22T05:54:57.3576206+01:00" impulse="31" power="0.062" />
+  <measurements mtp="2021-12-22T05:55:57.3511573+01:00" impulse="0" power="0" />
+  <measurements mtp="2021-12-22T05:56:57.3600434+01:00" impulse="0" power="0" />
+  <measurements mtp="2021-12-22T05:57:57.350387+01:00" impulse="0" power="0" />
+</measurementlog>

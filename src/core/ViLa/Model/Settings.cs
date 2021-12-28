@@ -41,7 +41,7 @@ namespace ViLa.Model
         /// </summary>
         [XmlElement(ElementName = "MaxChargingTime")]
         public int MaxChargingTime { get; set; }
-        
+
         /// <summary>
         /// Liefert oder setzt die Währung
         /// </summary>
@@ -49,9 +49,9 @@ namespace ViLa.Model
         public string Currency { get; set; }
 
         /// <summary>
-        /// Bestimmt, ob die Messungen automatisch erfolgen sollen
+        /// Bestimmt, wie die Messungen gestartet werden sollen
         /// </summary>
-        [XmlElement(ElementName = "Auto")]
-        public bool Auto { get; set; }
+        [XmlElement(ElementName = "Mode")]
+        public Mode Mode { get; set; }
     }
 }

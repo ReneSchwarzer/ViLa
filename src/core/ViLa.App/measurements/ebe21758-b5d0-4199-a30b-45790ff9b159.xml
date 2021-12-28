@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<measurementlog id="ebe21758-b5d0-4199-a30b-45790ff9b159" power="4.912" cost="1.37536" from="2021-09-13T06:42:57.3562971+02:00" till="2021-09-13T07:27:57.3514501+02:00" pricePerkWh="0.28" impulsePerkWh="500" currency="€">
+  <measurements mtp="2021-09-13T06:42:57.3562971+02:00" impulse="40" power="0.08" />
+  <measurements mtp="2021-09-13T06:43:57.3575072+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:44:57.3499503+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:45:57.3576613+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:46:57.3500803+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:47:57.3567605+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:48:57.3561764+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T06:49:57.3594621+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:50:57.3555357+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:51:57.3532359+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T06:52:57.3531431+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T06:53:57.3524961+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:54:57.3530966+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T06:55:57.3538732+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:56:57.3560748+02:00" impulse="60" power="0.12">
+    <logitem>
+      <Level>Warning</Level>
+      <Massage>Die Zeitspanne der GPIO-Schnittstelle wurde um 109 ms überschritten.</Massage>
+      <Time>2021-09-13T06:58:34.5611945+02:00</Time>
+      <Instance>Update</Instance>
+    </logitem>
+  </measurements>
+  <measurements mtp="2021-09-13T06:57:57.3527563+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T06:58:57.3522541+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T06:59:57.3519116+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:00:57.3512979+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:01:57.3518438+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:02:57.3576243+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:03:57.3505164+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:04:57.3582702+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:05:57.3532534+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:06:57.3526999+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:07:57.3535167+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:08:57.3529895+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:09:57.3527532+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:10:57.3531441+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:11:57.3587678+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:12:57.3595813+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:13:57.3530284+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:14:57.3540562+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:15:57.3516454+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:16:57.3551129+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:17:57.3532867+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:18:57.3581285+02:00" impulse="61" power="0.122" />
+  <measurements mtp="2021-09-13T07:19:57.3527114+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:20:57.351637+02:00" impulse="60" power="0.12" />
+  <measurements mtp="2021-09-13T07:21:57.3581249+02:00" impulse="59" power="0.118" />
+  <measurements mtp="2021-09-13T07:22:57.3509235+02:00" impulse="58" power="0.116" />
+  <measurements mtp="2021-09-13T07:23:57.3532582+02:00" impulse="4" power="0.008" />
+  <measurements mtp="2021-09-13T07:24:57.3577526+02:00" impulse="0" power="0" />
+  <measurements mtp="2021-09-13T07:25:57.3511625+02:00" impulse="0" power="0" />
+  <measurements mtp="2021-09-13T07:26:57.3567631+02:00" impulse="0" power="0" />
+</measurementlog>

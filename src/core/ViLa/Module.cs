@@ -4,8 +4,8 @@ using WebExpress.Module;
 namespace ViLa
 {
     [ID("ViLa")]
-    [Name("module.name")]
-    [Description("module.description")]
+    [Name("vila:module.name")]
+    [Description("vila:module.description")]
     [Icon("/assets/img/Logo.png")]
     [AssetPath("/")]
     [ContextPath("/")]

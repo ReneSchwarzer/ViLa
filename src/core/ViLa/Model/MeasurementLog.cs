@@ -56,8 +56,8 @@ namespace ViLa.Model
         /// <summary>
         /// Ermittelt die aktuell ermittelte Leistung der letzen Minute in kWh
         /// </summary>
-        public float CurrentPower => Measurements.Count < 2 ? 
-            Measurements.FirstOrDefault().Power : 
+        public float CurrentPower => Measurements.Count < 2 ?
+            Measurements.FirstOrDefault().Power :
             Measurements.TakeLast(2).Take(1).FirstOrDefault().Power;
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace ViLa.Model
         /// </summary>
         [XmlAttribute("cost")]
         public float FinalCost { get; set; }
-        
+
         /// <summary>
         /// Liefert oder setzt den finalen Startzeitpunkt
         /// </summary>

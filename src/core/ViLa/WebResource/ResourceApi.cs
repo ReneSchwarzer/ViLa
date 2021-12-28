@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.Json;
 using ViLa.Model;
 using WebExpress.Attribute;
+using WebExpress.Message;
+using WebExpress.WebResource;
 
 namespace ViLa.WebResource
 {
@@ -24,18 +26,19 @@ namespace ViLa.WebResource
         /// <summary>
         /// Initialisierung
         /// </summary>
-        public override void Initialization()
+        /// <param name="context">Der Kontext</param>
+        public override void Initialization(IResourceContext context)
         {
-            base.Initialization();
+            base.Initialization(context);
         }
 
         /// <summary>
         /// Verarbeitung
         /// </summary>
-        public override void Process()
+        /// <param name="request">Die Anfrage</param>
+        /// <returns>Ein Objekt welches mittels JsonSerializer serialisiert werden kann.</returns>
+        public override object GetData(Request request)
         {
-            base.Process();
-
             static string[] createArray(int size)
             {
                 var array = new string[size];
@@ -58,7 +61,7 @@ namespace ViLa.WebResource
                 Cost = string.Format("{0:F2}", ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? ViewModel.Instance.CurrentMeasurementLog.Cost : "-"),
                 Now = ViewModel.Now,
                 CurrentPower = string.Format("{0:F2}", ViewModel.Instance.CurrentPower),
-                ChartLabels = ViewModel.Instance.ActiveCharging ? 
+                ChartLabels = ViewModel.Instance.ActiveCharging ?
                     ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ViewModel.Instance.CurrentMeasurementLog.Measurements.IndexOf(x).ToString()).ToArray() :
                     createArray(ViewModel.Instance.CurrentMeasurementLog.Measurements.Count),
                 ChartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => (x.Power * 60).ToString(CultureInfo.InvariantCulture)).ToArray()
@@ -69,7 +72,7 @@ namespace ViLa.WebResource
                 WriteIndented = true
             };
 
-            Content = JsonSerializer.Serialize(api, options);
+            return JsonSerializer.Serialize(api, options);
         }
     }
 }

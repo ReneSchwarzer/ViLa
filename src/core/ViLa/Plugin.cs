@@ -8,8 +8,8 @@ using WebExpress.Plugin;
 namespace ViLa
 {
     [ID("ViLa")]
-    [Name("plugin.name")]
-    [Description("plugin.description")]
+    [Name("vila:plugin.name")]
+    [Description("vila:plugin.description")]
     [Icon("/assets/img/vila.svg")]
     public sealed class Plugin : IPlugin
     {

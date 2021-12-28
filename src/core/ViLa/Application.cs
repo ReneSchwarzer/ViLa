@@ -5,10 +5,11 @@ namespace ViLa
 {
     [ID("ViLa")]
     [Name("app.name")]
-    [Description("app.description")]
+    [Description("vila:app.description")]
     [Icon("/assets/img/vila.svg")]
     [AssetPath("/")]
     [ContextPath("/vila")]
+    [Option("webexpress.webapp.*")]
     public sealed class Application : IApplication
     {
         /// <summary>
