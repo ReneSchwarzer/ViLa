@@ -31,6 +31,9 @@ vila.history.label=History
 vila.log.label=Logging
 vila.off.label=Off
 vila.on.label=On
+vila.comment.label=Comment
+vila.comment.description=
+vila.comment.submit=Submit
 
 vila.setting.label=Settings
 vila.setting.general.label=General

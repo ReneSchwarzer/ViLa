@@ -86,6 +86,8 @@ namespace ViLa.WebPage
                 Styles = new List<string>() { "max-width: 80%;" },
                 Minimum = 0
             });
+
+            context.Uri.Display = id.Value;
         }
     }
 }

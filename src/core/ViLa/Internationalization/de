@@ -29,6 +29,9 @@ vila.history.label=Verlauf
 vila.log.label=Logging
 vila.off.label=Aus
 vila.on.label=An
+vila.comment.label=Kommentar
+vila.comment.description=
+vila.comment.submit=Abschicken
 
 vila.setting.label=Einstellungen
 vila.setting.general.label=Allgemein

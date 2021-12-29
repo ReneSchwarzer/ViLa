@@ -115,6 +115,12 @@ namespace ViLa.Model
         public string Currency { get; set; }
 
         /// <summary>
+        /// Liefert oder setzt die Logitems
+        /// </summary>
+        [XmlElement("comment")]
+        public List<CommentItem> Comments { get; set; } = new List<CommentItem>();
+
+        /// <summary>
         /// Setzt die Werte zurück
         /// </summary>
         public void Reset()

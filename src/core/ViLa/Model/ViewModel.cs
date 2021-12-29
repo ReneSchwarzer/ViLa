@@ -508,32 +508,7 @@ namespace ViLa.Model
             ActiveMeasurementLog.Currency = Settings.Currency;
 
             // Messung speichern
-            var serializer = new XmlSerializer(typeof(MeasurementLog));
-            var xmlns = new XmlSerializerNamespaces();
-            xmlns.Add(string.Empty, string.Empty);
-
-            using (var memoryStream = new MemoryStream())
-            {
-                serializer.Serialize(memoryStream, ActiveMeasurementLog, xmlns);
-
-                var utf = new UTF8Encoding();
-                var fileName = Path.Combine(Context.Host.AssetPath, "measurements", string.Format("{0}.xml", ActiveMeasurementLog.ID));
-
-                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(fileName));
-                }
-
-                File.WriteAllText
-                (
-                    fileName,
-                    utf.GetString(memoryStream.ToArray())
-                );
-
-                HistoryMeasurementLog.Add(ActiveMeasurementLog);
-
-                Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.charging.save"), fileName)));
-            }
+            SaveMeasurementLog();
 
             ActiveMeasurementLog = null;
             ElectricContactorStatus = false;
@@ -569,6 +544,71 @@ namespace ViLa.Model
         public MeasurementLog GetHistoryMeasurementLog(string id)
         {
             return HistoryMeasurementLog.Where(x => x.ID.Equals(id)).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Speichert ein abgeschlossenes Messprotokoll
+        /// </summary>
+        public void SaveMeasurementLog()
+        {
+            var serializer = new XmlSerializer(typeof(MeasurementLog));
+            var xmlns = new XmlSerializerNamespaces();
+            xmlns.Add(string.Empty, string.Empty);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                serializer.Serialize(memoryStream, ActiveMeasurementLog, xmlns);
+
+                var utf = new UTF8Encoding();
+                var fileName = Path.Combine(Context.Host.AssetPath, "measurements", string.Format("{0}.xml", ActiveMeasurementLog.ID));
+
+                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+                }
+
+                File.WriteAllText
+                (
+                    fileName,
+                    utf.GetString(memoryStream.ToArray())
+                );
+
+                HistoryMeasurementLog.Add(ActiveMeasurementLog);
+
+                Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.charging.save"), fileName)));
+            }
+        }
+
+        /// <summary>
+        /// Ändert ein abgeschlossenes Messprotokoll
+        /// </summary>
+        /// <param name="measurement">Das Messprotokoll, welches upgedatet werden soll</param>
+        public void UpdateMeasurementLog(MeasurementLog measurement)
+        {
+            var serializer = new XmlSerializer(typeof(MeasurementLog));
+            var xmlns = new XmlSerializerNamespaces();
+            xmlns.Add(string.Empty, string.Empty);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                serializer.Serialize(memoryStream, measurement, xmlns);
+
+                var utf = new UTF8Encoding();
+                var fileName = Path.Combine(Context.Host.AssetPath, "measurements", string.Format("{0}.xml", measurement.ID));
+
+                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+                }
+
+                File.WriteAllText
+                (
+                    fileName,
+                    utf.GetString(memoryStream.ToArray())
+                );
+
+                Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.charging.save"), fileName)));
+            }
         }
 
         /// <summary>
