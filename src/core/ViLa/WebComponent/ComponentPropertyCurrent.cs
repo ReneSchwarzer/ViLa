@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using ViLa.Model;
-using WebExpress.Attribute;
+using WebExpress.WebAttribute;
 using WebExpress.Html;
 using WebExpress.Internationalization;
-using WebExpress.UI.Attribute;
+using WebExpress.UI.WebAttribute;
 using WebExpress.UI.WebComponent;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebComponent;
@@ -15,7 +15,7 @@ namespace ViLa.WebComponent
     [Application("ViLa")]
     [Context("dashboard")]
     [Context("history")]
-    public sealed class ComponentPropertyCurrent : ControlList, IComponent
+    public sealed class ComponentPropertyCurrent : ComponentControlList
     {
         /// <summary>
         /// Liefert den Titel
@@ -56,8 +56,10 @@ namespace ViLa.WebComponent
         /// Initialisierung
         /// </summary>
         /// <param name="context">Der Kontext</param>
-        public void Initialization(IComponentContext context)
+        public override void Initialization(IComponentContext context)
         {
+            base.Initialization(context);
+
             Margin = new PropertySpacingMargin(PropertySpacing.Space.Two);
             Layout = TypeLayoutList.Flush;
 

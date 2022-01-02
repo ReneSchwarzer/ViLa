@@ -3,9 +3,9 @@ using System.Linq;
 using System.Text;
 using ViLa.Model;
 using ViLa.WebControl;
-using WebExpress.Attribute;
+using WebExpress.WebAttribute;
 using WebExpress.Html;
-using WebExpress.UI.Attribute;
+using WebExpress.UI.WebAttribute;
 using WebExpress.UI.WebComponent;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebComponent;
@@ -16,7 +16,7 @@ namespace ViLa.WebComponent
     [Section(Section.ContentSecondary)]
     [Module("vila")]
     [Context("details")]
-    public sealed class ComponentContentComment : ControlPanel, IComponent
+    public sealed class ComponentContentComment : ComponentControlPanel
     {
         /// <summary>
         /// Das Kommentierungsformular
@@ -67,8 +67,9 @@ namespace ViLa.WebComponent
         /// Initialisierung
         /// </summary>
         /// <param name="context">Der Kontext</param>
-        public void Initialization(IComponentContext context)
+        public override void Initialization(IComponentContext context)
         {
+            base.Initialization(context);
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using ViLa.Model;
-using WebExpress.Attribute;
+using WebExpress.WebAttribute;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebPage;
 using WebExpress.WebResource;

@@ -1,7 +1,7 @@
 ﻿using ViLa.Model;
-using WebExpress.Attribute;
+using WebExpress.WebAttribute;
 using WebExpress.Html;
-using WebExpress.UI.Attribute;
+using WebExpress.UI.WebAttribute;
 using WebExpress.UI.WebComponent;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebComponent;
@@ -13,7 +13,7 @@ namespace ViLa.WebComponent
     [Section(Section.PropertySecondary)]
     [Application("ViLa")]
     [Context("details")]
-    public sealed class ComponentPropertyDelete : ControlButtonLink, IComponent
+    public sealed class ComponentPropertyDelete : ComponentControlButtonLink
     {
         /// <summary>
         /// Liefert den modalen Dialog zur Bestätigung der Löschaktion
@@ -36,8 +36,10 @@ namespace ViLa.WebComponent
         /// Initialisierung
         /// </summary>
         /// <param name="context">Der Kontext</param>
-        public void Initialization(IComponentContext context)
+        public override void Initialization(IComponentContext context)
         {
+            base.Initialization(context);
+
             Text = "vila:vila.delete.label";
             Margin = new PropertySpacingMargin(PropertySpacing.Space.Two);
             BackgroundColor = new PropertyColorButton(TypeColorButton.Danger);

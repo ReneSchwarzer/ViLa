@@ -1,6 +1,6 @@
 ﻿
 using System.Reflection;
-using WebExpress.Attribute;
+using WebExpress.WebAttribute;
 using WebExpress.UI.WebControl;
 using WebExpress.Uri;
 using WebExpress.WebApp.WebPage;

@@ -1,7 +1,7 @@
 ﻿using ViLa.WebPage;
-using WebExpress.Attribute;
+using WebExpress.WebAttribute;
 using WebExpress.Html;
-using WebExpress.UI.Attribute;
+using WebExpress.UI.WebAttribute;
 using WebExpress.UI.WebComponent;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebComponent;
@@ -11,7 +11,7 @@ namespace ViLa.WebComponent
 {
     [Section(Section.AppNavigationPreferences)]
     [Application("ViLa")]
-    public sealed class ComponentHeaderDashbord : ControlNavigationItemLink, IComponent
+    public sealed class ComponentHeaderDashbord : ComponentControlNavigationItemLink
     {
         /// <summary>
         /// Konstruktor
@@ -19,15 +19,16 @@ namespace ViLa.WebComponent
         public ComponentHeaderDashbord()
             : base()
         {
-
         }
 
         /// <summary>
         /// Initialisierung
         /// </summary>
         /// <param name="context">Der Kontext</param>
-        public void Initialization(IComponentContext context)
+        public override void Initialization(IComponentContext context)
         {
+            base.Initialization(context);
+
             TextColor = new PropertyColorText(TypeColorText.Light);
             Text = "vila:vila.dashboard.label";
             Icon = new PropertyIcon(TypeIcon.TachometerAlt);
@@ -45,6 +46,5 @@ namespace ViLa.WebComponent
 
             return base.Render(context);
         }
-
     }
 }

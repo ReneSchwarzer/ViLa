@@ -1,8 +1,8 @@
 ﻿using ViLa.Model;
-using WebExpress.Condition;
+using WebExpress.WebCondition;
 using WebExpress.Message;
 
-namespace ViLa.Condition
+namespace ViLa.WebCondition
 {
     public class ConditionTimeControl : ICondition
     {

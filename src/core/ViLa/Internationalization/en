@@ -105,3 +105,6 @@ vila.log.electriccontactorstatus.error=StatusStatus of the contactor could not b
 vila.log.powermeterstatus.error=Status of the GPIO interface could not be determined.
 vila.log.init.gpio=GpioController has started.
 vila.log.update.exceeding=The gout of the GPIO interface has been exceeded by {0} ms.
+vila.log.on=Show debug output
+vila.log.off=Hide debug output
+vila.debug.description=Shows or hides the debug outputs.

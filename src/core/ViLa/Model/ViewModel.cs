@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using WebExpress.Internationalization;
-using WebExpress.Plugin;
+using WebExpress.WebPlugin;
 
 namespace ViLa.Model
 {

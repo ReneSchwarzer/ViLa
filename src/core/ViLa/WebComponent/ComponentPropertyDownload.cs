@@ -1,6 +1,6 @@
-﻿using WebExpress.Attribute;
+﻿using WebExpress.WebAttribute;
 using WebExpress.Html;
-using WebExpress.UI.Attribute;
+using WebExpress.UI.WebAttribute;
 using WebExpress.UI.WebComponent;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebComponent;
@@ -11,7 +11,7 @@ namespace ViLa.WebComponent
     [Section(Section.PropertyPreferences)]
     [Application("ViLa")]
     [Context("details")]
-    public sealed class ComponentPropertyDownload : ControlButtonLink, IComponent
+    public sealed class ComponentPropertyDownload : ComponentControlButtonLink
     {
         /// <summary>
         /// Konstruktor
@@ -25,8 +25,10 @@ namespace ViLa.WebComponent
         /// Initialisierung
         /// </summary>
         /// <param name="context">Der Kontext</param>
-        public void Initialization(IComponentContext context)
+        public override void Initialization(IComponentContext context)
         {
+            base.Initialization(context);
+
             Text = "vila:vila.download.label";
             BackgroundColor = new PropertyColorButton(TypeColorButton.Primary);
             Icon = new PropertyIcon(TypeIcon.Download);

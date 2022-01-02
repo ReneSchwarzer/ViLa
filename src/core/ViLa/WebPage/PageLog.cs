@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using ViLa.Model;
-using WebExpress.Attribute;
+using WebExpress.WebAttribute;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebPage;
 using WebExpress.WebResource;
@@ -78,14 +78,6 @@ namespace ViLa.WebPage
             }
 
             context.VisualTree.Content.Primary.Add(table);
-            context.VisualTree.Content.Primary.Add(new ControlPanelCenter(new ControlButtonLink()
-            {
-                Text = ViewModel.Instance.Settings.DebugMode ? "Debug-Ausgaben ausblenden" : "Debug-Ausgaben einblenden",
-                Icon = new PropertyIcon(TypeIcon.Bug),
-                TextColor = new PropertyColorText(TypeColorText.Warning),
-                Uri = context.Uri.Root.Append("/debug"),
-                Margin = new PropertySpacingMargin(PropertySpacing.Space.Three)
-            }));
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using ViLa.WebPage;
-using WebExpress.Attribute;
+using WebExpress.WebAttribute;
 using WebExpress.Html;
-using WebExpress.UI.Attribute;
+using WebExpress.UI.WebAttribute;
 using WebExpress.UI.WebComponent;
 using WebExpress.UI.WebControl;
 using WebExpress.Uri;
@@ -12,7 +12,7 @@ namespace ViLa.WebComponent
 {
     [Section(Section.AppSettingsPrimary)]
     [Application("ViLa")]
-    public sealed class ComponentHeaderSettings : ControlDropdownItemLink, IComponent
+    public sealed class ComponentHeaderSettings : ComponentControlDropdownItemLink
     {
         /// <summary>
         /// Konstruktor
@@ -26,8 +26,10 @@ namespace ViLa.WebComponent
         /// Initialisierung
         /// </summary>
         /// <param name="context">Der Kontext</param>
-        public void Initialization(IComponentContext context)
+        public override void Initialization(IComponentContext context)
         {
+            base.Initialization(context);
+
             TextColor = new PropertyColorText(TypeColorText.Dark);
             Text = "vila:vila.setting.label";
             Icon = new PropertyIcon(TypeIcon.Cog);

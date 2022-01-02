@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using WebExpress.Attribute;
+using WebExpress.WebAttribute;
 using WebExpress.Html;
-using WebExpress.Plugin;
-using WebExpress.UI.Attribute;
+using WebExpress.WebPlugin;
+using WebExpress.UI.WebAttribute;
 using WebExpress.UI.WebComponent;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebComponent;
@@ -13,7 +13,7 @@ namespace ViLa.WebComponent
 {
     [Section(Section.FooterPrimary)]
     [Application("ViLa")]
-    public sealed class ComponentFooterVersion : ControlText, IComponent
+    public sealed class ComponentFooterVersion : ComponentControlText
     {
         /// <summary>
         /// Konstruktor
@@ -27,8 +27,10 @@ namespace ViLa.WebComponent
         /// Initialisierung
         /// </summary>
         /// <param name="context">Der Kontext</param>
-        public void Initialization(IComponentContext context)
+        public override void Initialization(IComponentContext context)
         {
+            base.Initialization(context);
+
             TextColor = new PropertyColorText(TypeColorText.Muted);
             Format = TypeFormatText.Center;
             Size = new PropertySizeText(TypeSizeText.Small);

@@ -10,26 +10,27 @@ using WebExpress.WebPage;
 
 namespace ViLa.WebComponent
 {
-    [Section(Section.PropertyPrimary)]
+    [Section(Section.HeadlineSecondary)]
     [Application("ViLa")]
-    [Context("details")]
-    public sealed class ComponentPropertyArchive : ComponentControlButtonLink
+    [Context("log")]
+    public sealed class ComponentPropertyDebug : ComponentControlButtonLink
     {
         /// <summary>
         /// Liefert den modalen Dialog zur Bestätigung der Löschaktion
         /// </summary>
-        private ControlModalFormConfirm ModalDlg = new ControlModalFormConfirm("archive_btn")
+        private ControlModalFormConfirm ModalDlg = new ControlModalFormConfirm("debug")
         {
-            Header = "vila:vila.archive.label",
-            Content = new ControlFormularItemStaticText() { Text = "vila:vila.archive.description" }
+            Header = "vila:vila.debug.label",
+            Content = new ControlFormularItemStaticText() { Text = "vila:vila.debug.description" }
         };
 
         /// <summary>
         /// Konstruktor
         /// </summary>
-        public ComponentPropertyArchive()
-            : base("archive_btn")
+        public ComponentPropertyDebug()
+            : base("debug_btn")
         {
+           
         }
 
         /// <summary>
@@ -41,11 +42,12 @@ namespace ViLa.WebComponent
             base.Initialization(context);
 
             Margin = new PropertySpacingMargin(PropertySpacing.Space.Two);
-            BackgroundColor = new PropertyColorButton(TypeColorButton.Primary);
-            Icon = new PropertyIcon(TypeIcon.Clock);
+            BackgroundColor = new PropertyColorButton(TypeColorButton.Warning);
+            Icon = new PropertyIcon(TypeIcon.Bug);
             TextColor = new PropertyColorText(TypeColorText.Light);
 
-            ModalDlg.Confirm += OnConfirm;
+            ModalDlg.ButtonColor = new PropertyColorButton(TypeColorButton.Warning);
+            ModalDlg.Confirm += OnConfirm; 
 
             Modal = ModalDlg;
         }
@@ -57,8 +59,8 @@ namespace ViLa.WebComponent
         /// <param name="e">Das Eventargument</param>
         private void OnConfirm(object sender, FormularEventArgs e)
         {
-            var id = e.Context.Request.GetParameter("id");
-            ViewModel.Instance.ArchiveHistoryMeasurementLog(id.Value);
+            ViewModel.Instance.Settings.DebugMode = !ViewModel.Instance.Settings.DebugMode;
+            ViewModel.Instance.SaveSettings();
         }
 
         /// <summary>
@@ -68,9 +70,9 @@ namespace ViLa.WebComponent
         /// <returns>Das Control als HTML</returns>
         public override IHtmlNode Render(RenderContext context)
         {
-            Text = "vila:vila.archive.label";
+            Text = ViewModel.Instance.Settings.DebugMode ? "vila:vila.log.off" : "vila:vila.log.on";
 
-            ModalDlg.RedirectUri = context.Uri.Take(-1);
+            ModalDlg.RedirectUri = context.Uri;
 
             return base.Render(context);
         }
