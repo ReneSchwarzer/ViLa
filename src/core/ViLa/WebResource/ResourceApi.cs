@@ -67,12 +67,7 @@ namespace ViLa.WebResource
                 ChartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => (x.Power * 60).ToString(CultureInfo.InvariantCulture)).ToArray()
             };
 
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-
-            return JsonSerializer.Serialize(api, options);
+            return api;
         }
     }
 }

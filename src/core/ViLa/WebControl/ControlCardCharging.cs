@@ -7,6 +7,7 @@ using WebExpress.Html;
 using WebExpress.Internationalization;
 using WebExpress.UI.WebControl;
 using WebExpress.WebPage;
+using static WebExpress.Internationalization.InternationalizationManager;
 
 namespace ViLa.WebControl
 {
@@ -56,15 +57,15 @@ namespace ViLa.WebControl
             (
                 new ControlText("measurementtime")
                 {
-                    Text = string.Format(context.Culture, "vila:vila.charging.duration", ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null) : "-")
+                    Text = string.Format(context.Culture, I18N(context.Culture, "vila:vila.charging.duration"), ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null) : "-")
                 },
                 new ControlText("cost")
                 {
-                    Text = string.Format(context.Culture, "vila:vila.charging.cost", ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? ViewModel.Instance.CurrentMeasurementLog?.Cost : "-", ViewModel.Instance.Settings.Currency)
+                    Text = string.Format(context.Culture, I18N(context.Culture, "vila:vila.charging.cost"), ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? ViewModel.Instance.CurrentMeasurementLog?.Cost : "-", ViewModel.Instance.Settings.Currency)
                 },
                 new ControlText("power")
                 {
-                    Text = string.Format(context.Culture, "vila:vila.charging.consumption", ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? ViewModel.Instance.CurrentMeasurementLog?.Power : "-")
+                    Text = string.Format(context.Culture, I18N(context.Culture, "vila:vila.charging.consumption"), ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? ViewModel.Instance.CurrentMeasurementLog?.Power : "-")
                 })
             {
                 HorizontalAlignment = TypeHorizontalAlignment.Default,
