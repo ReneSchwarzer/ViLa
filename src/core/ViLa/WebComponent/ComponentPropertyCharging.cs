@@ -27,9 +27,10 @@ namespace ViLa.WebComponent
         /// Initialisierung
         /// </summary>
         /// <param name="context">Der Kontext</param>
-        public override void Initialization(IComponentContext context)
+        /// <param name="page">Die Seite, indem die Komonente aktiv ist</param>
+        public override void Initialization(IComponentContext context, IPage page)
         {
-            base.Initialization(context);
+            base.Initialization(context, page);
 
             Margin = new PropertySpacingMargin(PropertySpacing.Space.Two);
 

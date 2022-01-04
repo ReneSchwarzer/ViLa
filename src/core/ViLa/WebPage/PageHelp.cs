@@ -15,6 +15,7 @@ namespace ViLa.WebPage
     [Module("ViLa")]
     [Context("general")]
     [Context("help")]
+    [Cache]
     public sealed class PageHelp : PageWebApp
     {
         /// <summary>

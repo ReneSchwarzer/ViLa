@@ -14,6 +14,7 @@ namespace ViLa.WebResource
     [Path("/")]
     [IncludeSubPaths(true)]
     [Module("ViLa")]
+    [Cache]
     public sealed class ResourceMeasurements : WebExpress.WebResource.ResourceFile
     {
         /// <summary>

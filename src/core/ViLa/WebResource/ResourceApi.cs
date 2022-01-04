@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.Text.Json;
 using ViLa.Model;
-using WebExpress.WebAttribute;
 using WebExpress.Message;
+using WebExpress.WebAttribute;
 using WebExpress.WebResource;
 
 namespace ViLa.WebResource
@@ -13,6 +12,7 @@ namespace ViLa.WebResource
     [Segment("api")]
     [Path("/")]
     [Module("ViLa")]
+    [Cache]
     public sealed class ResourceApi : WebExpress.WebResource.ResourceApi
     {
         /// <summary>

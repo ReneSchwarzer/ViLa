@@ -12,6 +12,7 @@ namespace ViLa.WebComponent
 {
     [Section(Section.AppHelpSecondary)]
     [Application("ViLa")]
+    [Cache]
     public sealed class ComponentHeaderLogging : ComponentControlDropdownItemLink
     {
         /// <summary>
@@ -26,14 +27,16 @@ namespace ViLa.WebComponent
         /// Initialisierung
         /// </summary>
         /// <param name="context">Der Kontext</param>
-        public override void Initialization(IComponentContext context)
+        /// <param name="page">Die Seite, indem die Komonente aktiv ist</param>
+        public override void Initialization(IComponentContext context, IPage page)
         {
-            base.Initialization(context);
+            base.Initialization(context, page);
 
             TextColor = new PropertyColorText(TypeColorText.Dark);
             Text = "vila:vila.log.label";
             Icon = new PropertyIcon(TypeIcon.Book);
             Uri = new UriResource(context.Module.ContextPath, "log");
+            Active = page is IPageLogging ? TypeActive.Active : TypeActive.None;
         }
 
         /// <summary>
@@ -43,8 +46,6 @@ namespace ViLa.WebComponent
         /// <returns>Das Control als HTML</returns>
         public override IHtmlNode Render(RenderContext context)
         {
-            Active = context.Page is IPageLogging ? TypeActive.Active : TypeActive.None;
-
             return base.Render(context);
         }
 

@@ -12,6 +12,7 @@ namespace ViLa.WebResource
     [Path("/")]
     [IncludeSubPaths(true)]
     [Module("ViLa")]
+    [Cache]
     public sealed class ResourceAsset : WebExpress.WebResource.ResourceAsset
     {
         /// <summary>
