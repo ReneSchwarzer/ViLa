@@ -11,7 +11,7 @@ namespace ViLa.WebControl
         /// <summary>
         /// Bestimmt, wie die Messungen erfolgen sollen
         /// </summary>
-        public ControlFormularItemInputCheckbox Monday = new ControlFormularItemInputCheckbox("monday")
+        public ControlFormularItemInputCheckbox Monday { get; } = new ControlFormularItemInputCheckbox("monday")
         {
             Name = "auto",
             Label = "vila:vila.setting.form.mode.label",
@@ -26,7 +26,6 @@ namespace ViLa.WebControl
             : base("settings")
         {
             Name = "settings";
-            EnableCancelButton = false;
             Classes = new List<string>(new[] { "m-3" });
 
             Add(Monday);

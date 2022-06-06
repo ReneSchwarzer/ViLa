@@ -28,12 +28,10 @@ namespace ViLa.WebControl
             Add(Comment);
 
             Name = "form_comment";
-            EnableCancelButton = true;
             Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Three, PropertySpacing.Space.Five, PropertySpacing.Space.None);
             Layout = TypeLayoutFormular.Vertical;
             SubmitButton.Icon = new PropertyIcon(TypeIcon.PaperPlane);
             SubmitButton.Text = "vila:vila.comment.submit";
-            EnableCancelButton = false;
         }
 
         /// <summary>

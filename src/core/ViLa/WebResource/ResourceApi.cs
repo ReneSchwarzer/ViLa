@@ -13,7 +13,7 @@ namespace ViLa.WebResource
     [Path("/")]
     [Module("ViLa")]
     [Cache]
-    public sealed class ResourceApi : WebExpress.WebResource.ResourceApi
+    public sealed class ResourceApi : WebExpress.WebResource.ResourceRest
     {
         /// <summary>
         /// Konstruktor

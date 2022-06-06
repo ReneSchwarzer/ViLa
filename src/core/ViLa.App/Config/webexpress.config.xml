@@ -13,7 +13,8 @@
 
 	<culture>de-DE</culture>
 
-	<assets>./</assets>
+	<assets>./assets</assets>
+	<data>./data</data>
 	<contextpath></contextpath>
 	<stagedirectory>./</stagedirectory>
 

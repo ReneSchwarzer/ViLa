@@ -18,7 +18,7 @@ namespace ViLa.WebComponent
         /// <summary>
         /// Liefert den modalen Dialog zur Bestätigung der Löschaktion
         /// </summary>
-        private ControlModalFormConfirm ModalDlg = new ControlModalFormConfirm("archive_btn")
+        private ControlModalFormularConfirm ModalDlg { get; } = new ControlModalFormularConfirm("archive_btn")
         {
             Header = "vila:vila.archive.label",
             Content = new ControlFormularItemStaticText() { Text = "vila:vila.archive.description" }
@@ -48,7 +48,7 @@ namespace ViLa.WebComponent
 
             ModalDlg.Confirm += OnConfirm;
 
-            Modal = ModalDlg;
+            Modal = new PropertyModal(TypeModal.Modal, ModalDlg);
         }
 
         /// <summary>

@@ -90,7 +90,6 @@ namespace ViLa.WebControl
             : base("settings")
         {
             Name = "settings";
-            EnableCancelButton = false;
             Classes = new List<string>(new[] { "m-3" });
 
             Add(ImpulsePerkWhCtrl);
@@ -134,11 +133,11 @@ namespace ViLa.WebControl
             }
             catch (Exception ex)
             {
-                e.Results.Add(new ValidationResult()
-                {
-                    Text = ex.Message,
-                    Type = TypesInputValidity.Error
-                });
+                e.Results.Add(new ValidationResult
+                (
+                    TypesInputValidity.Error,
+                    ex.Message
+                ));
             }
         }
 
@@ -156,20 +155,20 @@ namespace ViLa.WebControl
 
                 if (value < 0)
                 {
-                    e.Results.Add(new ValidationResult()
-                    {
-                        Text = "vila:vila.setting.form.electricitypriceperkwhctrl.validation.negative",
-                        Type = TypesInputValidity.Error
-                    });
+                    e.Results.Add(new ValidationResult
+                    (
+                        TypesInputValidity.Error, 
+                        "vila:vila.setting.form.electricitypriceperkwhctrl.validation.negative"
+                    ));
                 }
             }
             catch (Exception ex)
             {
-                e.Results.Add(new ValidationResult()
-                {
-                    Text = ex.Message,
-                    Type = TypesInputValidity.Error
-                });
+                e.Results.Add(new ValidationResult
+                (
+                    TypesInputValidity.Error,
+                    ex.Message
+                ));
             }
         }
 
@@ -188,21 +187,21 @@ namespace ViLa.WebControl
 
                     if (value < 0 && value != -1)
                     {
-                        e.Results.Add(new ValidationResult()
-                        {
-                            Text = "vila:vila.setting.form.validation.low",
-                            Type = TypesInputValidity.Error
-                        });
+                        e.Results.Add(new ValidationResult
+                        (
+                            TypesInputValidity.Error,
+                            "vila:vila.setting.form.validation.low"
+                        ));
                     }
                 }
             }
             catch (Exception ex)
             {
-                e.Results.Add(new ValidationResult()
-                {
-                    Text = ex.Message,
-                    Type = TypesInputValidity.Error
-                });
+                e.Results.Add(new ValidationResult
+                (
+                    TypesInputValidity.Error,
+                    ex.Message                    
+                ));
             }
         }
 
@@ -221,21 +220,21 @@ namespace ViLa.WebControl
 
                     if (value < -1)
                     {
-                        e.Results.Add(new ValidationResult()
-                        {
-                            Text = "vila:vila.setting.form.validation.low",
-                            Type = TypesInputValidity.Error
-                        });
+                        e.Results.Add(new ValidationResult
+                        (
+                            TypesInputValidity.Error,
+                            "vila:vila.setting.form.validation.low"                            
+                        ));
                     }
                 }
             }
             catch (Exception ex)
             {
-                e.Results.Add(new ValidationResult()
-                {
-                    Text = ex.Message,
-                    Type = TypesInputValidity.Error
-                });
+                e.Results.Add(new ValidationResult
+                (
+                    TypesInputValidity.Error,
+                    ex.Message
+                ));
             }
         }
 
@@ -254,21 +253,21 @@ namespace ViLa.WebControl
 
                     if (value < -1)
                     {
-                        e.Results.Add(new ValidationResult()
-                        {
-                            Text = "vila:vila.setting.form.validation.low",
-                            Type = TypesInputValidity.Error
-                        });
+                        e.Results.Add(new ValidationResult
+                        (
+                            TypesInputValidity.Error,
+                            "vila:vila.setting.form.validation.low"
+                        ));
                     }
                 }
             }
             catch (Exception ex)
             {
-                e.Results.Add(new ValidationResult()
-                {
-                    Text = ex.Message,
-                    Type = TypesInputValidity.Error
-                });
+                e.Results.Add(new ValidationResult
+                (
+                    TypesInputValidity.Error,
+                    ex.Message
+                ));
             }
         }
 
@@ -283,28 +282,28 @@ namespace ViLa.WebControl
             {
                 if (string.IsNullOrWhiteSpace(e.Value))
                 {
-                    e.Results.Add(new ValidationResult()
-                    {
-                        Text = "vila:vila.setting.currency.validation.null",
-                        Type = TypesInputValidity.Error
-                    });
+                    e.Results.Add(new ValidationResult
+                    (
+                        TypesInputValidity.Error,
+                        "vila:vila.setting.currency.validation.null"
+                    ));
                 }
                 else if (e.Value.Length > 10)
                 {
-                    e.Results.Add(new ValidationResult()
-                    {
-                        Text = "vila:vila.setting.currency.validation.tolong",
-                        Type = TypesInputValidity.Error
-                    });
+                    e.Results.Add(new ValidationResult
+                    (
+                        TypesInputValidity.Error,
+                        "vila:vila.setting.currency.validation.tolong"
+                    ));
                 }
             }
             catch (Exception ex)
             {
-                e.Results.Add(new ValidationResult()
-                {
-                    Text = ex.Message,
-                    Type = TypesInputValidity.Error
-                });
+                e.Results.Add(new ValidationResult
+                (
+                    TypesInputValidity.Error,
+                    ex.Message
+                ));
             }
         }
 

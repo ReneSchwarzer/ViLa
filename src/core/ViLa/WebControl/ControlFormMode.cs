@@ -26,7 +26,6 @@ namespace ViLa.WebControl
             : base("settings")
         {
             Name = "settings";
-            EnableCancelButton = false;
             Classes = new List<string>(new[] { "m-3" });
 
             Add(Mode);

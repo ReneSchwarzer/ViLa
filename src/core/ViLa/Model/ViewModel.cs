@@ -231,7 +231,7 @@ namespace ViLa.Model
 
 
             // Alte Messprotokolle laden
-            var directoryName = Path.Combine(Context.Host.AssetPath, "measurements");
+            var directoryName = Path.Combine(Context.Host.DataPath, "measurements");
 
             if (!Directory.Exists(directoryName))
             {
@@ -560,7 +560,7 @@ namespace ViLa.Model
                 serializer.Serialize(memoryStream, ActiveMeasurementLog, xmlns);
 
                 var utf = new UTF8Encoding();
-                var fileName = Path.Combine(Context.Host.AssetPath, "measurements", string.Format("{0}.xml", ActiveMeasurementLog.ID));
+                var fileName = Path.Combine(Context.Host.DataPath, "measurements", string.Format("{0}.xml", ActiveMeasurementLog.ID));
 
                 if (!Directory.Exists(Path.GetDirectoryName(fileName)))
                 {
@@ -594,7 +594,7 @@ namespace ViLa.Model
                 serializer.Serialize(memoryStream, measurement, xmlns);
 
                 var utf = new UTF8Encoding();
-                var fileName = Path.Combine(Context.Host.AssetPath, "measurements", string.Format("{0}.xml", measurement.ID));
+                var fileName = Path.Combine(Context.Host.DataPath, "measurements", string.Format("{0}.xml", measurement.ID));
 
                 if (!Directory.Exists(Path.GetDirectoryName(fileName)))
                 {
@@ -622,7 +622,7 @@ namespace ViLa.Model
                 var measurementLog = GetHistoryMeasurementLog(id);
                 if (measurementLog != null)
                 {
-                    File.Delete(System.IO.Path.Combine(Context.Host.AssetPath, "measurements", $"{measurementLog.ID}.xml"));
+                    File.Delete(Path.Combine(Context.Host.DataPath, "measurements", $"{measurementLog.ID}.xml"));
                     ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.delete.file"), id)));
 
                     HistoryMeasurementLog.Remove(measurementLog);
@@ -649,7 +649,7 @@ namespace ViLa.Model
                 var measurementLog = GetHistoryMeasurementLog(id);
                 if (measurementLog != null)
                 {
-                    var archive = Path.Combine(ViewModel.Instance.Context.Host.AssetPath, "archive");
+                    var archive = Path.Combine(ViewModel.Instance.Context.Host.DataPath, "archive");
 
                     if (!Directory.Exists(archive))
                     {
@@ -668,7 +668,7 @@ namespace ViLa.Model
                         Directory.CreateDirectory(month);
                     }
 
-                    var source = Path.Combine(Context.Host.AssetPath, "measurements", id + ".xml");
+                    var source = Path.Combine(Context.Host.DataPath, "measurements", id + ".xml");
                     var destination = Path.Combine(month, id + ".xml");
 
                     File.Move(source, destination);

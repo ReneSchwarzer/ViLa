@@ -18,7 +18,7 @@ namespace ViLa.WebComponent
         /// <summary>
         /// Liefert den modalen Dialog zur Bestätigung der Löschaktion
         /// </summary>
-        private ControlModalFormConfirm ModalDlg = new ControlModalFormConfirm("debug")
+        private ControlModalFormularConfirm ModalDlg = new ControlModalFormularConfirm("debug")
         {
             Header = "vila:vila.debug.label",
             Content = new ControlFormularItemStaticText() { Text = "vila:vila.debug.description" }
@@ -50,7 +50,7 @@ namespace ViLa.WebComponent
             ModalDlg.ButtonColor = new PropertyColorButton(TypeColorButton.Warning);
             ModalDlg.Confirm += OnConfirm; 
 
-            Modal = ModalDlg;
+            Modal = new PropertyModal(TypeModal.Modal, ModalDlg);
         }
 
         /// <summary>
