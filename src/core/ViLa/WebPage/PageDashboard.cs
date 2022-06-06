@@ -60,7 +60,7 @@ namespace ViLa.WebPage
                         {
                             context.VisualTree.Content.Secondary.Add(new ControlText()
                             {
-                                Text = $"{ Culture.DateTimeFormat.GetMonthName(i) }",
+                                Text = $"{ Culture.DateTimeFormat.GetMonthName(i) } - {string.Format(context.Culture, "{0:F2}", m.Sum(x => x.Cost))} {ViewModel.Instance.Settings.Currency}",
                                 Format = TypeFormatText.H4,
                                 Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
                             });
