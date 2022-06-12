@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using ViLa.Model;
-using WebExpress.WebAttribute;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebPage;
+using WebExpress.WebAttribute;
 using WebExpress.WebResource;
 
 namespace ViLa.WebPage
 {
-    [ID("Log")]
+    [Id("Log")]
     [Title("vila:vila.log.label")]
     [Segment("log", "vila:vila.log.label")]
     [Path("/")]

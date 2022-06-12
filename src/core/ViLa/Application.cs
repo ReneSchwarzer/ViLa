@@ -3,7 +3,7 @@ using WebExpress.WebAttribute;
 
 namespace ViLa
 {
-    [ID("ViLa")]
+    [Id("ViLa")]
     [Name("app.name")]
     [Description("vila:app.description")]
     [Icon("/assets/img/vila.svg")]

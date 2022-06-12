@@ -8,7 +8,7 @@ using WebExpress.WebResource;
 
 namespace ViLa.WebResource
 {
-    [ID("Api")]
+    [Id("Api")]
     [Segment("api")]
     [Path("/")]
     [Module("ViLa")]

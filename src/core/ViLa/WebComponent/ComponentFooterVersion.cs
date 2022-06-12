@@ -44,7 +44,7 @@ namespace ViLa.WebComponent
         /// <returns>Das Control als HTML</returns>
         public override IHtmlNode Render(RenderContext context)
         {
-            var webexpress = PluginManager.Plugins.Where(x => x.PluginID == "webexpress.ui").FirstOrDefault();
+            var webexpress = PluginManager.Plugins.Where(x => x.PluginId == "webexpress.ui").FirstOrDefault();
             var plugin = PluginManager.Plugins.Where(x => x.Assembly == GetType().Assembly).FirstOrDefault();
 
             Text = string.Format

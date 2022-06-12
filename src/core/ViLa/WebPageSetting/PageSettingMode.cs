@@ -1,15 +1,15 @@
 ﻿using ViLa.WebControl;
 using ViLa.WebPage;
-using WebExpress.WebAttribute;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebPage;
 using WebExpress.WebApp.WebSettingPage;
+using WebExpress.WebAttribute;
 using WebExpress.WebResource;
 
 namespace ViLa.WebPageSetting
 {
-    [ID("SettingMode")]
+    [Id("SettingMode")]
     [Title("vila:vila.setting.mode.label")]
     [Segment("mode", "vila:vila.setting.mode.label")]
     [Path("/settings")]

@@ -8,7 +8,7 @@ namespace ViLa.WebResource
     /// <summary>
     /// Lieferung einer im Assamby eingebetteten Ressource
     /// </summary>
-    [ID("Measurements")]
+    [Id("Measurements")]
     [Title("Measurements")]
     [Segment("measurements", "")]
     [Path("/")]

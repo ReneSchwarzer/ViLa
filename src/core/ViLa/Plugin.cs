@@ -7,7 +7,7 @@ using WebExpress.WebPlugin;
 
 namespace ViLa
 {
-    [ID("ViLa")]
+    [Id("ViLa")]
     [Name("vila:plugin.name")]
     [Description("vila:plugin.description")]
     [Icon("/assets/img/vila.svg")]

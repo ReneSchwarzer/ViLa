@@ -1,14 +1,14 @@
 ﻿
 using System.Reflection;
-using WebExpress.WebAttribute;
 using WebExpress.UI.WebControl;
 using WebExpress.Uri;
 using WebExpress.WebApp.WebPage;
+using WebExpress.WebAttribute;
 using WebExpress.WebResource;
 
 namespace ViLa.WebPage
 {
-    [ID("Help")]
+    [Id("Help")]
     [Title("vila:vila.help.label")]
     [Segment("help", "vila:vila.help.label")]
     [Path("/")]

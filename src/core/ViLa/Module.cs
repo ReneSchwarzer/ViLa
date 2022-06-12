@@ -3,7 +3,7 @@ using WebExpress.WebModule;
 
 namespace ViLa
 {
-    [ID("ViLa")]
+    [Id("ViLa")]
     [Name("vila:module.name")]
     [Description("vila:module.description")]
     [Icon("/assets/img/Logo.png")]

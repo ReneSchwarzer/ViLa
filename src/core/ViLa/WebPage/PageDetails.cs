@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ViLa.Model;
-using WebExpress.WebAttribute;
 using WebExpress.Internationalization;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebPage;
+using WebExpress.WebAttribute;
 using WebExpress.WebResource;
 
 namespace ViLa.WebPage
 {
-    [ID("Details")]
+    [Id("Details")]
     [Title("vila:vila.details.label")]
     [SegmentGuid("id", "vila:vila.details.id", SegmentGuidAttribute.Format.Simple)]
     [Path("/")]
@@ -63,14 +63,14 @@ namespace ViLa.WebPage
 
             context.VisualTree.Content.Primary.Add(new ControlText()
             {
-                Text = $"{ measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongDatePattern) }",
+                Text = $"{measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongDatePattern)}",
                 Format = TypeFormatText.H5,
                 TextColor = new PropertyColorText(TypeColorText.Primary)
             });
 
             context.VisualTree.Content.Primary.Add(new ControlText()
             {
-                Text = $"{ measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongTimePattern) } - { measurementLog?.FinalTill.ToString(Culture.DateTimeFormat.LongTimePattern) } {this.I18N("vila:vila.charging.time")}",
+                Text = $"{measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongTimePattern)} - {measurementLog?.FinalTill.ToString(Culture.DateTimeFormat.LongTimePattern)} {this.I18N("vila:vila.charging.time")}",
                 Format = TypeFormatText.Paragraph,
                 TextColor = new PropertyColorText(TypeColorText.Dark)
             });

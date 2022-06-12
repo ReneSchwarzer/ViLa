@@ -195,11 +195,6 @@ namespace ViLa.Model
         public CultureInfo Culture { get; set; }
 
         /// <summary>
-        /// Liefert den I18N-Key
-        /// </summary>
-        public string I18N_PluginID => Context.PluginID;
-
-        /// <summary>
         /// Konstruktor
         /// </summary>
         private ViewModel()

@@ -1,16 +1,16 @@
 ﻿using ViLa.WebCondition;
 using ViLa.WebControl;
 using ViLa.WebPage;
-using WebExpress.WebAttribute;
 using WebExpress.UI.WebControl;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebPage;
 using WebExpress.WebApp.WebSettingPage;
+using WebExpress.WebAttribute;
 using WebExpress.WebResource;
 
 namespace ViLa.WebPageSetting
 {
-    [ID("SettingTimeControl")]
+    [Id("SettingTimeControl")]
     [Title("vila:vila.setting.timecontrol.label")]
     [Segment("timecontrol", "vila:vila.setting.timecontrol.label")]
     [Path("/settings")]
