@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Version>1.4.0.0</Version>
+		<AssemblyVersion>1.4.0.0</AssemblyVersion>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/ReneSchwarzer/ViLa.git</RepositoryUrl>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Assets\img\Favicon.png" />
+		<None Remove="Assets\img\Logo.png" />
+		<None Remove="Assets\img\vila.svg" />
+		<None Remove="Assets\js\vila.dashboard.js" />
+		<None Remove="Internationalization\de" />
+		<None Remove="Internationalization\en" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Assets\img\Favicon.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Assets\img\Logo.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Assets\img\vila.svg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Assets\js\vila.dashboard.js">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Internationalization\de" />
+		<EmbeddedResource Include="Internationalization\en" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Device.Gpio" Version="2.3.0-prerelease.22520.10" />
+		<PackageReference Include="WebExpress" Version="1.4.7-alpha">
+			<Private>false</Private>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<PackageReference Include="WebExpress.UI" Version="1.4.7-alpha">
+			<Private>false</Private>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<PackageReference Include="WebExpress.WebApp" Version="1.4.7-alpha">
+			<Private>false</Private>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config version = "1">
+
+  <!-- Loggingeinstellungen Off, Override, Append-->
+  <log modus="Off" path="/var/log/" encoding="utf-8" filename="inventory.log" timepattern="dd.MM.yyyy HH:mm:ss" />
+
+	<uri>http://localhost/</uri>
+	<endpoint uri="http://localhost/"/>
+
+	<limit>
+		<connectionlimit>300</connectionlimit>
+		<uploadlimit>3000000000</uploadlimit>
+	</limit>
+
+	<culture>de-DE</culture>
+
+	<packages>./packages</packages>
+	<assets>./assets</assets>
+	<data>./data</data>
+	<contextpath></contextpath>
+
+</config>
