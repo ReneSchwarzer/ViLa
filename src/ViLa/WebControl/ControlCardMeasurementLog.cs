@@ -2,7 +2,7 @@
 using ViLa.WebPage;
 using ViLa.WebParameter;
 using WebExpress.Internationalization;
-using WebExpress.UI.WebControl;
+using WebExpress.WebUI.WebControl;
 using WebExpress.WebComponent;
 using WebExpress.WebHtml;
 using WebExpress.WebPage;

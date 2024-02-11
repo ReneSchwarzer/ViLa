@@ -10,6 +10,8 @@ namespace ViLa
     [Name("vila:plugin.name")]
     [Description("vila:plugin.description")]
     [Icon("/assets/img/vila.svg")]
+    [Dependency("webexpress.webui")]
+    [Dependency("webexpress.webapp")]
     public sealed class Plugin : IPlugin
     {
         /// <summary>

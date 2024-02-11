@@ -35,7 +35,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="WebExpress" Version="1.4.7-alpha" />
+		<PackageReference Include="WebExpress" Version="0.0.2-alpha" />
+		<PackageReference Include="WebExpress.WebApp" Version="0.0.2-alpha" />
+		<PackageReference Include="WebExpress.WebIndex" Version="0.0.3-alpha" />
+		<PackageReference Include="WebExpress.WebUI" Version="0.0.2-alpha" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">

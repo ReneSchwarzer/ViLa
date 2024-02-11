@@ -36,16 +36,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Device.Gpio" Version="2.3.0-prerelease.22520.10" />
-		<PackageReference Include="WebExpress" Version="1.4.7-alpha">
+		<PackageReference Include="System.Device.Gpio" Version="3.0.0" />
+		<PackageReference Include="WebExpress" Version="0.0.2-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="WebExpress.UI" Version="1.4.7-alpha">
+		<PackageReference Include="WebExpress.WebUI" Version="0.0.2-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="WebExpress.WebApp" Version="1.4.7-alpha">
+		<PackageReference Include="WebExpress.WebIndex" Version="0.0.3-alpha">
+			<Private>false</Private>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<PackageReference Include="WebExpress.WebApp" Version="0.0.2-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
