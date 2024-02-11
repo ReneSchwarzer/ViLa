@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using ViLa.Model;
+using ViLa.WebParameter;
 using WebExpress.WebApp.WebPage;
 using WebExpress.WebAttribute;
+using WebExpress.WebComponent;
 using WebExpress.WebResource;
 using WebExpress.WebScope;
 using WebExpress.WebUI.WebControl;
@@ -56,7 +58,7 @@ namespace ViLa.WebPage
                 row.Cells.Add(new ControlText() { Text = string.Format("{0:F2} kWh", measurementLog.FinalPower) });
                 row.Cells.Add(new ControlText() { Text = string.Format("{0:F2} {1}", measurementLog.FinalCost, measurementLog.Currency) });
                 row.Cells.Add(new ControlTag() { Text = measurementLog.Tag, BackgroundColor = new PropertyColorBackground(TypeColorBackground.Secondary) });
-                row.Cells.Add(new ControlLink() { Text = "Details", Uri = context.Uri.Append(measurementLog.ID) });
+                row.Cells.Add(new ControlLink() { Text = "Details", Uri = ComponentManager.SitemapManager.GetUri<PageDetails>(new ParameterId(measurementLog.ID)) });
 
                 table.Rows.Add(row);
             }
