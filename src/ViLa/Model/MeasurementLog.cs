@@ -121,6 +121,12 @@ namespace ViLa.Model
         public List<CommentItem> Comments { get; set; } = new List<CommentItem>();
 
         /// <summary>
+        /// Liefert oder setzt ein Label
+        /// </summary>
+        [XmlElement("label")]
+        public string Tag { get; set; }
+
+        /// <summary>
         /// Setzt die Werte zurück
         /// </summary>
         public void Reset()

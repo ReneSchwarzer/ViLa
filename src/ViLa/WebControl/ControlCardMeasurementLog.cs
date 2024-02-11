@@ -2,10 +2,10 @@
 using ViLa.WebPage;
 using ViLa.WebParameter;
 using WebExpress.Internationalization;
-using WebExpress.WebUI.WebControl;
 using WebExpress.WebComponent;
 using WebExpress.WebHtml;
 using WebExpress.WebPage;
+using WebExpress.WebUI.WebControl;
 
 namespace ViLa.WebControl
 {
@@ -47,6 +47,12 @@ namespace ViLa.WebControl
             {
                 Text = $"{MeasurementLog?.FinalFrom.ToString(context.Culture.DateTimeFormat.LongTimePattern)} - {MeasurementLog?.FinalTill.ToString(context.Culture.DateTimeFormat.LongTimePattern)} {context.I18N("vila:vila.charging.time")}",
                 Format = TypeFormatText.Small
+            }.Render(context) +
+            new HtmlElementTextSemanticsBr() +
+            new ControlTag()
+            {
+                BackgroundColor = new PropertyColorBackground(TypeColorBackground.Secondary),
+                Text = MeasurementLog?.Tag
             }.Render(context) +
             new HtmlElementTextSemanticsBr() +
             new ControlLink()

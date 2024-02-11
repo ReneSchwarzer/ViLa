@@ -3,11 +3,11 @@ using System.Linq;
 using ViLa.Model;
 using ViLa.WebParameter;
 using WebExpress.Internationalization;
-using WebExpress.WebUI.WebControl;
 using WebExpress.WebApp.WebPage;
 using WebExpress.WebAttribute;
 using WebExpress.WebResource;
 using WebExpress.WebScope;
+using WebExpress.WebUI.WebControl;
 
 namespace ViLa.WebPage
 {
@@ -46,34 +46,34 @@ namespace ViLa.WebPage
             var chartLabels = measurementLog?.Measurements.Select(x => measurementLog?.Measurements.IndexOf(x).ToString()).ToArray();
             var chartData = measurementLog?.Measurements.Select(x => x.Power * 60).ToArray();
 
-            context.VisualTree.Content.Primary.Add(new ControlText()
+            context.VisualTree.Content.Preferences.Add(new ControlText()
             {
                 Text = id.Value + ".xml",
                 TextColor = new PropertyColorText(TypeColorText.Muted)
             });
 
-            context.VisualTree.Content.Primary.Add(new ControlText()
+            context.VisualTree.Content.Preferences.Add(new ControlText()
             {
                 Text = string.Format("{0:F2} kWh", measurementLog?.FinalPower) + " / " + string.Format("{0:F2} {1}", measurementLog?.FinalCost, ViewModel.Instance.Settings.Currency),
                 Format = TypeFormatText.H1,
                 TextColor = new PropertyColorText(TypeColorText.Primary)
             });
 
-            context.VisualTree.Content.Primary.Add(new ControlText()
+            context.VisualTree.Content.Preferences.Add(new ControlText()
             {
                 Text = $"{measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongDatePattern)}",
                 Format = TypeFormatText.H5,
                 TextColor = new PropertyColorText(TypeColorText.Primary)
             });
 
-            context.VisualTree.Content.Primary.Add(new ControlText()
+            context.VisualTree.Content.Preferences.Add(new ControlText()
             {
                 Text = $"{measurementLog?.FinalFrom.ToString(Culture.DateTimeFormat.LongTimePattern)} - {measurementLog?.FinalTill.ToString(Culture.DateTimeFormat.LongTimePattern)} {this.I18N("vila:vila.charging.time")}",
                 Format = TypeFormatText.Paragraph,
                 TextColor = new PropertyColorText(TypeColorText.Dark)
             });
 
-            context.VisualTree.Content.Primary.Add(new ControlChart("chart")
+            context.VisualTree.Content.Preferences.Add(new ControlChart("chart")
             {
                 Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None),
                 Labels = chartLabels,
