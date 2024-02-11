@@ -2,11 +2,11 @@
 using System.Linq;
 using ViLa.Model;
 using ViLa.WebControl;
-using WebExpress.WebUI.WebControl;
 using WebExpress.WebApp.WebPage;
 using WebExpress.WebAttribute;
 using WebExpress.WebResource;
 using WebExpress.WebScope;
+using WebExpress.WebUI.WebControl;
 
 namespace ViLa.WebPage
 {
@@ -53,7 +53,7 @@ namespace ViLa.WebPage
 
                     for (var i = 12; i > 0; i--)
                     {
-                        var m = ViewModel.Instance.GetHistoryMeasurementLogs(new DateTime(year, i, 1), new DateTime(year, i, DateTime.DaysInMonth(year, i)));
+                        var m = ViewModel.Instance.GetHistoryMeasurementLogs(new DateTime(year, i, 1), new DateTime(year, i, DateTime.DaysInMonth(year, i), 23, 59, 59));
                         if (m.Any())
                         {
                             context.VisualTree.Content.Secondary.Add(new ControlText()
