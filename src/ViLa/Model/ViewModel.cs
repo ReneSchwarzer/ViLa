@@ -9,8 +9,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using WebExpress.Internationalization;
-using WebExpress.WebPlugin;
+using WebExpress.WebCore.Internationalization;
+using WebExpress.WebCore.WebPlugin;
 
 namespace ViLa.Model
 {
@@ -193,6 +193,14 @@ namespace ViLa.Model
         /// Liefert die Kultur
         /// </summary>
         public CultureInfo Culture { get; set; }
+
+        /// <summary>
+        /// Liefert alle vergebenen Labels.
+        /// </summary>
+        public IEnumerable<string> Tags => HistoryMeasurementLog
+            .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
+            .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            .Distinct();
 
         /// <summary>
         /// Konstruktor

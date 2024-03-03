@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ViLa.Model;
-using WebExpress.Internationalization;
+using WebExpress.WebCore.Internationalization;
+using WebExpress.WebCore.WebHtml;
+using WebExpress.WebCore.WebPage;
 using WebExpress.WebUI.WebControl;
-using WebExpress.WebHtml;
-using WebExpress.WebPage;
-using static WebExpress.Internationalization.InternationalizationManager;
+using static WebExpress.WebCore.Internationalization.InternationalizationManager;
 
 namespace ViLa.WebControl
 {
@@ -46,7 +46,7 @@ namespace ViLa.WebControl
                 ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ViewModel.Instance.CurrentMeasurementLog.Measurements.IndexOf(x).ToString()).ToArray() :
                 createArray(ViewModel.Instance.CurrentMeasurementLog.Measurements.Count);
 
-            var chartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power).ToArray();
+            var chartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power * 60).ToArray();
 
             var card = new ControlPanelCard()
             {

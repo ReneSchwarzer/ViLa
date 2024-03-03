@@ -2,17 +2,17 @@
 using System.Linq;
 using ViLa.Model;
 using ViLa.WebParameter;
-using WebExpress.Internationalization;
 using WebExpress.WebApp.WebPage;
-using WebExpress.WebAttribute;
-using WebExpress.WebResource;
-using WebExpress.WebScope;
+using WebExpress.WebCore.Internationalization;
+using WebExpress.WebCore.WebAttribute;
+using WebExpress.WebCore.WebResource;
+using WebExpress.WebCore.WebScope;
 using WebExpress.WebUI.WebControl;
 
 namespace ViLa.WebPage
 {
     [Title("vila:vila.details.label")]
-    [SegmentGuid<ParameterId>("vila:vila.details.id", WebExpress.WebUri.UriPathSegmentVariableGuid.Format.Simple)]
+    [SegmentGuid<ParameterId>("vila:vila.details.id", WebExpress.WebCore.WebUri.UriPathSegmentVariableGuid.Format.Simple)]
     [ContextPath("/")]
     [Module<Module>]
     public sealed class PageDetails : PageWebApp, IScope

@@ -10,39 +10,37 @@
             $('#cost').html(vila_charging_cost.replace('{0:F2}', data.Cost).replace('{1}', currency));
 			$('#current_name').html(data.CurrentPower + " kWh");
 
-			if (data.ActiveCharging)
-			{
-				$('#submit_charging').removeClass('btn-success');
-				$('#submit_charging').removeClass('btn-danger');
-                $('#submit_charging').addClass('btn-danger');
-				$('#submit_charging').html("&nbsp;&nbsp;" + vila_charging_stop);
-				var span = document.createElement('span');
-				span.setAttribute('class', 'fas fa-stop-circle');
-				var a = document.getElementById('submit_charging');
-				a.insertAdjacentElement('afterbegin', span);
-			}
-			else
-			{
-				$('#submit_charging').removeClass('btn-success');
-				$('#submit_charging').removeClass('btn-danger');
-                $('#submit_charging').addClass('btn-success');
-				$('#submit_charging').html("&nbsp;&nbsp;" + vila_charging_begin);
-				var span = document.createElement('span');
-				span.setAttribute('class', 'fas fa-play-circle');
-				var a = document.getElementById('submit_charging');
-				a.insertAdjacentElement('afterbegin', span);
-			}
-
-			if  (config_chart != null)
-			{
+			if (config_chart != null) {
 				config_chart.data.labels = data.ChartLabels;
 
-				config_chart.data.datasets.forEach(function(dataset) 
-				{
+				config_chart.data.datasets.forEach(function (dataset) {
 					dataset.data = data.ChartData;
 				});
 
 				chart_chart.update();
+			}
+
+			if (data.ActiveCharging)
+			{
+				$('#submit-formular_charging').removeClass('btn-success');
+				$('#submit-formular_charging').removeClass('btn-danger');
+				$('#submit-formular_charging').addClass('btn-danger');
+				$('#submit-formular_charging').html("&nbsp;&nbsp;" + vila_charging_stop);
+				var span = document.createElement('span');
+				span.setAttribute('class', 'fas fa-stop-circle');
+				var a = document.getElementById('submit-formular_charging');
+				a.insertAdjacentElement('afterbegin', span);
+			}
+			else
+			{
+				$('#submit-formular_charging').removeClass('btn-success');
+				$('#submit-formular_charging').removeClass('btn-danger');
+				$('#submit-formular_charging').addClass('btn-success');
+				$('#submit-formular_charging').html("&nbsp;&nbsp;" + vila_charging_begin);
+				var span = document.createElement('span');
+				span.setAttribute('class', 'fas fa-play-circle');
+				var a = document.getElementById('submit-formular_charging');
+				a.insertAdjacentElement('afterbegin', span);
 			}
         });
     }, 5000);

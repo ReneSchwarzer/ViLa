@@ -1,6 +1,6 @@
 ﻿using ViLa.Model;
-using WebExpress.WebAttribute;
-using WebExpress.WebResource;
+using WebExpress.WebCore.WebAttribute;
+using WebExpress.WebCore.WebResource;
 
 namespace ViLa.WebResource
 {
@@ -13,7 +13,7 @@ namespace ViLa.WebResource
     [IncludeSubPaths(true)]
     [Module<Module>]
     [Cache]
-    public sealed class ResourceMeasurements : WebExpress.WebResource.ResourceFile
+    public sealed class ResourceMeasurements : WebExpress.WebCore.WebResource.ResourceFile
     {
         /// <summary>
         /// Konstruktor

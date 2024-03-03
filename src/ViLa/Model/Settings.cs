@@ -49,6 +49,12 @@ namespace ViLa.Model
         public string Currency { get; set; }
 
         /// <summary>
+        /// Liefert oder setzt den Offset des Abrechnungszeitraumes
+        /// </summary>
+        [XmlElement(ElementName = "BillingDayOffset")]
+        public int BillingDayOffset { get; set; }
+
+        /// <summary>
         /// Bestimmt, wie die Messungen gestartet werden sollen
         /// </summary>
         [XmlElement(ElementName = "Mode")]

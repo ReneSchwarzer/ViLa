@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using ViLa.Model;
 using ViLa.WebPage;
+using WebExpress.WebApp.WebFragment;
+using WebExpress.WebCore.WebAttribute;
+using WebExpress.WebCore.WebHtml;
+using WebExpress.WebCore.WebPage;
 using WebExpress.WebUI.WebAttribute;
 using WebExpress.WebUI.WebControl;
 using WebExpress.WebUI.WebFragment;
-using WebExpress.WebApp.WebFragment;
-using WebExpress.WebAttribute;
-using WebExpress.WebHtml;
-using WebExpress.WebPage;
 
 namespace ViLa.WebFragment
 {
@@ -53,7 +53,35 @@ namespace ViLa.WebFragment
             {
                 if (!value.Any()) return;
 
-                Items.Add(new ControlListItem
+                var tagPanels = value
+                    .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
+                    .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Distinct()
+                    .Select(x => new
+                    {
+                        Tag = x,
+                        M = value
+                            .Where(y => !string.IsNullOrWhiteSpace(y.Tag))
+                            .Where(y => y.Tag.Contains(x))
+                    })
+                    .Select(x => new ControlPanel
+                        (
+                            new ControlTag()
+                            {
+                                BackgroundColor = new PropertyColorBackground(TypeColorBackground.Secondary),
+                                Text = x.Tag
+                            },
+                            new ControlText()
+                            {
+                                Text = $"{string.Format(context.Culture, "{0:F2}", x.M.Sum(x => x.FinalCost))} {ViewModel.Instance.Settings.Currency} / {string.Format(context.Culture, "{0:F2}", x.M.Sum(x => x.FinalPower))} kWh",
+                                Format = TypeFormatText.Span,
+                                TextColor = new PropertyColorText(TypeColorText.Secondary),
+                                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
+                            }
+                        )
+                    ));
+
+                var items = new ControlListItem
                 (
                     new ControlText()
                     {
@@ -75,7 +103,10 @@ namespace ViLa.WebFragment
                         Value = "",
                         TextColor = new PropertyColorText(TypeColorText.Secondary)
                     }
-                ));
+                );
+
+                items.Content.AddRange(tagPanels);
+                Items.Add(items);
             }
 
             item(ViewModel.Instance.GetHistoryMeasurementLogs(new DateTime(DateTime.Now.Year, 1, 1), DateTime.Now), DateTime.Now.Year.ToString());

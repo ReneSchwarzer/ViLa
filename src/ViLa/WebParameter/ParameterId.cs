@@ -1,4 +1,4 @@
-﻿using WebExpress.WebMessage;
+﻿using WebExpress.WebCore.WebMessage;
 
 namespace ViLa.WebParameter
 {

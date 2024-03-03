@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using ViLa.Model;
-using WebExpress.Internationalization;
+using WebExpress.WebCore.Internationalization;
+using WebExpress.WebCore.WebHtml;
+using WebExpress.WebCore.WebPage;
 using WebExpress.WebUI.WebControl;
-using WebExpress.WebHtml;
-using WebExpress.WebPage;
 
 namespace ViLa.WebControl
 {
@@ -62,7 +62,7 @@ namespace ViLa.WebControl
         /// <summary>
         /// Liefert oder setzt die Währung
         /// </summary>
-        public ControlFormItemInputTextBox Currency { get; } = new ControlFormItemInputTextBox("currency")
+        public ControlFormItemInputTextBox CurrencyCtrl { get; } = new ControlFormItemInputTextBox("currency")
         {
             Name = "currency",
             Label = "vila:vila.setting.currency.label",
@@ -71,17 +71,15 @@ namespace ViLa.WebControl
             Format = TypesEditTextFormat.Default
         };
 
-        ///// <summary>
-        ///// Bestimmt, ob die Messungen automatisch erfolgen sollen
-        ///// </summary>
-        //public ControlFormItemInputCheckbox Auto = new ControlFormItemInputCheckbox("auto")
-        //{
-        //    Name = "auto",
-        //    //Label = "vila.setting.auto.label",
-        //    Help = "vila:vila.setting.auto.description",
-        //    Description = "vila:vila.setting.auto.label",
-        //    //Icon = new PropertyIcon(TypeIcon.PlayCircle)
-        //};
+        /// <summary>
+        /// Liefert oder setzt den Tag des Abrechnungszeitraumes als Offset.
+        /// </summary>
+        private ControlFormItemInputTextBox BillingDayOffsetCtrl { get; } = new ControlFormItemInputTextBox()
+        {
+            Name = "BillingDayOffsetCtrl",
+            Label = "vila:vila.setting.form.billingdayoffsetctrl.label",
+            Help = "vila:vila.setting.form.billingdayoffsetctrl.description"
+        };
 
         /// <summary>
         /// Konstruktor
@@ -97,7 +95,8 @@ namespace ViLa.WebControl
             Add(MaxWattageCtrl);
             Add(MinWattageCtrl);
             Add(MaxChargingTimeCtrl);
-            Add(Currency);
+            Add(CurrencyCtrl);
+            Add(BillingDayOffsetCtrl);
             //Add(Auto);
 
             FillFormular += OnFillFormular;
@@ -108,7 +107,8 @@ namespace ViLa.WebControl
             MinWattageCtrl.Validation += OnMinWattageCtrlValidation;
             MaxWattageCtrl.Validation += OnMaxWattageCtrlValidation;
             MaxChargingTimeCtrl.Validation += OnMaxChargingTimeCtrlValidation;
-            Currency.Validation += OnCurrencyValidation;
+            CurrencyCtrl.Validation += OnCurrencyValidation;
+            BillingDayOffsetCtrl.Validation += OnBillingDayOffsetValidation;
         }
 
         /// <summary>
@@ -308,6 +308,46 @@ namespace ViLa.WebControl
         }
 
         /// <summary>
+        /// Wird aufgerufen, wenn das der Offset des Abrechnungsmonats geprüft werden soll
+        /// </summary>
+        /// <param name="sender">Der Auslöser des Events</param>
+        /// <param name="e">Das Eventargument</param>
+        private void OnBillingDayOffsetValidation(object sender, ValidationEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(e.Value))
+                {
+                    e.Value = "0";
+                }
+                if (!int.TryParse(e.Value, out _))
+                {
+                    e.Results.Add(new ValidationResult
+                    (
+                        TypesInputValidity.Error,
+                        "vila:vila.setting.billingdayoffset.validation.int"
+                    ));
+                }
+                else if (Convert.ToInt32(e.Value) < 0 || Convert.ToInt32(e.Value) > 31)
+                {
+                    e.Results.Add(new ValidationResult
+                    (
+                        TypesInputValidity.Error,
+                        "vila:vila.setting.billingdayoffset.validation.wrongvalue"
+                    ));
+                }
+            }
+            catch (Exception ex)
+            {
+                e.Results.Add(new ValidationResult
+                (
+                    TypesInputValidity.Error,
+                    ex.Message
+                ));
+            }
+        }
+
+        /// <summary>
         /// Wird aufgerufen, wenn das Formular befüllt werden soll
         /// </summary>
         /// <param name="sender">Der Auslöser des Events</param>
@@ -319,7 +359,8 @@ namespace ViLa.WebControl
             MaxWattageCtrl.Value = ViewModel.Instance.Settings.MaxWattage.ToString();
             MinWattageCtrl.Value = ViewModel.Instance.Settings.MinWattage.ToString();
             MaxChargingTimeCtrl.Value = ViewModel.Instance.Settings.MaxChargingTime.ToString();
-            Currency.Value = ViewModel.Instance.Settings.Currency.ToString();
+            CurrencyCtrl.Value = ViewModel.Instance.Settings.Currency.ToString();
+            BillingDayOffsetCtrl.Value = ViewModel.Instance.Settings.BillingDayOffset.ToString();
             //Auto.Value = ViewModel.Instance.Settings.Auto ? "true" : "false";
         }
 
@@ -335,7 +376,8 @@ namespace ViLa.WebControl
             ViewModel.Instance.Settings.MaxWattage = !string.IsNullOrWhiteSpace(MaxWattageCtrl.Value) ? Convert.ToInt32(MaxWattageCtrl.Value) : -1;
             ViewModel.Instance.Settings.MinWattage = !string.IsNullOrWhiteSpace(MinWattageCtrl.Value) ? Convert.ToInt32(MinWattageCtrl.Value) : -1;
             ViewModel.Instance.Settings.MaxChargingTime = !string.IsNullOrWhiteSpace(MaxChargingTimeCtrl.Value) ? Convert.ToInt32(MaxChargingTimeCtrl.Value) : -1;
-            ViewModel.Instance.Settings.Currency = string.IsNullOrWhiteSpace(Currency.Value) ? "€" : Currency.Value;
+            ViewModel.Instance.Settings.Currency = string.IsNullOrWhiteSpace(CurrencyCtrl.Value) ? "€" : CurrencyCtrl.Value;
+            ViewModel.Instance.Settings.BillingDayOffset = !string.IsNullOrWhiteSpace(BillingDayOffsetCtrl.Value) ? Convert.ToInt32(BillingDayOffsetCtrl.Value) : 0;
             //ViewModel.Instance.Settings.Auto = Auto.Value != null && Auto.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
             ViewModel.Instance.SaveSettings();
         }
@@ -347,7 +389,7 @@ namespace ViLa.WebControl
         /// <returns>Das Control als HTML</returns>
         public override IHtmlNode Render(RenderContext context)
         {
-            ElectricityPricePerkWhCtrl.Label = string.Format(context.I18N("vila:vila.setting.form.electricitypriceperkwhctrl.label"), ViewModel.Instance.Settings.Currency);
+            ElectricityPricePerkWhCtrl.Label = string.Format(context.I18N("vila:vila.setting.form.electricitypriceperkwhctrl.label"), ViewModel.Instance.Settings.BillingDayOffset);
 
             return base.Render(context);
         }

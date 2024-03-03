@@ -68,6 +68,10 @@ vila.setting.mode.manuallycontrolled=Manuell
 vila.setting.mode.automaticcontrolled=Automatisch
 vila.setting.mode.timecontrolled=Zeitgesteuert
 vila.setting.timecontrol.label=Zeitsteuerung
+vila.setting.form.billingdayoffsetctrl.label=Offset des Abrechnungsmonats
+vila.setting.form.billingdayoffsetctrl.description=Der Tag im Monat, an dem der Abrechnungszeiraum beginnen soll (z.B. 3. Tag).
+vila.setting.billingdayoffset.validation.int=Es wurde keine Zahl 0-31 angegeben!
+vila.setting.billingdayoffset.validation.wrongvalue=Es wurde keine Zahl 0-31 angegeben!
 
 vila.charging.begin=Ladevorgang starten
 vila.charging.stop=Ladevorgang beenden

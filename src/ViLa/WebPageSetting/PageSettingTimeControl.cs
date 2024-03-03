@@ -1,13 +1,13 @@
 ﻿using ViLa.WebCondition;
 using ViLa.WebControl;
 using ViLa.WebPage;
-using WebExpress.WebUI.WebAttribute;
-using WebExpress.WebUI.WebControl;
 using WebExpress.WebApp.WebPage;
 using WebExpress.WebApp.WebSettingPage;
-using WebExpress.WebAttribute;
-using WebExpress.WebResource;
-using WebExpress.WebScope;
+using WebExpress.WebCore.WebAttribute;
+using WebExpress.WebCore.WebResource;
+using WebExpress.WebCore.WebScope;
+using WebExpress.WebUI.WebAttribute;
+using WebExpress.WebUI.WebControl;
 
 namespace ViLa.WebPageSetting
 {

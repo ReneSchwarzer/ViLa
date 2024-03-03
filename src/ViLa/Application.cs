@@ -1,5 +1,5 @@
-﻿using WebExpress.WebApplication;
-using WebExpress.WebAttribute;
+﻿using WebExpress.WebCore.WebApplication;
+using WebExpress.WebCore.WebAttribute;
 
 namespace ViLa
 {

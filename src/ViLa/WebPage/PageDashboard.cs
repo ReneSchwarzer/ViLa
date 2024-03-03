@@ -3,9 +3,9 @@ using System.Linq;
 using ViLa.Model;
 using ViLa.WebControl;
 using WebExpress.WebApp.WebPage;
-using WebExpress.WebAttribute;
-using WebExpress.WebResource;
-using WebExpress.WebScope;
+using WebExpress.WebCore.WebAttribute;
+using WebExpress.WebCore.WebResource;
+using WebExpress.WebCore.WebScope;
 using WebExpress.WebUI.WebControl;
 
 namespace ViLa.WebPage
@@ -53,15 +53,49 @@ namespace ViLa.WebPage
 
                     for (var i = 12; i > 0; i--)
                     {
-                        var m = ViewModel.Instance.GetHistoryMeasurementLogs(new DateTime(year, i, 1), new DateTime(year, i, DateTime.DaysInMonth(year, i), 23, 59, 59));
+                        var offset = ViewModel.Instance.Settings.BillingDayOffset == 0 ? 0 : ViewModel.Instance.Settings.BillingDayOffset - 1;
+                        var m = ViewModel.Instance.GetHistoryMeasurementLogs
+                        (
+                            new DateTime(year, i, 1).AddDays(offset),
+                            new DateTime(year, i, DateTime.DaysInMonth(year, i), 23, 59, 59).AddDays(offset)
+                        );
+
                         if (m.Any())
                         {
                             context.VisualTree.Content.Secondary.Add(new ControlText()
                             {
-                                Text = $"{Culture.DateTimeFormat.GetMonthName(i)} - {string.Format(context.Culture, "{0:F2}", m.Sum(x => x.Cost))} {ViewModel.Instance.Settings.Currency} / {string.Format(context.Culture, "{0:F2}", m.Sum(x => x.FinalPower))} kWh",
+                                Text = $"{Culture.DateTimeFormat.GetMonthName(i)} - {string.Format(context.Culture, "{0:F2}", m.Sum(x => x.FinalCost))} {ViewModel.Instance.Settings.Currency} / {string.Format(context.Culture, "{0:F2}", m.Sum(x => x.FinalPower))} kWh",
                                 Format = TypeFormatText.H4,
                                 Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
                             });
+
+                            foreach (var tag in m
+                                .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
+                                .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                .Distinct()))
+                            {
+                                var mt = m.Where(x => !string.IsNullOrWhiteSpace(x.Tag))
+                                          .Where(x => x.Tag.Contains(tag));
+
+                                context.VisualTree.Content.Secondary.Add(new ControlPanel
+                                (
+                                    new ControlTag()
+                                    {
+                                        BackgroundColor = new PropertyColorBackground(TypeColorBackground.Secondary),
+                                        Text = tag
+                                    },
+                                    new ControlText()
+                                    {
+                                        Text = $"{string.Format(context.Culture, "{0:F2}", mt.Sum(x => x.FinalCost))} {ViewModel.Instance.Settings.Currency} / {string.Format(context.Culture, "{0:F2}", mt.Sum(x => x.FinalPower))} kWh",
+                                        Format = TypeFormatText.Span,
+                                        Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
+                                    }
+                                )
+                                {
+                                    Fluid = TypePanelContainer.Fluid
+                                }
+                                );
+                            }
 
                             var grid = new ControlPanelGrid() { Fluid = TypePanelContainer.Fluid };
 

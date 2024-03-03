@@ -1,11 +1,11 @@
-﻿using WebExpress.WebUI.WebAttribute;
+﻿using WebExpress.WebApp.WebFragment;
+using WebExpress.WebCore.WebAttribute;
+using WebExpress.WebCore.WebHtml;
+using WebExpress.WebCore.WebPage;
+using WebExpress.WebUI.WebAttribute;
 using WebExpress.WebUI.WebControl;
 using WebExpress.WebUI.WebFragment;
-using WebExpress.WebApp.WebFragment;
-using WebExpress.WebAttribute;
-using WebExpress.WebHtml;
-using WebExpress.WebPage;
-using static WebExpress.Internationalization.InternationalizationManager;
+using static WebExpress.WebCore.Internationalization.InternationalizationManager;
 
 namespace ViLa.WebFragment
 {

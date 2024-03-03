@@ -1,10 +1,10 @@
 ﻿using ViLa.Model;
 using ViLa.WebPage;
 using ViLa.WebParameter;
-using WebExpress.Internationalization;
-using WebExpress.WebComponent;
-using WebExpress.WebHtml;
-using WebExpress.WebPage;
+using WebExpress.WebCore.Internationalization;
+using WebExpress.WebCore.WebComponent;
+using WebExpress.WebCore.WebHtml;
+using WebExpress.WebCore.WebPage;
 using WebExpress.WebUI.WebControl;
 
 namespace ViLa.WebControl

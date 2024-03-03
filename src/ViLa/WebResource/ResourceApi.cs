@@ -2,9 +2,9 @@
 using System.Globalization;
 using System.Linq;
 using ViLa.Model;
-using WebExpress.WebAttribute;
-using WebExpress.WebMessage;
-using WebExpress.WebResource;
+using WebExpress.WebCore.WebAttribute;
+using WebExpress.WebCore.WebMessage;
+using WebExpress.WebCore.WebResource;
 
 namespace ViLa.WebResource
 {
@@ -12,7 +12,7 @@ namespace ViLa.WebResource
     [ContextPath("/")]
     [Module<Module>]
     [Cache]
-    public sealed class ResourceApi : WebExpress.WebResource.ResourceRest
+    public sealed class ResourceApi : ResourceRest
     {
         /// <summary>
         /// Konstruktor

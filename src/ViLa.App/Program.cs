@@ -7,7 +7,7 @@ namespace ViLa.App
     {
         private static void Main(string[] args)
         {
-            var app = new WebExpress.WebEx()
+            var app = new WebExpress.WebCore.WebEx()
             {
                 Name = Assembly.GetExecutingAssembly().GetName().Name
             };

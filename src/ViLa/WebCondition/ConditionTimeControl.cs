@@ -1,6 +1,6 @@
 ﻿using ViLa.Model;
-using WebExpress.WebCondition;
-using WebExpress.WebMessage;
+using WebExpress.WebCore.WebCondition;
+using WebExpress.WebCore.WebMessage;
 
 namespace ViLa.WebCondition
 {

@@ -1,5 +1,5 @@
-﻿using WebExpress.WebAttribute;
-using WebExpress.WebResource;
+﻿using WebExpress.WebCore.WebAttribute;
+using WebExpress.WebCore.WebResource;
 
 namespace ViLa.WebResource
 {
@@ -12,7 +12,7 @@ namespace ViLa.WebResource
     [IncludeSubPaths(true)]
     [Module<Module>]
     [Cache]
-    public sealed class ResourceAsset : WebExpress.WebResource.ResourceAsset
+    public sealed class ResourceAsset : WebExpress.WebCore.WebResource.ResourceAsset
     {
         /// <summary>
         /// Konstruktor

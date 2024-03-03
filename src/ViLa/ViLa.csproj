@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Version>1.4.0.0</Version>
 		<AssemblyVersion>1.4.0.0</AssemblyVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -36,20 +36,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Device.Gpio" Version="3.0.0" />
-		<PackageReference Include="WebExpress" Version="0.0.2-alpha">
+		<PackageReference Include="System.Device.Gpio" Version="3.1.0" />
+		<PackageReference Include="WebExpress.WebCore" Version="0.0.6-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="WebExpress.WebUI" Version="0.0.2-alpha">
+		<PackageReference Include="WebExpress.WebUI" Version="0.0.6-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="WebExpress.WebIndex" Version="0.0.3-alpha">
+		<PackageReference Include="WebExpress.WebIndex" Version="0.0.6-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="WebExpress.WebApp" Version="0.0.2-alpha">
+		<PackageReference Include="WebExpress.WebApp" Version="0.0.6-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>

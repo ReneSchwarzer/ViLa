@@ -70,6 +70,10 @@ vila.setting.mode.manuallycontrolled=Manually controlled
 vila.setting.mode.automaticcontrolled=Automatic controlled
 vila.setting.mode.timecontrolled=Time controlled
 vila.setting.timecontrol.label=Time control
+vila.setting.form.billingdayoffsetctrl.label=Offset of the billing month
+vila.setting.form.billingdayoffsetctrl.description=The day of the month on which the billing period should start (e.g. 3rd day).
+vila.setting.billingdayoffset.validation.int=No number 0-31 has been given!
+vila.setting.billingdayoffset.validation.wrongvalue=No number 0-31 has been given!
 
 vila.charging.begin=Start charging
 vila.charging.stop=Stop charging
