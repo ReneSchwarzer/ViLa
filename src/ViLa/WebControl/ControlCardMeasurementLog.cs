@@ -51,7 +51,7 @@ namespace ViLa.WebControl
             new HtmlElementTextSemanticsBr() +
             new ControlTag()
             {
-                BackgroundColor = new PropertyColorBackground(TypeColorBackground.Secondary),
+                BackgroundColor = new PropertyColorBackground(ViewModel.Instance.GetColor(MeasurementLog?.Tag)),
                 Text = MeasurementLog?.Tag
             }.Render(context) +
             new HtmlElementTextSemanticsBr() +

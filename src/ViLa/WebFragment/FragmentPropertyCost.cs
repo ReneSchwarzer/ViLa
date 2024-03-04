@@ -55,7 +55,7 @@ namespace ViLa.WebFragment
 
                 var tagPanels = value
                     .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                    .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                     .Distinct()
                     .Select(x => new
                     {
@@ -68,7 +68,7 @@ namespace ViLa.WebFragment
                         (
                             new ControlTag()
                             {
-                                BackgroundColor = new PropertyColorBackground(TypeColorBackground.Secondary),
+                                BackgroundColor = new PropertyColorBackground(ViewModel.Instance.GetColor(x.Tag)),
                                 Text = x.Tag
                             },
                             new ControlText()
@@ -79,7 +79,7 @@ namespace ViLa.WebFragment
                                 Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
                             }
                         )
-                    ));
+                    );
 
                 var items = new ControlListItem
                 (

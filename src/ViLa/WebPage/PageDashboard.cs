@@ -66,13 +66,14 @@ namespace ViLa.WebPage
                             {
                                 Text = $"{Culture.DateTimeFormat.GetMonthName(i)} - {string.Format(context.Culture, "{0:F2}", m.Sum(x => x.FinalCost))} {ViewModel.Instance.Settings.Currency} / {string.Format(context.Culture, "{0:F2}", m.Sum(x => x.FinalPower))} kWh",
                                 Format = TypeFormatText.H4,
-                                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
+                                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None),
+                                TextColor = new PropertyColorText(TypeColorText.Primary)
                             });
 
                             foreach (var tag in m
                                 .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                                .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                                .Distinct()))
+                                .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                                .Distinct())
                             {
                                 var mt = m.Where(x => !string.IsNullOrWhiteSpace(x.Tag))
                                           .Where(x => x.Tag.Contains(tag));
@@ -81,7 +82,7 @@ namespace ViLa.WebPage
                                 (
                                     new ControlTag()
                                     {
-                                        BackgroundColor = new PropertyColorBackground(TypeColorBackground.Secondary),
+                                        BackgroundColor = new PropertyColorBackground(ViewModel.Instance.GetColor(tag)),
                                         Text = tag
                                     },
                                     new ControlText()

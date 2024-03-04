@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Device.Gpio;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -689,6 +690,36 @@ namespace ViLa.Model
             {
                 Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
+        }
+
+        /// <summary>
+        /// Berechnet eine Farbe für ein Tag.
+        /// </summary>
+        /// <param name="tag">Das Label.</param>
+        /// <returns>Der Farbcode.</returns>
+        public string GetColor(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                return "#dddddd";
+            }
+
+            int hashCode = tag.GetHashCode();
+            int hue = Math.Abs(hashCode) % 360;
+            float saturation = 0.5f;
+            float lightness = 0.6f;
+
+            float temp2 = lightness < 0.5f ? lightness * (1.0f + saturation) : lightness + saturation - lightness * saturation;
+            float temp1 = 2.0f * lightness - temp2;
+
+            Func<float, float> getColorComponent = temp3 =>
+            {
+                temp3 = temp3 < 0 ? temp3 + 360 : temp3 > 360 ? temp3 - 360 : temp3;
+                return temp3 < 60 ? temp1 + (temp2 - temp1) * temp3 / 60f : temp3 < 180 ? temp2 : temp3 < 240 ? temp1 + (temp2 - temp1) * (240 - temp3) / 60f : temp1;
+            };
+
+            Color color = Color.FromArgb((int)(255 * getColorComponent(hue + 120)), (int)(255 * getColorComponent(hue)), (int)(255 * getColorComponent(hue - 120)));
+            return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
         }
     }
 }
