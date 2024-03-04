@@ -57,7 +57,7 @@ namespace ViLa.WebPage
                 row.Cells.Add(new ControlText() { Text = string.Format("{0} - {1} Uhr", measurementLog.FinalFrom.ToString(Culture.DateTimeFormat.LongTimePattern), measurementLog.FinalTill.ToString(Culture.DateTimeFormat.LongTimePattern)) });
                 row.Cells.Add(new ControlText() { Text = string.Format("{0:F2} kWh", measurementLog.FinalPower) });
                 row.Cells.Add(new ControlText() { Text = string.Format("{0:F2} {1}", measurementLog.FinalCost, measurementLog.Currency) });
-                row.Cells.Add(new ControlTag() { Text = measurementLog.Tag, BackgroundColor = new PropertyColorBackground(TypeColorBackground.Secondary) });
+                row.Cells.Add(new ControlTag() { Text = measurementLog.Tag, BackgroundColor = new PropertyColorBackground(ViewModel.Instance.GetColor(measurementLog.Tag)) });
                 row.Cells.Add(new ControlLink() { Text = "Details", Uri = ComponentManager.SitemapManager.GetUri<PageDetails>(new ParameterId(measurementLog.ID)) });
 
                 table.Rows.Add(row);
