@@ -262,7 +262,7 @@ namespace ViLa.Model
             {
                 while (true)
                 {
-                    foreach (var his in HistoryMeasurementLog.Where(x => x.Till < DateTime.Now.AddYears(-1)).ToList())
+                    foreach (var his in HistoryMeasurementLog.Where(x => x.Till < DateTime.Now.AddYears(-10)).ToList())
                     {
                         ArchiveHistoryMeasurementLog(his.ID);
                     }
