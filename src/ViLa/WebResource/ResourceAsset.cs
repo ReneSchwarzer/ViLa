@@ -1,33 +1,20 @@
-﻿using WebExpress.WebCore.WebAttribute;
+using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebResource;
 
 namespace ViLa.WebResource
 {
-    /// <summary>
-    /// Lieferung einer im Assamby eingebetteten Ressource
-    /// </summary>
+    // TODO MIGRATION: New ResourceAsset base requires IResourceContext via ctor; Initialization override is gone.
     [Title("Assets")]
-    [Segment("assets", "")]
+    [Segment("assets")]
     [ContextPath("/")]
     [IncludeSubPaths(true)]
-    [Module<Module>]
+    [Application<Application>]
     [Cache]
     public sealed class ResourceAsset : WebExpress.WebCore.WebResource.ResourceAsset
     {
-        /// <summary>
-        /// Konstruktor
-        /// </summary>
-        public ResourceAsset()
+        public ResourceAsset(IResourceContext resourceContext)
+            : base(resourceContext)
         {
-        }
-
-        /// <summary>
-        /// Initialisierung
-        /// </summary>
-        /// <param name="context">Der Kontext</param>
-        public override void Initialization(IResourceContext context)
-        {
-            base.Initialization(context);
         }
     }
 }

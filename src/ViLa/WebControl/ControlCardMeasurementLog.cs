@@ -1,72 +1,59 @@
-﻿using ViLa.Model;
-using ViLa.WebPage;
-using ViLa.WebParameter;
-using WebExpress.WebCore.Internationalization;
-using WebExpress.WebCore.WebComponent;
-using WebExpress.WebCore.WebHtml;
-using WebExpress.WebCore.WebPage;
+using ViLa.Model;
 using WebExpress.WebUI.WebControl;
+using WebExpress.WebUI.WebIcon;
 
 namespace ViLa.WebControl
 {
+    /// <summary>  
+    /// Represents a card with its associated measurement log.  
+    /// </summary>
     public class ControlCardMeasurementLog : ControlCardCounter
     {
         /// <summary>
-        /// Liefert oder setzt das Messprotokoll
+        /// Gets or sets the measurement log.
         /// </summary>
         public MeasurementLog MeasurementLog { get; set; }
 
-        /// <summary>
-        /// Konstruktor
-        /// </summary>
-        /// <param name="page">Die zugehörige Seite</param>
-        /// <param name="id">Die ID</param>
+        /// <summary>  
+        /// Initializes a new instance of the class.  
+        /// </summary>  
+        /// <param name="id">The ID of the measurement log. May be null.</param>
         public ControlCardMeasurementLog(string id = null)
             : base(id)
         {
-            Init();
-        }
+            Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.Two);
+            Icon = _ => new IconTachometerAlt();
+            TextColor = _ => new PropertyColorText(TypeColorText.Default);
+            BackgroundColor = _ => new PropertyColorBackground(TypeColorBackground.Light);
+            Progress = _ => (uint?)MeasurementLog?.Power;
 
-        /// <summary>
-        /// Initialisierung
-        /// </summary>
-        private void Init()
-        {
-            Margin = new PropertySpacingMargin(PropertySpacing.Space.Two);
-        }
+            //Value = _ =>
+            //{
+            //    if (MeasurementLog == null) return "-";
+            //    return $"{string.Format("{0:F2} kWh", MeasurementLog.FinalPower)} / {string.Format("{0:F2} {1}", MeasurementLog.FinalCost, MeasurementLog.Currency)}";
+            //};
 
-        /// <summary>
-        /// In HTML konvertieren
-        /// </summary>
-        /// <param name="context">Der Kontext, indem das Steuerelement dargestellt wird</param>
-        /// <returns>Das Control als HTML</returns>
-        public override IHtmlNode Render(RenderContext context)
-        {
-            Text = MeasurementLog?.From.ToString(context.Culture.DateTimeFormat.ShortDatePattern) +
-            new ControlText()
+            Text = renderContext =>
             {
-                Text = $"{MeasurementLog?.FinalFrom.ToString(context.Culture.DateTimeFormat.LongTimePattern)} - {MeasurementLog?.FinalTill.ToString(context.Culture.DateTimeFormat.LongTimePattern)} {context.I18N("vila:vila.charging.time")}",
-                Format = TypeFormatText.Small
-            }.Render(context) +
-            new HtmlElementTextSemanticsBr() +
-            new ControlTag()
-            {
-                BackgroundColor = new PropertyColorBackground(ViewModel.Instance.GetColor(MeasurementLog?.Tag)),
-                Text = MeasurementLog?.Tag
-            }.Render(context) +
-            new HtmlElementTextSemanticsBr() +
-            new ControlLink()
-            {
-                Text = "vila:vila.charging.details",
-                Uri = ComponentManager.SitemapManager.GetUri<PageDetails>(new ParameterId(MeasurementLog.ID))
-            }.Render(context);
-            Value = $"{string.Format("{0:F2} kWh", MeasurementLog?.FinalPower)} / {string.Format("{0:F2} {1}", MeasurementLog?.FinalCost, MeasurementLog?.Currency)}";
-            Icon = new PropertyIcon(TypeIcon.TachometerAlt);
-            TextColor = new PropertyColorText(TypeColorText.Default);
-            BackgroundColor = new PropertyColorBackground(TypeColorBackground.Light);
-            Progress = (int)MeasurementLog?.Power;
+                if (MeasurementLog == null) return string.Empty;
 
-            return base.Render(context);
+                var culture = renderContext.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+                var shortDate = MeasurementLog.From.ToString(culture.DateTimeFormat.ShortDatePattern);
+                var finalFrom = MeasurementLog.FinalFrom.ToString(culture.DateTimeFormat.LongTimePattern);
+                var finalTill = MeasurementLog.FinalTill.ToString(culture.DateTimeFormat.LongTimePattern);
+                var labelTime = WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(culture, "vila:vila.charging.time");
+                var labelDetails = WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(culture, "vila:vila.charging.details");
+                var detailsUri = WebExpress.WebCore.WebEx.ComponentHub.SitemapManager.GetUri<WWW.Details.Index>(renderContext.Request.ApplicationContext, new WebExpress.WebCore.WebParameter.ParameterId(MeasurementLog.ID));
+
+                var tagHtml = "";
+                if (!string.IsNullOrWhiteSpace(MeasurementLog.Tag))
+                {
+                    var color = ViewModel.Instance.GetColor(MeasurementLog.Tag);
+                    tagHtml = $"<br/><span class=\"badge\" style=\"background-color: {color}; color: #fff;\">{MeasurementLog.Tag}</span>";
+                }
+
+                return $"{shortDate} <small class=\"text-muted\">({finalFrom} - {finalTill} {labelTime})</small>{tagHtml}<br/><a href=\"{detailsUri}\">{labelDetails}</a>";
+            };
         }
     }
 }

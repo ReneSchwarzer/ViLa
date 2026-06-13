@@ -1,0 +1,26 @@
+.wx-vila-chart {
+    color: #212529;
+}
+
+.wx-vila-chart .card,
+.wx-vila-chart .wx-panel-card {
+    background-color: #ffffff;
+    color: #212529;
+}
+
+@media (prefers-color-scheme: dark) {
+    .wx-vila-chart {
+        color: #e9ecef;
+    }
+
+    .wx-vila-chart .card,
+    .wx-vila-chart .wx-panel-card {
+        background-color: #1f242a;
+        color: #e9ecef;
+        border-color: #2f3740;
+    }
+
+    .wx-vila-chart canvas {
+        background-color: transparent;
+    }
+}

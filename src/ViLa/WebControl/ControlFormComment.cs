@@ -1,56 +1,27 @@
-﻿using WebExpress.WebCore.WebHtml;
-using WebExpress.WebCore.WebPage;
 using WebExpress.WebUI.WebControl;
 
 namespace ViLa.WebControl
 {
+    /// <summary>
+    /// Represents a form control with a comment input text field.
+    /// </summary>
     public class ControlFormComment : ControlForm
     {
-        /// <summary>
-        /// Liefert oder setzt den Kommentar
+        /// <summary>  
+        /// Gets the input field for comments.  
         /// </summary>
-        public ControlFormItemInputTextBox Comment { get; } = new ControlFormItemInputTextBox("comment")
-        {
-            Name = "comment",
-            Label = "vila:vila.comment.label",
-            Help = "vila:vila.comment.description",
-            Icon = new PropertyIcon(TypeIcon.Comment),
-            Format = TypesEditTextFormat.Wysiwyg
-        };
+        public ControlFormItemInputText Comment { get; } = new ControlFormItemInputText("comment");
 
         /// <summary>
-        /// Konstruktor
+        /// Initializes a new instance of the  class.
         /// </summary>
-        /// <param name="id">Die ID</param>
+        /// <param name="id">
+        /// The unique identifier for the control.
+        /// </param>
         public ControlFormComment(string id = null)
             : base(id)
         {
             Add(Comment);
-
-            Name = "form_comment";
-            Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Three, PropertySpacing.Space.Five, PropertySpacing.Space.None);
-            Layout = TypeLayoutForm.Vertical;
-            SubmitButton.Icon = new PropertyIcon(TypeIcon.PaperPlane);
-            SubmitButton.Text = "vila:vila.comment.submit";
-        }
-
-        /// <summary>
-        /// Initialisiert das Formular
-        /// </summary>
-        /// <param name="context">Der Kontext, indem das Steuerelement dargestellt wird</param>
-        public override void Initialize(RenderContextFormular context)
-        {
-            base.Initialize(context);
-        }
-
-        /// <summary>
-        /// In HTML konvertieren
-        /// </summary>
-        /// <param name="context">Der Kontext, indem das Steuerelement dargestellt wird</param>
-        /// <returns>Das Control als HTML</returns>
-        public override IHtmlNode Render(RenderContext context)
-        {
-            return base.Render(context);
         }
     }
 }

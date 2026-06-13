@@ -1,83 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
 using ViLa.Model;
-using WebExpress.WebCore.WebHtml;
-using WebExpress.WebCore.WebPage;
 using WebExpress.WebUI.WebControl;
 
 namespace ViLa.WebControl
 {
+    /// <summary>
+    /// Represents a settings control form for mode selection.
+    /// </summary>
     public class ControlFormMode : ControlForm
     {
         /// <summary>
-        /// Bestimmt, wie die Messungen erfolgen sollen
+        /// Gets the mode input combo control.
         /// </summary>
-        public ControlFormItemInputComboBox Mode { get; } = new ControlFormItemInputComboBox("mode")
-        {
-            Name = "auto",
-            Label = "vila:vila.setting.form.mode.label",
-            Help = "vila:vila.setting.form.mode.description"
-        };
+        public ControlFormItemInputCombo Mode { get; } = new ControlFormItemInputCombo("mode");
 
-        /// <summary>
-        /// Konstruktor
-        /// </summary>
+        /// <summary>  
+        /// Initializes a new instance of the class.  
+        /// </summary> 
         public ControlFormMode()
             : base("settings")
         {
-            Name = "settings";
-            Classes = new List<string>(new[] { "m-3" });
+            Mode.Initialize(args => args.Value.Text = ViewModel.Instance.Settings.Mode.ToString());
 
             Add(Mode);
-
-            FillFormular += OnFillFormular;
-            ProcessFormular += OnProcessFormular;
-
-            Mode.Items.Add(new ControlFormItemInputComboBoxItem() { Text = Model.Mode.ManuallyControlled.ToText(), Value = Model.Mode.ManuallyControlled.ToString() });
-            Mode.Items.Add(new ControlFormItemInputComboBoxItem() { Text = Model.Mode.AutomaticControlled.ToText(), Value = Model.Mode.AutomaticControlled.ToString() });
-            //Mode.Items.Add(new ControlFormItemInputComboBoxItem() { Text = Model.Mode.TimeControlled.ToText(), Value = Model.Mode.TimeControlled.ToString() });
-        }
-
-        /// <summary>
-        /// Initialisiert das Formular
-        /// </summary>
-        /// <param name="context">Der Kontext, indem das Steuerelement dargestellt wird</param>
-        public override void Initialize(RenderContextFormular context)
-        {
-            base.Initialize(context);
-        }
-
-        /// <summary>
-        /// Wird aufgerufen, wenn das Formular befüllt werden soll
-        /// </summary>
-        /// <param name="sender">Der Auslöser des Events</param>
-        /// <param name="e">Das Eventargument</param>
-        private void OnFillFormular(object sender, FormularEventArgs e)
-        {
-            Mode.Value = ViewModel.Instance.Settings.Mode.ToString();
-        }
-
-        /// <summary>
-        /// Wird aufgerufen, wenn das Formular bearbeitet werden soll
-        /// </summary>
-        /// <param name="sender">Der Auslöser des Events</param>
-        /// <param name="e">Das Eventargument</param>
-        private void OnProcessFormular(object sender, FormularEventArgs e)
-        {
-            ViewModel.Instance.Settings.Mode = (Mode)Enum.Parse(typeof(Mode), Mode.Value);
-            ViewModel.Instance.SaveSettings();
-
-            e.Context.Page.Redirecting(e.Context.Uri);
-        }
-
-        /// <summary>
-        /// In HTML konvertieren
-        /// </summary>
-        /// <param name="context">Der Kontext, indem das Steuerelement dargestellt wird</param>
-        /// <returns>Das Control als HTML</returns>
-        public override IHtmlNode Render(RenderContext context)
-        {
-            return base.Render(context);
+            AddPrimaryButton
+            (
+                new ControlFormItemButtonSubmit()
+            );
         }
     }
 }

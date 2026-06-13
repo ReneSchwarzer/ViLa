@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir C:UsersRenesourcereposViLa *)",
+      "Bash(dotnet restore *)",
+      "Bash(dotnet build *)",
+      "Read(//tmp/**)",
+      "Bash(dotnet run *)",
+      "Bash(grep -oE '\\\\\\\\ViLa\\\\\\\\[^\\(]+\\\\.cs' /tmp/build-errors.txt)",
+      "Bash(grep -E \"^\\(Application|Module|Plugin|Model|WebPage\\\\\\\\\\\\\\\\|WebResource\\\\\\\\\\\\\\\\|WebCondition\\\\\\\\\\\\\\\\|WebParameter\\\\\\\\\\\\\\\\\\)\")",
+      "Bash(grep -oE '\\\\\\\\ViLa\\\\\\\\[^\\\\\\\\]+\\\\\\\\[^.]+\\\\.cs')",
+      "Bash(git checkout *)"
+    ]
+  }
+}

@@ -10,12 +10,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using WebExpress.WebCore.Internationalization;
 using WebExpress.WebCore.WebPlugin;
 
 namespace ViLa.Model
 {
-    public class ViewModel : II18N
+    public class ViewModel
     {
         /// <summary>
         /// Die Größe des Autobuffers in Minuten
@@ -103,12 +102,12 @@ namespace ViLa.Model
                         if (!value)
                         {
                             GPIO.Write(ElectricContactorPin, PinValue.High);
-                            Log(new LogItem(LogItem.LogLevel.Debug, this.I18N("vila:vila.log.electriccontactorstatus.high")));
+                            Log(new LogItem(LogItem.LogLevel.Debug, "vila:vila.log.electriccontactorstatus.high"));
                         }
                         else
                         {
                             GPIO.Write(ElectricContactorPin, PinValue.Low);
-                            Log(new LogItem(LogItem.LogLevel.Debug, this.I18N("vila:vila.log.electriccontactorstatus.low")));
+                            Log(new LogItem(LogItem.LogLevel.Debug, "vila:vila.log.electriccontactorstatus.low"));
                         }
 
                         _electricContactorStatus = value;
@@ -116,7 +115,7 @@ namespace ViLa.Model
                 }
                 catch (Exception ex)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila:vila.log.electriccontactorstatus.error")));
+                    Log(new LogItem(LogItem.LogLevel.Error, "vila:vila.log.electriccontactorstatus.error"));
                     Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
                 }
             }
@@ -138,7 +137,7 @@ namespace ViLa.Model
                 }
                 catch (Exception ex)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila:vila.log.powermeterstatus.error")));
+                    Log(new LogItem(LogItem.LogLevel.Error, "vila:vila.log.powermeterstatus.error"));
                     Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
                 }
 
@@ -225,7 +224,7 @@ namespace ViLa.Model
                 GPIO.Write(ElectricContactorPin, PinValue.High);
                 _electricContactorStatus = false;
 
-                Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.log.init.gpio")));
+                Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.log.init.gpio"));
                 Log(new LogItem(LogItem.LogLevel.Debug, "ElectricContactorPin " + ElectricContactorPin));
             }
             catch (Exception ex)
@@ -235,7 +234,7 @@ namespace ViLa.Model
 
 
             // Alte Messprotokolle laden
-            var directoryName = Path.Combine(Context.Host.DataPath, "measurements");
+            var directoryName = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "data/measurements");
 
             if (!Directory.Exists(directoryName))
             {
@@ -271,7 +270,7 @@ namespace ViLa.Model
                 }
             });
 
-            Culture = Context.Host.Culture;
+            Culture = System.Globalization.CultureInfo.CurrentCulture;
 
             ResetSettings();
 
@@ -292,7 +291,7 @@ namespace ViLa.Model
 
                 if (delta > ImpulseDuration)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format(Context.Host.Culture, this.I18N("vila:vila.log.update.exceeding"), delta - ViewModel.ImpulseDuration)));
+                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format(System.Globalization.CultureInfo.CurrentCulture, "vila:vila.log.update.exceeding", delta - ViewModel.ImpulseDuration)));
                 }
 
                 if (Stopwatch.IsRunning)
@@ -358,7 +357,7 @@ namespace ViLa.Model
                             ActiveMeasurementLog?.CurrentMeasurement?.Power <= Settings.MinWattage
                         )
                         {
-                            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.min")));
+                            Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.min"));
 
                             StopCharging();
                             return;
@@ -368,7 +367,7 @@ namespace ViLa.Model
 
                 if (ActiveCharging && Settings.MaxChargingTime > 0 && (DateTime.Now - ActiveMeasurementLog.From).TotalSeconds > Settings.MaxChargingTime * 60 * 60)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.time.max")));
+                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.time.max"));
 
                     StopCharging();
                     return;
@@ -376,7 +375,7 @@ namespace ViLa.Model
 
                 if (ActiveCharging && Settings.MaxWattage > 0 && ActiveMeasurementLog.Power > Settings.MaxWattage)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.consumption.max")));
+                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.consumption.max"));
 
                     StopCharging();
                     return;
@@ -384,7 +383,7 @@ namespace ViLa.Model
             }
             catch (Exception ex)
             {
-                Log(new LogItem(LogItem.LogLevel.Error, this.I18N("vila:vila.charging.error")));
+                Log(new LogItem(LogItem.LogLevel.Error, "vila:vila.charging.error"));
                 Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
             finally
@@ -409,24 +408,9 @@ namespace ViLa.Model
                 current?.Logitems.Add(logItem);
             }
 
-            switch (logItem.Level)
-            {
-                case LogItem.LogLevel.Info:
-                    Context.Host.Log.Info(logItem.Massage, logItem.Instance);
-                    break;
-                case LogItem.LogLevel.Debug:
-                    Context.Host.Log.Debug(logItem.Massage, logItem.Instance);
-                    break;
-                case LogItem.LogLevel.Warning:
-                    Context.Host.Log.Warning(logItem.Massage, logItem.Instance);
-                    break;
-                case LogItem.LogLevel.Error:
-                    Context.Host.Log.Error(logItem.Massage, logItem.Instance);
-                    break;
-                case LogItem.LogLevel.Exception:
-                    Context.Host.Log.Error(logItem.Massage, logItem.Instance);
-                    break;
-            }
+            // TODO MIGRATION: IPluginContext no longer exposes a Host with a Log facade in 0.0.11.
+            // Resolve the LogManager via ComponentHub or wire the log routing differently when refactoring.
+            System.Diagnostics.Debug.WriteLine($"[{logItem.Level}] {logItem.Instance}: {logItem.Massage}");
         }
 
         /// <summary>
@@ -434,7 +418,7 @@ namespace ViLa.Model
         /// </summary>
         public void SaveSettings()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.setting.save")));
+            Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.setting.save"));
 
             // Konfiguration speichern
             var serializer = new XmlSerializer(typeof(Settings));
@@ -446,7 +430,7 @@ namespace ViLa.Model
 
             File.WriteAllText
             (
-                Path.Combine(Context.Host.ConfigPath, "vila.settings.xml"),
+                Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "vila.settings.xml"),
                 utf.GetString(memoryStream.ToArray())
             );
         }
@@ -456,19 +440,19 @@ namespace ViLa.Model
         /// </summary>
         public void ResetSettings()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.setting.load")));
+            Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.setting.load"));
 
             // Konfiguration laden
             var serializer = new XmlSerializer(typeof(Settings));
 
             try
             {
-                using var reader = File.OpenText(Path.Combine(Context.Host.ConfigPath, "vila.settings.xml"));
+                using var reader = File.OpenText(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "vila.settings.xml"));
                 Settings = serializer.Deserialize(reader) as Settings;
             }
             catch
             {
-                Log(new LogItem(LogItem.LogLevel.Warning, this.I18N("vila:vila.setting.warning")));
+                Log(new LogItem(LogItem.LogLevel.Warning, "vila:vila.setting.warning"));
             }
 
             Log(new LogItem(LogItem.LogLevel.Debug, "ImpulsePerkWh = " + Settings.ImpulsePerkWh));
@@ -479,7 +463,7 @@ namespace ViLa.Model
         /// </summary>
         public void StartCharging()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.begin")));
+            Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.begin"));
 
             ActiveMeasurementLog = new MeasurementLog()
             {
@@ -501,7 +485,7 @@ namespace ViLa.Model
         /// </summary>
         public void StopCharging()
         {
-            Log(new LogItem(LogItem.LogLevel.Info, this.I18N("vila:vila.charging.stop")));
+            Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.stop"));
 
             ActiveMeasurementLog.FinalPower = ActiveMeasurementLog.Power;
             ActiveMeasurementLog.FinalCost = ActiveMeasurementLog.Cost;
@@ -564,7 +548,7 @@ namespace ViLa.Model
                 serializer.Serialize(memoryStream, ActiveMeasurementLog, xmlns);
 
                 var utf = new UTF8Encoding();
-                var fileName = Path.Combine(Context.Host.DataPath, "measurements", string.Format("{0}.xml", ActiveMeasurementLog.ID));
+                var fileName = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "measurements", string.Format("{0}.xml", ActiveMeasurementLog.ID));
 
                 if (!Directory.Exists(Path.GetDirectoryName(fileName)))
                 {
@@ -579,7 +563,7 @@ namespace ViLa.Model
 
                 HistoryMeasurementLog.Add(ActiveMeasurementLog);
 
-                Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.charging.save"), fileName)));
+                Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.charging.save", fileName)));
             }
         }
 
@@ -598,7 +582,7 @@ namespace ViLa.Model
                 serializer.Serialize(memoryStream, measurement, xmlns);
 
                 var utf = new UTF8Encoding();
-                var fileName = Path.Combine(Context.Host.DataPath, "measurements", string.Format("{0}.xml", measurement.ID));
+                var fileName = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "measurements", string.Format("{0}.xml", measurement.ID));
 
                 if (!Directory.Exists(Path.GetDirectoryName(fileName)))
                 {
@@ -611,7 +595,7 @@ namespace ViLa.Model
                     utf.GetString(memoryStream.ToArray())
                 );
 
-                Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.charging.save"), fileName)));
+                Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.charging.save", fileName)));
             }
         }
 
@@ -626,14 +610,14 @@ namespace ViLa.Model
                 var measurementLog = GetHistoryMeasurementLog(id);
                 if (measurementLog != null)
                 {
-                    File.Delete(Path.Combine(Context.Host.DataPath, "measurements", $"{measurementLog.ID}.xml"));
-                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.delete.file"), id)));
+                    File.Delete(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "measurements", $"{measurementLog.ID}.xml"));
+                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.delete.file", id)));
 
                     HistoryMeasurementLog.Remove(measurementLog);
                 }
                 else
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.delete.error"), id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.delete.error", id)));
                 }
             }
             catch (Exception ex)
@@ -653,7 +637,7 @@ namespace ViLa.Model
                 var measurementLog = GetHistoryMeasurementLog(id);
                 if (measurementLog != null)
                 {
-                    var archive = Path.Combine(ViewModel.Instance.Context.Host.DataPath, "archive");
+                    var archive = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "archive");
 
                     if (!Directory.Exists(archive))
                     {
@@ -672,18 +656,18 @@ namespace ViLa.Model
                         Directory.CreateDirectory(month);
                     }
 
-                    var source = Path.Combine(Context.Host.DataPath, "measurements", id + ".xml");
+                    var source = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "measurements", id + ".xml");
                     var destination = Path.Combine(month, id + ".xml");
 
                     File.Move(source, destination);
 
                     HistoryMeasurementLog.Remove(measurementLog);
 
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.archive.move"), id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.archive.move", id)));
                 }
                 else
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format(this.I18N("vila:vila.archive.error"), id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.archive.error", id)));
                 }
             }
             catch (Exception ex)

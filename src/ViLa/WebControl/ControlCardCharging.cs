@@ -1,36 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Linq;
-using System.Text;
 using ViLa.Model;
-using WebExpress.WebCore.Internationalization;
 using WebExpress.WebCore.WebHtml;
-using WebExpress.WebCore.WebPage;
 using WebExpress.WebUI.WebControl;
-using static WebExpress.WebCore.Internationalization.InternationalizationManager;
+using WebExpress.WebUI.WebPage;
 
 namespace ViLa.WebControl
 {
+    /// <summary>
+    /// Represents a control panel for card charging operations.
+    /// </summary>
     public class ControlCardCharging : ControlPanel
     {
         /// <summary>
-        /// Konstruktor
+        /// Initializes a new instance of the class.
         /// </summary>
-        /// <param name="id">Die ID</param>
+        /// <param name="id">
+        /// The identifier for the control card charging, or null to use a default value.
+        /// </param>
         public ControlCardCharging(string id = null)
             : base(id)
         {
         }
 
         /// <summary>
-        /// In HTML konvertieren
+        /// Renders the control into an HTML node.
         /// </summary>
-        /// <param name="context">Der Kontext, indem das Steuerelement dargestellt wird</param>
-        /// <returns>Das Control als HTML</returns>
-        public override IHtmlNode Render(RenderContext context)
+        /// <param name="renderContext">The render context.</param>
+        /// <param name="visualTree">The visual tree control.</param>
+        /// <returns>The rendered HTML node.</returns>
+        public override IHtmlNode Render(IRenderControlContext renderContext, IVisualTreeControl visualTree)
         {
-            context.VisualTree.AddHeaderScriptLinks(context.ApplicationContext.ContextPath.Append("/assets/js/vila.dashboard.js"));
-
             static string[] createArray(int size)
             {
                 var array = new string[size];
@@ -42,63 +42,89 @@ namespace ViLa.WebControl
                 return array;
             }
 
-            var chartLabels = ViewModel.Instance.ActiveCharging ?
-                ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ViewModel.Instance.CurrentMeasurementLog.Measurements.IndexOf(x).ToString()).ToArray() :
-                createArray(ViewModel.Instance.CurrentMeasurementLog.Measurements.Count);
+            var chartLabels = ViewModel.Instance.ActiveCharging
+                ? [.. ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => ViewModel.Instance.CurrentMeasurementLog.Measurements.IndexOf(x).ToString())]
+                : createArray(ViewModel.Instance.CurrentMeasurementLog.Measurements.Count);
 
             var chartData = ViewModel.Instance.CurrentMeasurementLog.Measurements.Select(x => x.Power * 60).ToArray();
 
-            var card = new ControlPanelCard()
+            var card = new ControlPanelCard(null)
             {
-                BackgroundColor = new PropertyColorBackground(TypeColorBackground.Light)
+                BackgroundColor = _ => new PropertyColorBackground(TypeColorBackground.Light)
             };
 
-            card.Content.Add(new ControlPanelCard
-            (
-                new ControlText("measurementtime")
-                {
-                    Text = string.Format(context.Culture, I18N(context.Culture, "vila:vila.charging.duration"), ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null) : "-")
-                },
-                new ControlText("cost")
-                {
-                    Text = string.Format(context.Culture, I18N(context.Culture, "vila:vila.charging.cost"), ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? ViewModel.Instance.CurrentMeasurementLog?.Cost : "-", ViewModel.Instance.Settings.Currency)
-                },
-                new ControlText("power")
-                {
-                    Text = string.Format(context.Culture, I18N(context.Culture, "vila:vila.charging.consumption"), ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? ViewModel.Instance.CurrentMeasurementLog?.Power : "-")
-                })
+            var durationText = new ControlText("measurementtime")
             {
-                HorizontalAlignment = TypeHorizontalAlignment.Default,
-                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
-            });
+                Text = ctx =>
+                {
+                    var culture = ctx.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+                    var val = ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? new TimeSpanConverter().Convert(DateTime.Now - ViewModel.Instance.CurrentMeasurementLog?.From, typeof(string), null, null) : "-";
+                    return string.Format(culture, WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(culture, "vila:vila.charging.duration"), val);
+                }
+            };
 
-            card.Content.Add(new ControlChart("chart")
+            var costText = new ControlText("cost")
             {
-                Margin = new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None),
-                Title = "",
-                Labels = chartLabels,
-                Data = new List<ControlChartDataset> { new ControlChartDataset() { Data = chartData, Title = context.I18N("vila:vila.charging.title") } },
-                TitleX = context.I18N("vila:vila.charging.title.x"),
-                TitleY = context.I18N("vila:vila.charging.title.y"),
-                Styles = new List<string>() { "max-width: 85%;" },
-                Minimum = 0
-            });
+                Text = ctx =>
+                {
+                    var culture = ctx.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+                    var val = ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? (object)ViewModel.Instance.CurrentMeasurementLog?.Cost : "-";
+                    return string.Format(culture, WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(culture, "vila:vila.charging.cost"), val, ViewModel.Instance.Settings.Currency);
+                }
+            };
 
-            Content.Add(card);
+            var powerText = new ControlText("power")
+            {
+                Text = ctx =>
+                {
+                    var culture = ctx.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+                    var val = ViewModel.Instance.ActiveCharging && ViewModel.Instance.CurrentMeasurementLog.Measurements.Count > 0 ? (object)ViewModel.Instance.CurrentMeasurementLog?.Power : "-";
+                    return string.Format(culture, WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(culture, "vila:vila.charging.consumption"), val);
+                }
+            };
 
-            var builder = new StringBuilder();
-            builder.AppendLine($"var restUrl='{context.ApplicationContext.ContextPath.Append("api")}';");
+            var infoCard = new ControlPanelCard(null, durationText, costText, powerText)
+            {
+                HorizontalAlignment = _ => TypeHorizontalAlignment.Default,
+                Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
+            };
+            card.Add(infoCard);
+
+            var chart = new ControlChart("chart")
+            {
+                Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None),
+                Title = _ => "",
+                Labels = _ => chartLabels,
+                Data = ctx => new[] {
+                    new ControlChartDataset()
+                    {
+                        Data = new ControlChartDatasetPointCollection(chartData),
+                        Title = WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(ctx.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture, "vila:vila.charging.title")
+                    }
+                },
+                TitleX = ctx => WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(ctx.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture, "vila:vila.charging.title.x"),
+                TitleY = ctx => WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(ctx.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture, "vila:vila.charging.title.y"),
+                Styles = new[] { "max-width: 85%;" },
+                Minimum = _ => 0
+            };
+            card.Add(chart);
+
+            Clear();
+            Add(card);
+
+            var builder = new System.Text.StringBuilder();
+            //builder.AppendLine($"var restUrl='{renderContext.ApplicationContext.ContextPath.Append("api")}';");
             builder.AppendLine($"var currency='{ViewModel.Instance.Settings.Currency}';");
-            builder.AppendLine($"var vila_charging_current='{context.Page.I18N("vila:vila.charging.current")}';");
-            builder.AppendLine($"var vila_charging_begin='{context.Page.I18N("vila:vila.charging.begin")}';");
-            builder.AppendLine($"var vila_charging_stop='{context.Page.I18N("vila:vila.charging.stop")}';");
-            builder.AppendLine($"var vila_charging_duration='{context.Page.I18N("vila:vila.charging.duration")}';");
-            builder.AppendLine($"var vila_charging_cost='{context.Page.I18N("vila:vila.charging.cost")}';");
-            builder.AppendLine($"var vila_charging_consumption='{context.Page.I18N("vila:vila.charging.consumption")}';");
+            builder.AppendLine($"var vila_charging_current='{WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(renderContext.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture, "vila:vila.charging.current")}';");
+            builder.AppendLine($"var vila_charging_begin='{WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(renderContext.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture, "vila:vila.charging.begin")}';");
+            builder.AppendLine($"var vila_charging_stop='{WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(renderContext.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture, "vila:vila.charging.stop")}';");
+            builder.AppendLine($"var vila_charging_duration='{WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(renderContext.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture, "vila:vila.charging.duration")}';");
+            builder.AppendLine($"var vila_charging_cost='{WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(renderContext.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture, "vila:vila.charging.cost")}';");
+            builder.AppendLine($"var vila_charging_consumption='{WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(renderContext.Request.Culture ?? System.Globalization.CultureInfo.CurrentCulture, "vila:vila.charging.consumption")}';");
 
-            context.VisualTree.AddScript($"charging_i18n", builder.ToString());
+            visualTree.AddScript($"charging_i18n", builder.ToString());
 
-            return base.Render(context);
+            return base.Render(renderContext, visualTree);
         }
     }
 }
