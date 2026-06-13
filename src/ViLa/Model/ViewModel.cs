@@ -234,7 +234,7 @@ namespace ViLa.Model
 
 
             // Alte Messprotokolle laden
-            var directoryName = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "data/measurements");
+            var directoryName = ResolveMeasurementsDirectory();
 
             if (!Directory.Exists(directoryName))
             {
@@ -430,7 +430,7 @@ namespace ViLa.Model
 
             File.WriteAllText
             (
-                Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "vila.settings.xml"),
+                ResolveConfigPath("vila.settings.xml"),
                 utf.GetString(memoryStream.ToArray())
             );
         }
@@ -445,9 +445,13 @@ namespace ViLa.Model
             // Konfiguration laden
             var serializer = new XmlSerializer(typeof(Settings));
 
+            // 0.0.11 MIGRATION: Die csproj-Datei kopiert vila.settings.xml nach <BaseDirectory>/Config/,
+            // der Code suchte aber in <BaseDirectory>/. Fallback: erst Config/, dann BaseDirectory.
+            var settingsPath = ResolveConfigPath("vila.settings.xml");
+
             try
             {
-                using var reader = File.OpenText(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "vila.settings.xml"));
+                using var reader = File.OpenText(settingsPath);
                 Settings = serializer.Deserialize(reader) as Settings;
             }
             catch
@@ -455,7 +459,42 @@ namespace ViLa.Model
                 Log(new LogItem(LogItem.LogLevel.Warning, "vila:vila.setting.warning"));
             }
 
-            Log(new LogItem(LogItem.LogLevel.Debug, "ImpulsePerkWh = " + Settings.ImpulsePerkWh));
+            Log(new LogItem(LogItem.LogLevel.Debug, "ImpulsePerkWh = " + Settings?.ImpulsePerkWh));
+        }
+
+        /// <summary>
+        /// Sucht eine Konfigurationsdatei zuerst im Config/-Unterordner (0.0.11 Standard),
+        /// dann als Fallback im BaseDirectory (1.4.7 Standard).
+        /// </summary>
+        private static string ResolveConfigPath(string fileName)
+        {
+            var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            var configPath = Path.Combine(baseDir, "Config", fileName);
+            if (File.Exists(configPath))
+            {
+                return configPath;
+            }
+
+            var rootPath = Path.Combine(baseDir, fileName);
+            return rootPath;
+        }
+
+        /// <summary>
+        /// Liefert das Datenverzeichnis für Messprotokolle. Erstellt es bei Bedarf.
+        /// Reihenfolge: <BaseDirectory>/data/measurements, sonst <BaseDirectory>/measurements.
+        /// </summary>
+        private static string ResolveMeasurementsDirectory()
+        {
+            var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            var dataDir = Path.Combine(baseDir, "data", "measurements");
+            if (Directory.Exists(dataDir))
+            {
+                return dataDir;
+            }
+
+            var legacyDir = Path.Combine(baseDir, "measurements");
+            Directory.CreateDirectory(legacyDir);
+            return legacyDir;
         }
 
         /// <summary>
@@ -548,7 +587,7 @@ namespace ViLa.Model
                 serializer.Serialize(memoryStream, ActiveMeasurementLog, xmlns);
 
                 var utf = new UTF8Encoding();
-                var fileName = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "measurements", string.Format("{0}.xml", ActiveMeasurementLog.ID));
+                var fileName = Path.Combine(ResolveMeasurementsDirectory(), string.Format("{0}.xml", ActiveMeasurementLog.ID));
 
                 if (!Directory.Exists(Path.GetDirectoryName(fileName)))
                 {
@@ -582,7 +621,7 @@ namespace ViLa.Model
                 serializer.Serialize(memoryStream, measurement, xmlns);
 
                 var utf = new UTF8Encoding();
-                var fileName = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "measurements", string.Format("{0}.xml", measurement.ID));
+                var fileName = Path.Combine(ResolveMeasurementsDirectory(), string.Format("{0}.xml", measurement.ID));
 
                 if (!Directory.Exists(Path.GetDirectoryName(fileName)))
                 {
@@ -610,7 +649,7 @@ namespace ViLa.Model
                 var measurementLog = GetHistoryMeasurementLog(id);
                 if (measurementLog != null)
                 {
-                    File.Delete(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "measurements", $"{measurementLog.ID}.xml"));
+                    File.Delete(Path.Combine(ResolveMeasurementsDirectory(), $"{measurementLog.ID}.xml"));
                     ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.delete.file", id)));
 
                     HistoryMeasurementLog.Remove(measurementLog);
@@ -637,11 +676,15 @@ namespace ViLa.Model
                 var measurementLog = GetHistoryMeasurementLog(id);
                 if (measurementLog != null)
                 {
-                    var archive = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "archive");
-
+                    var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+                    var archive = Path.Combine(baseDir, "data", "archive");
                     if (!Directory.Exists(archive))
                     {
-                        Directory.CreateDirectory(archive);
+                        archive = Path.Combine(baseDir, "archive");
+                        if (!Directory.Exists(archive))
+                        {
+                            Directory.CreateDirectory(archive);
+                        }
                     }
 
                     var year = Path.Combine(archive, DateTime.Now.Year.ToString());
@@ -656,7 +699,7 @@ namespace ViLa.Model
                         Directory.CreateDirectory(month);
                     }
 
-                    var source = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "measurements", id + ".xml");
+                    var source = Path.Combine(ResolveMeasurementsDirectory(), id + ".xml");
                     var destination = Path.Combine(month, id + ".xml");
 
                     File.Move(source, destination);

@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Version>2.0.0.0</Version>
+		<AssemblyVersion>2.0.0.0</AssemblyVersion>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/ReneSchwarzer/ViLa.git</RepositoryUrl>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Assets\img\Favicon.png" />
+		<None Remove="Assets\img\Logo.png" />
+		<None Remove="Assets\img\vila.svg" />
+		<None Remove="Assets\js\vila.dashboard.js" />
+		<None Remove="Internationalization\de" />
+		<None Remove="Internationalization\en" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Assets/**/*.*">
+			<LogicalName>$(MSBuildProjectName).Assets.%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<EmbeddedResource Include="Internationalization\de" />
+		<EmbeddedResource Include="Internationalization\en" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Device.Gpio" Version="3.1.0" />
+		<PackageReference Include="WebExpress.WebCore" Version="0.0.11-alpha">
+			<Private>false</Private>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<PackageReference Include="WebExpress.WebUI" Version="0.0.11-alpha">
+			<Private>false</Private>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<PackageReference Include="WebExpress.WebIndex" Version="0.0.11-alpha">
+			<Private>false</Private>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<PackageReference Include="WebExpress.WebApp" Version="0.0.11-alpha">
+			<Private>false</Private>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

@@ -1,3 +1,4 @@
+using System;
 using ViLa.Model;
 using WebExpress.WebUI.WebControl;
 using WebExpress.WebUI.WebIcon;
@@ -25,7 +26,19 @@ namespace ViLa.WebControl
             Icon = _ => new IconTachometerAlt();
             TextColor = _ => new PropertyColorText(TypeColorText.Default);
             BackgroundColor = _ => new PropertyColorBackground(TypeColorBackground.Light);
-            Progress = _ => (uint?)MeasurementLog?.Power;
+            // 0.0.11 MIGRATION: Wenn Settings.ImpulsePerkWh = 0 ist, ergibt Power = Infinity/NaN.
+            // Cast (uint?)Infinity läuft auf x86 in uint.MaxValue (4294967295%) über.
+            // Wir klammern ungültige Werte auf 0..100% ab.
+            Progress = _ =>
+            {
+                var power = MeasurementLog?.Power;
+                if (power is null || float.IsNaN(power.Value) || float.IsInfinity(power.Value) || power.Value < 0)
+                {
+                    return (uint?)0;
+                }
+
+                return (uint?)Math.Min(power.Value, 100f);
+            };
 
             //Value = _ =>
             //{

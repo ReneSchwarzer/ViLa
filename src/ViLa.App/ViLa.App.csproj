@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<AssemblyName>ViLa.App</AssemblyName>
+		<RootNamespace>ViLa.App</RootNamespace>
+		<Version>2.0.0.0</Version>
+		<AssemblyVersion>2.0.0.0</AssemblyVersion>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/ReneSchwarzer/ViLa.git</RepositoryUrl>
+		<ApplicationIcon>ViLa.ico</ApplicationIcon>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<StartupObject>ViLa.App.Program</StartupObject>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Assets\**" />
+	  <EmbeddedResource Remove="Assets\**" />
+	  <None Remove="Assets\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ViLa\ViLa.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Config\vila.settings.xml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Config\webexpress.config.xml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="WebExpress.WebCore" Version="0.0.11-alpha" />
+		<PackageReference Include="WebExpress.WebApp" Version="0.0.11-alpha" />
+		<PackageReference Include="WebExpress.WebIndex" Version="0.0.11-alpha" />
+		<PackageReference Include="WebExpress.WebUI" Version="0.0.11-alpha" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
+		<Exec Command="$(SolutionDir)$(AssemblyName)\bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).exe -s $(SolutionDir)..\Vila.spec -c $(Configuration) -t $(TargetFramework) -o $(SolutionDir)..\pkg\$(Configuration)" />
+	</Target>
+
+</Project>
