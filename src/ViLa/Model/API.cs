@@ -3,52 +3,52 @@
     public class API
     {
         /// <summary>
-        /// Liefert oder setzt den Mandanten
+        /// Gets or sets the tenant.
         /// </summary>
         public string Client { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt, ob der Ladevorgang aktiv ist
+        /// Gets or sets whether the charging process is active.
         /// </summary>
         public bool ActiveCharging { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt den Anfang des Messzeitpunkt
+        /// Gets or sets the start of the measurement time.
         /// </summary>
         public string MeasurementTime { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Anzahl der gemessenen Gesammtimpulse
+        /// Gets or sets the total number of measured impulses.
         /// </summary>
         public string Impulse { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die gemessene Gesammtleistung in kWh
+        /// Gets or sets the total measured power in kWh.
         /// </summary>
         public string Power { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Kosten in €
+        /// Gets or sets the cost in €.
         /// </summary>
         public string Cost { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die aktuell gemessene Gesammtleistung in kWh
+        /// Gets or sets the currently measured total power in kWh.
         /// </summary>
         public string CurrentPower { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die aktuelle Zeit
+        /// Gets or sets the current time.
         /// </summary>
         public string Now { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Daten
+        /// Gets or sets the chart data labels.
         /// </summary>
         public string[] ChartLabels { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Daten
+        /// Gets or sets the chart data values.
         /// </summary>
         public string[] ChartData { get; set; }
     }

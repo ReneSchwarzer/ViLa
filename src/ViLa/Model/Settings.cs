@@ -6,56 +6,56 @@ namespace ViLa.Model
     public class Settings
     {
         /// <summary>
-        /// Liefert oder setzt den Debug-Modus
+        /// Gets or sets the debug mode.
         /// </summary>
         [XmlElement(ElementName = "debug", DataType = "boolean")]
         public bool DebugMode { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Anzahl der Impulse pro kWh
+        /// Gets or sets the number of impulses per kWh.
         /// </summary>
         [XmlElement(ElementName = "ImpulsePerkWh")]
         public int ImpulsePerkWh { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt den Strompreis pro kWh
+        /// Gets or sets the electricity price per kWh.
         /// </summary>
         [XmlElement(ElementName = "ElectricityPricePerkWh")]
         public float ElectricityPricePerkWh { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die maximale Stromverbrauch in kWh
+        /// Gets or sets the maximum power consumption in kWh.
         /// </summary>
         [XmlElement(ElementName = "MaxWattage")]
         public int MaxWattage { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die minimalen Stromverbrauch in kWh, 
-        /// bei dem der Ladevorgang abgebrochen wird
+        /// Gets or sets the minimum power consumption in kWh
+        /// at which the charging process is aborted.
         /// </summary>
         [XmlElement(ElementName = "MinWattage")]
         public float MinWattage { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die maximale Ladezeit in h
+        /// Gets or sets the maximum charging time in hours.
         /// </summary>
         [XmlElement(ElementName = "MaxChargingTime")]
         public int MaxChargingTime { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Währung
+        /// Gets or sets the currency.
         /// </summary>
         [XmlElement(ElementName = "Currency")]
         public string Currency { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt den Offset des Abrechnungszeitraumes
+        /// Gets or sets the billing period offset.
         /// </summary>
         [XmlElement(ElementName = "BillingDayOffset")]
         public int BillingDayOffset { get; set; }
 
         /// <summary>
-        /// Bestimmt, wie die Messungen gestartet werden sollen
+        /// Determines how measurements are started.
         /// </summary>
         [XmlElement(ElementName = "Mode")]
         public Mode Mode { get; set; }

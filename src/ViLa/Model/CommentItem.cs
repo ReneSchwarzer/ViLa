@@ -6,24 +6,24 @@ namespace ViLa.Model
     public class CommentItem
     {
         /// <summary>
-        /// Die GUID
+        /// The GUID.
         /// </summary>
         public string Guid { get; set; }
 
         /// <summary>
-        /// Der Kommentar
+        /// The comment.
         /// </summary>
         [XmlElement("comment")]
         public string Comment { get; set; }
 
         /// <summary>
-        /// Der Zeitstempel der Erstellung
+        /// The creation timestamp.
         /// </summary>
         [XmlAttribute("created")]
         public DateTime Created { get; set; }
 
         /// <summary>
-        /// Der Zeitstempel der letzten Änderung
+        /// The last-modified timestamp.
         /// </summary>
         [XmlAttribute("updated")]
         public DateTime Updated { get; set; }

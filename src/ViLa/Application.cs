@@ -8,7 +8,7 @@ namespace ViLa
     /// </summary>
     [Name("vila:app.name")]
     [Description("vila:app.description")]
-    [Icon("/assets/img/vila.svg")]
+    [Icon("assets/img/vila.svg")]
     [AssetPath("/")]
     [ContextPath("/vila")]
     public sealed class Application : IApplication

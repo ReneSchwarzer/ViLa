@@ -17,78 +17,78 @@ namespace ViLa.Model
     public class ViewModel
     {
         /// <summary>
-        /// Die Größe des Autobuffers in Minuten
+        /// Size of the continuous-log buffer in minutes.
         /// </summary>
         public const int ContinuousLogSize = 5;
 
         /// <summary>
-        /// Der Schwellwert in Impulsen
+        /// Threshold in impulses.
         /// </summary>
         public const int ContinuousThreshold = 50;
 
         /// <summary>
-        /// Impulsdauer im ms 
+        /// Impulse duration in milliseconds.
         /// </summary>
         public const int ImpulseDuration = 30;
 
         /// <summary>
-        /// Der GPIO-Pin, welcher die S0-Schnittstelle des Strommeßgerät ausließt
+        /// GPIO pin that reads the S0 interface of the electricity meter.
         /// </summary>
         private const int PowerMeterPin = 3;
 
         /// <summary>
-        /// Der GPIO-Pin, welcher den Schütz steuert
+        /// GPIO pin that controls the contactor.
         /// </summary>
         private const int ElectricContactorPin = 13;
 
         /// <summary>
-        /// Lifert die einzige Instanz der Modell-Klasse
+        /// Gets the singleton instance of the model class.
         /// </summary>
         public static ViewModel Instance { get; } = new ViewModel();
 
         /// <summary>
-        /// Liefert die aktuelle Zeit
+        /// Gets the current time.
         /// </summary>
         public static string Now => DateTime.Now.ToString("dd.MM.yyyy<br>HH:mm:ss");
 
         /// <summary>
-        /// Liefert oder setzt den Verweis auf den Kontext des Plugins
+        /// Gets or sets the reference to the plugin context.
         /// </summary>
         public IPluginContext Context { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt den Staustext
+        /// Gets or sets the log entries.
         /// </summary>
         [XmlIgnore]
         public List<LogItem> Logging { get; set; } = new List<LogItem>();
 
         /// <summary>
-        /// Der GPIO-Controller
+        /// The GPIO controller.
         /// </summary>
         private GpioController GPIO { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Zeit des letzen Auslesens
+        /// Gets or sets the time of the last read.
         /// </summary>
         private Stopwatch Stopwatch { get; } = new Stopwatch();
 
         /// <summary>
-        /// Liefert oder setzt Startzeitpunkt
+        /// Gets or sets the start time.
         /// </summary>
         private DateTime StartTime { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die vergangenen Minuten
+        /// Gets or sets the elapsed minutes.
         /// </summary>
         private long PastMinutes { get; set; } = 0;
 
         /// <summary>
-        /// Der Zustand des GPIO-Pins, welcher den Schütz steuert
+        /// State of the GPIO pin that controls the contactor.
         /// </summary>
         private bool _electricContactorStatus;
 
         /// <summary>
-        /// Liefert oder setzt ob der Schütz angeschaltet ist
+        /// Gets or sets whether the contactor is switched on.
         /// </summary>
         protected virtual bool ElectricContactorStatus
         {
@@ -122,7 +122,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Liefert oder setzt ob ein GPIO-Impuls anliegt 
+        /// Gets whether a GPIO impulse is present.
         /// </summary>
         protected virtual bool PowerMeterStatus
         {
@@ -146,17 +146,17 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Liefert oder setzt den letzten Status der GPIO-Schnittstelle
+        /// Gets or sets the last status of the GPIO interface.
         /// </summary>
         private bool LastPowerMeterStatus { get; set; }
 
         /// <summary>
-        /// Bestimmt, ob der Ladevorgang aktiv ist
+        /// Determines whether the charging process is active.
         /// </summary>
         public bool ActiveCharging => ActiveMeasurementLog != null;
 
         /// <summary>
-        /// Messprotokoll der ständigen Messung
+        /// Measurement log of the continuous measurement.
         /// </summary>
         private MeasurementLog ContinuousMeasurementLog { get; } = new MeasurementLog()
         {
@@ -165,37 +165,37 @@ namespace ViLa.Model
         };
 
         /// <summary>
-        /// Aktuelles Messprotokoll
+        /// Current measurement log.
         /// </summary>
         public MeasurementLog CurrentMeasurementLog => ActiveCharging ? ActiveMeasurementLog : ContinuousMeasurementLog;
 
         /// <summary>
-        /// Ermittelt die aktuell ermittelte Leistung der letzen Minute in kWh
+        /// Gets the power measured in the last minute, in kWh.
         /// </summary>
         public float CurrentPower => CurrentMeasurementLog.Measurements.Count > 0 ? CurrentMeasurementLog.CurrentPower : 0;
 
         /// <summary>
-        /// Liefert oder setzt das aktive Messprotokoll
+        /// Gets or sets the active measurement log.
         /// </summary>
         private MeasurementLog ActiveMeasurementLog { get; set; }
 
         /// <summary>
-        /// Liefert die bereits abgeschlossene Messprotokolle
+        /// Gets the already-completed measurement logs.
         /// </summary>
         private List<MeasurementLog> HistoryMeasurementLog { get; } = new List<MeasurementLog>();
 
         /// <summary>
-        /// Liefert oder setzt die Settings
+        /// Gets or sets the settings.
         /// </summary>
         public Settings Settings { get; private set; } = new Settings() { Currency = "€" };
 
         /// <summary>
-        /// Liefert die Kultur
+        /// Gets the culture.
         /// </summary>
         public CultureInfo Culture { get; set; }
 
         /// <summary>
-        /// Liefert alle vergebenen Labels.
+        /// Gets all assigned labels.
         /// </summary>
         public IEnumerable<string> Tags => HistoryMeasurementLog
             .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
@@ -203,20 +203,20 @@ namespace ViLa.Model
             .Distinct();
 
         /// <summary>
-        /// Konstruktor
+        /// Constructor.
         /// </summary>
         private ViewModel()
         {
         }
 
         /// <summary>
-        /// Initialisierung
+        /// Initialization.
         /// </summary>
         public void Init()
         {
             try
             {
-                // Initialisierung des Controllers
+                // Initialize the controller
                 GPIO = new GpioController(PinNumberingScheme.Logical);
                 GPIO.OpenPin(PowerMeterPin, PinMode.InputPullUp);
                 GPIO.OpenPin(ElectricContactorPin, PinMode.Output);
@@ -233,7 +233,7 @@ namespace ViLa.Model
             }
 
 
-            // Alte Messprotokolle laden
+            // Load existing measurement logs
             var directoryName = ResolveMeasurementsDirectory();
 
             if (!Directory.Exists(directoryName))
@@ -256,7 +256,7 @@ namespace ViLa.Model
                 }
             }
 
-            // ganz alte Messprotokolle archivieren (zyklisch)
+            // Archive very old measurement logs (cyclically)
             Task.Run(() =>
             {
                 while (true)
@@ -278,7 +278,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Updatefunktion
+        /// Update function.
         /// </summary>
         public virtual void Update()
         {
@@ -304,7 +304,7 @@ namespace ViLa.Model
                         ContinuousMeasurementLog.CurrentMeasurement.Power = (float)ContinuousMeasurementLog?.CurrentMeasurement?.Impulse / Settings.ImpulsePerkWh;
                     }
 
-                    // Neuer Messwert
+                    // New measurement value
                     if (minutes > PastMinutes)
                     {
                         PastMinutes = minutes;
@@ -326,7 +326,7 @@ namespace ViLa.Model
                         {
                             StartCharging();
 
-                            // Bestimme den ersten Meßwert mit Werten
+                            // Find the first measurement value with non-zero data
                             var skip = 0;
                             for (var i = 0; i < ContinuousMeasurementLog.Measurements.Count; i++)
                             {
@@ -337,7 +337,7 @@ namespace ViLa.Model
                                 }
                             }
 
-                            // Bereits verbrauchte Energie welche zur Dedektierung der Autofunktion gemessen wurde, dem neuen Messprotokoll zuschreiben
+                            // Attribute the already-consumed energy measured for auto-detection to the new log
                             var measurements = ContinuousMeasurementLog.Measurements.Skip(skip);
                             ActiveMeasurementLog.Measurements.Clear();
                             ActiveMeasurementLog.Measurements.AddRange(measurements.SkipLast(1));
@@ -395,7 +395,7 @@ namespace ViLa.Model
         /// <summary>
         /// Loggt ein Event
         /// </summary>
-        /// <param name="logItem">Der Logeintrag</param>
+        /// <param name="logItem">The log entry.</param>
         public void Log(LogItem logItem)
         {
             Logging.Add(logItem);
@@ -414,13 +414,13 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Wird aufgerufen, wenn das Speichern der Einstellungen erfolgen soll
+        /// Invoked when settings should be saved.
         /// </summary>
         public void SaveSettings()
         {
             Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.setting.save"));
 
-            // Konfiguration speichern
+            // Save settings
             var serializer = new XmlSerializer(typeof(Settings));
 
             using var memoryStream = new MemoryStream();
@@ -436,17 +436,17 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Wird aufgerufen, wenn die Einstellungen zurückgesetzt werden sollen
+        /// Invoked when settings should be reset.
         /// </summary>
         public void ResetSettings()
         {
             Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.setting.load"));
 
-            // Konfiguration laden
+            // Load settings
             var serializer = new XmlSerializer(typeof(Settings));
 
-            // 0.0.11 MIGRATION: Die csproj-Datei kopiert vila.settings.xml nach <BaseDirectory>/Config/,
-            // der Code suchte aber in <BaseDirectory>/. Fallback: erst Config/, dann BaseDirectory.
+            // 0.0.11 migration: csproj copies vila.settings.xml to <BaseDirectory>/Config/,
+            // but the code looked in <BaseDirectory>/. Fallback: Config/ first, then BaseDirectory.
             var settingsPath = ResolveConfigPath("vila.settings.xml");
 
             try
@@ -463,8 +463,8 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Sucht eine Konfigurationsdatei zuerst im Config/-Unterordner (0.0.11 Standard),
-        /// dann als Fallback im BaseDirectory (1.4.7 Standard).
+        /// Looks up a config file first in the Config/ subfolder (0.0.11 default),
+        /// then falls back to BaseDirectory (1.4.7 default).
         /// </summary>
         private static string ResolveConfigPath(string fileName)
         {
@@ -480,7 +480,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Liefert das Datenverzeichnis für Messprotokolle. Erstellt es bei Bedarf.
+        /// Gets the data directory for measurement logs; creates it if necessary.
         /// Reihenfolge: <BaseDirectory>/data/measurements, sonst <BaseDirectory>/measurements.
         /// </summary>
         private static string ResolveMeasurementsDirectory()
@@ -544,7 +544,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Liefert die abgeschlossenen Messprotokolle
+        /// Gets the completed measurement logs
         /// </summary>
         /// <param name="from">Die Anfang, in welcher die Messprotokolle geliefert werden sollen</param>
         /// <param name="till">Das Ende, in welcher die Messprotokolle geliefert werden sollen</param>
@@ -555,7 +555,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Liefert alle abgeschlossenen Messprotokolle
+        /// Gets all completed measurement logs
         /// </summary>
         /// <return>Alle gespeicherten Messprotokoll</return>
         public IEnumerable<MeasurementLog> GetHistoryMeasurementLogs()
@@ -564,7 +564,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Liefert ein abgeschlossenes Messprotokoll
+        /// Gets a single completed measurement log
         /// </summary>
         /// <param name="id">Die ID des Messprotokolls</param>
         /// <return>Das Messprokoll oder null</return>
@@ -607,7 +607,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Ändert ein abgeschlossenes Messprotokoll
+        /// Modifies a completed measurement log
         /// </summary>
         /// <param name="measurement">Das Messprotokoll, welches upgedatet werden soll</param>
         public void UpdateMeasurementLog(MeasurementLog measurement)
@@ -639,7 +639,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Löscht ein abgeschlossenes Messprotokoll
+        /// Deletes a completed measurement log
         /// </summary>
         /// <param name="id">Die ID des Messprotokolls</param>
         public void RemoveHistoryMeasurementLog(string id)
@@ -720,7 +720,7 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Berechnet eine Farbe für ein Tag.
+        /// Calculates a color for a tag.
         /// </summary>
         /// <param name="tag">Das Label.</param>
         /// <returns>Der Farbcode.</returns>

@@ -118,3 +118,17 @@ vila.log.update.exceeding=Die Zeitspanne der GPIO-Schnittstelle wurde um {0} ms 
 vila.log.on=Debug-Ausgaben einblenden
 vila.log.off=Debug-Ausgaben ausblenden
 vila.debug.description=Blendet die Debug-Ausgaben ein oder aus.
+
+vila.history.search.placeholder=Suche…
+vila.history.search.label=Suche
+vila.history.filter.label=Filter
+vila.history.filter.tags.label=Nach Tags filtern
+vila.history.filter.last7days=Letzte 7 Tage
+vila.history.filter.morethan10kwh=Mehr als 10 kWh
+vila.history.filter.clear=Filter zurücksetzen
+vila.history.paging.previous=Zurück
+vila.history.paging.next=Weiter
+vila.history.paging.page=Seite {0} von {1}
+vila.history.paging.first=Erste
+vila.history.paging.last=Letzte
+vila.history.empty=Keine Einträge gefunden.

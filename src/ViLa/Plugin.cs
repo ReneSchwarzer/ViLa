@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ViLa.Model;
+using WebExpress.WebCore;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebPlugin;
 
@@ -13,7 +14,7 @@ namespace ViLa
     /// </summary>
     [Name("vila:plugin.name")]
     [Description("vila:plugin.description")]
-    [Icon("/assets/img/vila.svg")]
+    [Icon("assets/img/vila.svg")]
     [Dependency("webexpress.webui")]
     [Dependency("webexpress.webapp")]
     [Application<Application>()]
@@ -29,6 +30,8 @@ namespace ViLa
         {
             ViewModel.Instance.Context = context;
             ViewModel.Instance.Init();
+
+            WebEx.Favicon = "assets/img/vila.svg";
 
             // increase priority
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;

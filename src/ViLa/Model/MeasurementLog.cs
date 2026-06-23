@@ -6,128 +6,128 @@ using System.Xml.Serialization;
 namespace ViLa.Model
 {
     /// <summary>
-    /// Messprotokoll
+    /// Measurement log.
     /// </summary>
     [XmlRoot(ElementName = "measurementlog", IsNullable = false)]
     public class MeasurementLog
     {
         /// <summary>
-        /// Die ID
+        /// The ID.
         /// </summary>
         [XmlAttribute("id")]
         public string ID { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt den Mandanten
+        /// Gets or sets the tenant.
         /// </summary>
         [XmlAttribute("mandant")]
         public string Client { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt den Anfang des Messzeitpunkt
+        /// Gets the start of the measurement time.
         /// </summary>
         [XmlIgnore]
         public DateTime From => Measurements.FirstOrDefault().MeasurementTimePoint;
 
         /// <summary>
-        /// Liefert oder setzt das Ende des Messzeitpunkt
+        /// Gets the end of the measurement time.
         /// </summary>
         [XmlIgnore]
         public DateTime Till => Measurements.LastOrDefault().MeasurementTimePoint;
 
         /// <summary>
-        /// Liefert oder setzt die Anzahl der gemessenen Gesammtimpulse
+        /// Gets the total number of measured impulses.
         /// </summary>
         [XmlIgnore]
         public long Impulse => Measurements.Sum(x => x.Impulse);
 
         /// <summary>
-        /// Liefert oder setzt die gemessene Gesammtleistung in kWh
+        /// Gets the total measured power in kWh.
         /// </summary>
         [XmlIgnore]
         public float Power => (float)Impulse / ViewModel.Instance.Settings.ImpulsePerkWh;
 
         /// <summary>
-        /// Liefert oder setzt die Kosten in der angegebenen Währung
+        /// Gets the cost in the configured currency.
         /// </summary>
         [XmlIgnore]
         public float Cost => Power * ViewModel.Instance.Settings.ElectricityPricePerkWh;
 
         /// <summary>
-        /// Ermittelt die aktuell ermittelte Leistung der letzen Minute in kWh
+        /// Gets the power measured in the last minute, in kWh.
         /// </summary>
         public float CurrentPower => Measurements.Count < 2 ?
             Measurements.FirstOrDefault().Power :
             Measurements.TakeLast(2).Take(1).FirstOrDefault().Power;
 
         /// <summary>
-        /// Liefert oder setzt den aktuellen Messwert
+        /// Gets the current measurement value.
         /// </summary>
         [XmlIgnore]
         public MeasurementItem CurrentMeasurement => Measurements.LastOrDefault();
 
         /// <summary>
-        /// Liefert oder setzt die Messwerte
+        /// Gets or sets the measurement values.
         /// </summary>
         [XmlElement("measurements")]
         public List<MeasurementItem> Measurements { get; set; } = new List<MeasurementItem>();
 
         /// <summary>
-        /// Liefert oder setzt den finalen Verbrauch in kWh
+        /// Gets or sets the final consumption in kWh.
         /// </summary>
         [XmlAttribute("power")]
         public float FinalPower { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die finalen Kosten in der angegebenen Währung
+        /// Gets or sets the final cost in the configured currency.
         /// </summary>
         [XmlAttribute("cost")]
         public float FinalCost { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt den finalen Startzeitpunkt
+        /// Gets or sets the final start time.
         /// </summary>
         [XmlAttribute("from")]
         public DateTime FinalFrom { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die finalen Endzeitpunkt
+        /// Gets or sets the final end time.
         /// </summary>
         [XmlAttribute("till")]
         public DateTime FinalTill { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt den Strompreis pro kWh
+        /// Gets or sets the electricity price per kWh.
         /// </summary>
         [XmlAttribute("pricePerkWh")]
         public float ElectricityPricePerkWh { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Anzahl der Impulse pro kWh
+        /// Gets or sets the number of impulses per kWh.
         /// </summary>
         [XmlAttribute("impulsePerkWh")]
         public int ImpulsePerkWh { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Währung
+        /// Gets or sets the currency.
         /// </summary>
         [XmlAttribute("currency")]
         public string Currency { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Logitems
+        /// Gets or sets the log items.
         /// </summary>
         [XmlElement("comment")]
         public List<CommentItem> Comments { get; set; } = new List<CommentItem>();
 
         /// <summary>
-        /// Liefert oder setzt ein Label
+        /// Gets or sets a label.
         /// </summary>
         [XmlElement("label")]
         public string Tag { get; set; }
 
         /// <summary>
-        /// Setzt die Werte zurück
+        /// Resets the values.
         /// </summary>
         public void Reset()
         {

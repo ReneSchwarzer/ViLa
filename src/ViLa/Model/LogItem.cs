@@ -6,42 +6,42 @@ namespace ViLa.Model
     public class LogItem
     {
         /// <summary>
-        /// Die Art des Logeintrages
+        /// The log-entry type.
         /// </summary>
         public enum LogLevel { Info, Debug, Warning, Error, Exception }
 
         /// <summary>
-        /// Liefert oder setzt das Loglevel
+        /// Gets or sets the log level.
         /// </summary>
         public LogLevel Level { get; set; }
 
         /// <summary>
-        /// Liefert ider setzt die Lognachricht
+        /// Gets or sets the log message.
         /// </summary>
         public string Massage { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die Logzeit
+        /// Gets or sets the log time.
         /// </summary>
         public DateTime Time { get; set; }
 
         /// <summary>
-        /// Liefert oder setzt die auslösende Instanz
+        /// Gets or sets the triggering instance.
         /// </summary>
         public string Instance { get; set; }
 
         /// <summary>
-        /// Konstruktor
+        /// Constructor.
         /// </summary>
         public LogItem()
         {
         }
 
         /// <summary>
-        /// Konstruktor
+        /// Constructor.
         /// </summary>
-        /// <param name="level">Das Loglevel</param>
-        /// <param name="massage">Die Lognachricht</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="massage">The log message.</param>
         public LogItem(LogLevel level, string massage, [CallerMemberName] string instance = null)
         {
             Level = level;

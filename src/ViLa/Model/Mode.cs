@@ -1,7 +1,7 @@
 ﻿namespace ViLa.Model
 {
     /// <summary>
-    /// Die unterstützten Betriebsmodi
+    /// The supported operating modes.
     /// </summary>
     public enum Mode
     {
@@ -11,15 +11,15 @@
     }
 
     /// <summary>
-    /// Erweiterung des Mode
+    /// Extensions for the operating mode.
     /// </summary>
     public static class ModeExtensions
     {
         /// <summary>
-        /// Umwandlung in eine String-Klasse
+        /// Converts the mode to its resource string.
         /// </summary>
-        /// <param name="mode">Der Betriebsmodus</param>
-        /// <returns>Der String</returns>
+        /// <param name="mode">The operating mode.</param>
+        /// <returns>The string.</returns>
         public static string ToText(this Mode mode)
         {
             return mode switch
