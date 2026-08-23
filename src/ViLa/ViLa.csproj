@@ -2,8 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
-		<Version>2.0.0.0</Version>
-		<AssemblyVersion>2.0.0.0</AssemblyVersion>
+		<Version>2.0.0</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/ReneSchwarzer/ViLa.git</RepositoryUrl>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
@@ -31,19 +30,19 @@
 
 	<ItemGroup>
 		<PackageReference Include="System.Device.Gpio" Version="3.1.0" />
-		<PackageReference Include="WebExpress.WebCore" Version="0.0.11-alpha">
+		<PackageReference Include="WebExpress.WebCore" Version="2.0.0-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="WebExpress.WebUI" Version="0.0.11-alpha">
+		<PackageReference Include="WebExpress.WebUI" Version="2.0.0-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="WebExpress.WebIndex" Version="0.0.11-alpha">
+		<PackageReference Include="WebExpress.WebIndex" Version="2.0.0-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="WebExpress.WebApp" Version="0.0.11-alpha">
+		<PackageReference Include="WebExpress.WebApp" Version="2.0.0-alpha">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>

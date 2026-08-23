@@ -35,7 +35,6 @@ namespace ViLa.WebFragment
             : base(fragmentContext)
         {
             Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.Two);
-            Layout = _ => TypeLayoutList.Flush;
         }
 
         /// <summary>

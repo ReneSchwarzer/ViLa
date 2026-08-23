@@ -1,4 +1,5 @@
 using WebExpress.WebApp.WebControl;
+using WebExpress.WebApp.WebData;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebFragment;
 using WebExpress.WebCore.WebIcon;
@@ -22,9 +23,9 @@ namespace ViLa.WebFragment
         /// <summary>
         /// Gets the table control.
         /// </summary>
-        public ControlRestTable Table { get; } = new ControlRestTable()
+        public ControlDataTable Table { get; } = new ControlDataTable()
         {
-            RestUri = _ => ViLa.App.RestUriHelper.GetUri<WWW.Api._1_.History.Table>()
+            ServiceFactory = _ => DataServiceDescriptor.TableData(ViLa.App.RestUriHelper.GetUri<WWW.Api._1_.History.Table>()?.ToString())
         };
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace ViLa.WebFragment
         public FragmentHistoryTableFragment(IFragmentContext fragmentContext)
             : base(fragmentContext)
         {
-            Icon = _ => new IconTable(TypeIconTheme.Light);
+            Icon = _ => new IconTable();
             Title = _ => "vila:vila.history.label";
 
             Add(Table);

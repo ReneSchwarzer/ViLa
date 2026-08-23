@@ -86,8 +86,8 @@ namespace ViLa.WebControl
             var html = new HtmlElementTextSemanticsSpan()
             {
                 Id = Id,
-                Class = Css.Concatenate("card-counter", GetClasses()),
-                Style = GetStyles(),
+                Class = Css.Concatenate("card-counter", GetClasses(renderContext)),
+                Style = GetStyles(renderContext),
                 Role = Role?.Invoke(renderContext)
             };
 

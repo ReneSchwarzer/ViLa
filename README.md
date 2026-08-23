@@ -33,3 +33,9 @@ siehe https://github.com/ReneSchwarzer/ViLa/blob/master/doc/ViLa.docx
 
 # Stichwörter
 #Wallbox #S0 #Raspberry #Raspbian #IoT #NETCore #WebExpress #DIN43864 #Heidelberg #Home #Eco 
+
+---
+
+## KI-Transparenzhinweis
+
+Teile dieser Software, ihrer Dokumentation und ihrer Assets wurden mithilfe KI-basierter Werkzeuge, einschließlich großer Sprachmodelle, erstellt. KI-gestützte Beiträge werden vor der Aufnahme durch den Projektbetreuer geprüft. Dieser Hinweis erfolgt aus Gründen der Transparenz und orientiert sich an den Transparenzgrundsätzen der KI-Verordnung der EU (Verordnung (EU) 2024/1689, insbesondere Artikel 50); siehe https://eur-lex.europa.eu/eli/reg/2024/1689/oj.

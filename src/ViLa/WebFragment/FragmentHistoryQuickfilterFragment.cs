@@ -1,8 +1,8 @@
 using WebExpress.WebApp.WebControl;
+using WebExpress.WebApp.WebData;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebFragment;
 using WebExpress.WebUI.WebFragment;
-using WebExpress.WebUI.WebPage;
 using WebExpress.WebUI.WebSection;
 
 namespace ViLa.WebFragment
@@ -26,9 +26,9 @@ namespace ViLa.WebFragment
         /// <summary>
         /// Gets the quickfilter control.
         /// </summary>
-        public ControlRestQuickfilter Quickfilter { get; } = new ControlRestQuickfilter(ContentId)
+        public ControlDataQuickfilter Quickfilter { get; } = new ControlDataQuickfilter(ContentId)
         {
-            RestUri = _ => ViLa.App.RestUriHelper.GetUri<WWW.Api._1_.History.Quickfilter>()
+            ServiceFactory = _ => DataServiceDescriptor.QueryData(ViLa.App.RestUriHelper.GetUri<WWW.Api._1_.History.Quickfilter>()?.ToString())
         };
 
         /// <summary>

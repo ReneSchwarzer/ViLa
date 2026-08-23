@@ -1,4 +1,5 @@
 using WebExpress.WebApp.WebControl;
+using WebExpress.WebApp.WebData;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebFragment;
 using WebExpress.WebUI.WebFragment;
@@ -27,7 +28,7 @@ namespace ViLa.WebFragment
         /// </summary>
         public ControlAdvancedSearch Search { get; } = new ControlAdvancedSearch(ContentId)
         {
-            RestUri = _ => ViLa.App.RestUriHelper.GetUri<WWW.Api._1_.History.Wql>()
+            ServiceFactory = _ => DataServiceDescriptor.QueryData(ViLa.App.RestUriHelper.GetUri<WWW.Api._1_.History.Wql>()?.ToString())
         };
 
         /// <summary>
