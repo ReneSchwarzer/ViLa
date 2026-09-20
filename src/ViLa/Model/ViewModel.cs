@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Device.Gpio;
 using System.Diagnostics;
@@ -199,7 +199,7 @@ namespace ViLa.Model
         /// </summary>
         public IEnumerable<string> Tags => HistoryMeasurementLog
             .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-            .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            .SelectMany(x => x.Tag.Split(new[] { ' ', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             .Distinct();
 
         /// <summary>

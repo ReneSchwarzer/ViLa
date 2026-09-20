@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ViLa.App;
 using ViLa.Model;
 using WebExpress.WebApp.WebRestApi;
 using WebExpress.WebCore.Internationalization;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebMessage;
 using WebExpress.WebIndex.Queries;
+using WebExpress.WebUI.WebControl;
+using WebExpress.WebUI.WebIcon;
 
 namespace ViLa.WWW.Api._1_.History
 {
@@ -46,6 +49,7 @@ namespace ViLa.WWW.Api._1_.History
                 Id = "from",
                 Name = "From",
                 Label = I18N.Translate(request, "vila:vila.history.from"),
+                Icon = new IconPlay().ToString(),
                 Visible = true
             };
 
@@ -54,6 +58,7 @@ namespace ViLa.WWW.Api._1_.History
                 Id = "till",
                 Name = "Till",
                 Label = I18N.Translate(request, "vila:vila.history.till"),
+                Icon = new IconStop().ToString(),
                 Visible = false
             };
 
@@ -62,6 +67,7 @@ namespace ViLa.WWW.Api._1_.History
                 Id = "power",
                 Name = "Power",
                 Label = I18N.Translate(request, "vila:vila.history.power"),
+                Icon = new IconBolt().ToString(),
                 Visible = true
             };
 
@@ -70,14 +76,17 @@ namespace ViLa.WWW.Api._1_.History
                 Id = "cost",
                 Name = "Cost",
                 Label = I18N.Translate(request, "vila:vila.history.cost"),
+                Icon = new IconEuroSign().ToString(),
                 Visible = true
             };
 
             yield return new RestApiTableColumn()
             {
                 Id = "tag",
-                Name = "Tag",
+                Name = "tag",
                 Label = I18N.Translate(request, "vila:vila.history.tag"),
+                Icon = new IconTag().ToString(),
+                Template = new RestApiTableColumnTemplateTag(true, TypeColorTag.Default, I18N.Translate(request, "vila:vila.history.tag")),
                 Visible = true
             };
         }
@@ -98,9 +107,12 @@ namespace ViLa.WWW.Api._1_.History
                 .Select(x => new IndexMeasurementLog { Log = x })
                 .ToList();
 
+            var tagUri = RestUriHelper.GetUri<Tag>()?.ToString() ?? "/api/1/history/tag";
+
             return logs.Select(x => new RestApiTableRow
             {
                 Id = x.Id.ToString(),
+                RestApi = $"{tagUri}?id={x.Id}",
                 Cells = new List<RestApiTableCell>
                 {
                     new RestApiTableCell { Content = x.From.ToString("o") },

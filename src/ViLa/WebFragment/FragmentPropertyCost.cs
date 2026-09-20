@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using ViLa.Model;
@@ -84,7 +84,7 @@ namespace ViLa.WebFragment
 
             foreach (var tag in values
                 .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                .SelectMany(x => x.Tag.Split(new[] { ' ', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                 .Distinct())
             {
                 var taggedValues = values
