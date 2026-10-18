@@ -23,7 +23,7 @@ namespace ViLa.WebFragment
     {
         private readonly IFragmentContext _fragmentContext;
 
-        private ControlText Title { get; } = new ControlText()
+        private ControlText Heading { get; } = new ControlText()
         {
             Text = _ => "vila:vila.charging.current",
             Format = _ => TypeFormatText.H4,
@@ -58,7 +58,7 @@ namespace ViLa.WebFragment
             Layout = _ => TypeLayoutList.Flush;
 
             var item = new ControlListItem();
-            item.Add(Title);
+            item.Add(Heading);
             item.Add(CurrentPower);
             item.Add(Description);
 
@@ -73,6 +73,8 @@ namespace ViLa.WebFragment
         /// <returns>The rendered HTML node.</returns>
         public override IHtmlNode Render(IRenderControlContext renderContext, IVisualTreeControl visualTree)
         {
+            CurrentPower.Value = ctx => string.Format(ctx.Request.Culture ?? CultureInfo.CurrentCulture,
+                "{0:F2} kW", ViewModel.Instance.CurrentPower * 60);
             return base.Render(renderContext, visualTree);
         }
     }

@@ -19,14 +19,9 @@ namespace ViLa.WebFragment
     /// </summary>
     [Section<SectionPropertyPrimary>]
     [Application<Application>]
-    [Scope<ViLa.WWW.Index>]
-    [Scope<ViLa.WWW.History.Index>]
     [Scope<IScopeGeneral>]
-    [Cache]
     public sealed class FragmentPropertyCost : FragmentControlList
     {
-        private bool ContentBuilt { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
@@ -42,11 +37,12 @@ namespace ViLa.WebFragment
         /// </summary>
         /// <param name="year">The year to display.</param>
         /// <param name="from">The inclusive start of the period.</param>
-        /// <param name="till">The inclusive end of the period.</param>
+        /// <param name="till">The exclusive end of the period.</param>
         /// <param name="culture">The culture used for number formatting.</param>
         private void AddYearSummary(int year, DateTime from, DateTime till, CultureInfo culture)
         {
-            var values = ViewModel.Instance.GetHistoryMeasurementLogs(from, till).ToList();
+            var values = ViewModel.Instance.GetHistoryMeasurementLogs()
+                .Where(x => x.Till >= from && x.Till < till).ToList();
 
             if (!values.Any())
             {
@@ -68,7 +64,7 @@ namespace ViLa.WebFragment
                 new ControlAttribute()
                 {
                     Icon = _ => new IconEuroSign(),
-                    Value = _ => string.Format(culture, "{0:F2} {1}", values.Sum(x => x.Cost), ViewModel.Instance.Settings.Currency),
+                    Value = _ => BillingPeriod.FormatCosts(values, culture, ViewModel.Instance.Settings.Currency),
                     TextColor = _ => new PropertyColorText(TypeColorText.Secondary)
                 }
             );
@@ -77,27 +73,28 @@ namespace ViLa.WebFragment
                 new ControlAttribute()
                 {
                     Icon = _ => new IconBolt(),
-                    Value = _ => string.Format(culture, "{0:F2} kWh", values.Sum(x => x.Power)),
+                    Value = _ => string.Format(culture, "{0:F2} kWh", values.Sum(x => x.FinalPower)),
                     TextColor = _ => new PropertyColorText(TypeColorText.Secondary)
                 }
             );
 
             foreach (var tag in values
                 .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                .SelectMany(x => x.Tag.Split(new[] { ' ', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                .SelectMany(BillingPeriod.GetTags)
                 .Distinct())
             {
                 var taggedValues = values
                     .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                    .Where(x => x.Tag.Contains(tag))
+                    .Where(x => BillingPeriod.GetTags(x).Contains(tag))
                     .ToList();
 
                 var panel = new ControlPanel();
                 panel.Add
                 (
-                    new ControlTag(tag)
+                    new ControlTag()
                     {
-                        BackgroundColor = _ => new PropertyColorBackground(ViewModel.Instance.GetColor(tag))
+                        Value = _ => tag,
+                        Color = _ => new PropertyColorTag(ViewModel.Instance.GetColor(tag))
                     }
                 );
                 panel.Add
@@ -107,9 +104,8 @@ namespace ViLa.WebFragment
                         Text = _ => string.Format
                         (
                             culture,
-                            "{0:F2} {1} / {2:F2} kWh",
-                            taggedValues.Sum(x => x.FinalCost),
-                            ViewModel.Instance.Settings.Currency,
+                            "{0} / {1:F2} kWh",
+                            BillingPeriod.FormatCosts(taggedValues, culture, ViewModel.Instance.Settings.Currency),
                             taggedValues.Sum(x => x.FinalPower)
                         ),
                         Format = _ => TypeFormatText.Span,
@@ -132,19 +128,17 @@ namespace ViLa.WebFragment
         /// <returns>The rendered HTML node.</returns>
         public override IHtmlNode Render(IRenderControlContext renderContext, IVisualTreeControl visualTree)
         {
-            if (ContentBuilt)
+            foreach (var item in Items.ToArray())
             {
-                return base.Render(renderContext, visualTree);
+                Remove(item);
             }
 
             var culture = renderContext.Request.Culture ?? CultureInfo.CurrentCulture;
             var now = DateTime.Now;
 
             AddYearSummary(now.Year, new DateTime(now.Year, 1, 1), now, culture);
-            AddYearSummary(now.Year - 1, new DateTime(now.Year - 1, 1, 1), new DateTime(now.Year - 1, 12, 31), culture);
-            AddYearSummary(now.Year - 2, new DateTime(now.Year - 2, 1, 1), new DateTime(now.Year - 2, 12, 31), culture);
-
-            ContentBuilt = true;
+            AddYearSummary(now.Year - 1, new DateTime(now.Year - 1, 1, 1), new DateTime(now.Year, 1, 1), culture);
+            AddYearSummary(now.Year - 2, new DateTime(now.Year - 2, 1, 1), new DateTime(now.Year - 1, 1, 1), culture);
 
             return base.Render(renderContext, visualTree);
         }

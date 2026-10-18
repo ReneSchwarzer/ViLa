@@ -27,8 +27,9 @@
 		<None Update="Config\vila.settings.xml">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="Config\webexpress.config.xml">
+		<None Update="settings\webexpress.settings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</None>
 
 	</ItemGroup>

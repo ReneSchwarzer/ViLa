@@ -12,6 +12,24 @@ namespace ViLa.Model
     public class MeasurementLog
     {
         /// <summary>
+        /// Gets or sets the stable identifier of the assigned vehicle.
+        /// </summary>
+        [XmlAttribute("vehicleId")]
+        public string VehicleId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vehicle name captured when the assignment was made.
+        /// </summary>
+        [XmlAttribute("vehicleName")]
+        public string VehicleName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the assignment origin, including manual exclusion from recognition.
+        /// </summary>
+        [XmlAttribute("vehicleAssignment")]
+        public VehicleAssignment VehicleAssignment { get; set; }
+
+        /// <summary>
         /// The ID.
         /// </summary>
         [XmlAttribute("id")]
@@ -27,13 +45,13 @@ namespace ViLa.Model
         /// Gets the start of the measurement time.
         /// </summary>
         [XmlIgnore]
-        public DateTime From => Measurements.FirstOrDefault().MeasurementTimePoint;
+        public DateTime From => Measurements.FirstOrDefault()?.MeasurementTimePoint ?? FinalFrom;
 
         /// <summary>
         /// Gets the end of the measurement time.
         /// </summary>
         [XmlIgnore]
-        public DateTime Till => Measurements.LastOrDefault().MeasurementTimePoint;
+        public DateTime Till => FinalTill != default ? FinalTill : Measurements.LastOrDefault()?.MeasurementTimePoint ?? FinalFrom;
 
         /// <summary>
         /// Gets the total number of measured impulses.
@@ -45,7 +63,8 @@ namespace ViLa.Model
         /// Gets the total measured power in kWh.
         /// </summary>
         [XmlIgnore]
-        public float Power => (float)Impulse / ViewModel.Instance.Settings.ImpulsePerkWh;
+        public float Power => ViewModel.Instance.Settings.ImpulsePerkWh > 0
+            ? (float)Impulse / ViewModel.Instance.Settings.ImpulsePerkWh : 0;
 
         /// <summary>
         /// Gets the cost in the configured currency.
@@ -57,7 +76,7 @@ namespace ViLa.Model
         /// Gets the power measured in the last minute, in kWh.
         /// </summary>
         public float CurrentPower => Measurements.Count < 2 ?
-            Measurements.FirstOrDefault().Power :
+            Measurements.FirstOrDefault()?.Power ?? 0 :
             Measurements.TakeLast(2).Take(1).FirstOrDefault().Power;
 
         /// <summary>

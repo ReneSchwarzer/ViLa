@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Net;
 using ViLa.Model;
 using WebExpress.WebCore.WebHtml;
 using WebExpress.WebCore.WebIcon;
@@ -39,6 +40,12 @@ namespace ViLa.WebControl
             BackgroundColor = _ => new PropertyColorBackground(TypeColorBackground.Light);
         }
 
+        /// <summary>
+        /// Renders a completed session with its stored totals and encoded labels.
+        /// </summary>
+        /// <param name="renderContext">The context providing localization and routes.</param>
+        /// <param name="visualTree">The visual tree receiving child controls.</param>
+        /// <returns>The rendered measurement card.</returns>
         public override IHtmlNode Render(IRenderControlContext renderContext, IVisualTreeControl visualTree)
         {
             var icon = Icon?.Invoke(renderContext);
@@ -77,10 +84,14 @@ namespace ViLa.WebControl
                 if (!string.IsNullOrWhiteSpace(ml.Tag))
                 {
                     var color = ViewModel.Instance.GetColor(ml.Tag);
-                    tagHtml = $"<br/><span class=\"badge\" style=\"background-color: {color}; color: #fff;\">{ml.Tag}</span>";
+                    tagHtml = $"<br/><span class=\"badge\" style=\"background-color: {color}; color: #fff;\">{WebUtility.HtmlEncode(ml.Tag)}</span>";
                 }
 
                 bodyText = $"{shortDate} <small class=\"text-muted\">({finalFrom} - {finalTill} {labelTime})</small>{tagHtml}<br/><a href=\"{detailsUri}\">{labelDetails}</a>";
+                if (!string.IsNullOrEmpty(ml.VehicleName))
+                {
+                    bodyText += $"<br/><span class=\"vila-vehicle-label\">{WebUtility.HtmlEncode(ml.VehicleName)}</span>";
+                }
             }
 
             var html = new HtmlElementTextSemanticsSpan()

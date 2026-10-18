@@ -33,7 +33,7 @@
         public string Cost { get; set; }
 
         /// <summary>
-        /// Gets or sets the currently measured total power in kWh.
+        /// Gets or sets the average power of the last completed minute in kW.
         /// </summary>
         public string CurrentPower { get; set; }
 

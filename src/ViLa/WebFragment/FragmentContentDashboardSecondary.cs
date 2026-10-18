@@ -42,16 +42,80 @@ namespace ViLa.WebFragment
         {
             Clear();
 
-            AddYearSection(renderContext, DateTime.Now.Year);
-            AddYearSection(renderContext, DateTime.Now.Year - 1);
-            AddYearSection(renderContext, DateTime.Now.Year - 2);
+            AddSummary(renderContext);
+            var year = DateTime.Now.AddDays(ViewModel.Instance.Settings.BillingDayOffset).Year;
+            AddYearSection(renderContext, year);
+            AddYearSection(renderContext, year - 1);
+            AddYearSection(renderContext, year - 2);
 
             return base.Render(renderContext, visualTree);
         }
 
+        /// <summary>
+        /// Adds a twelve month consumption chart and the current billing totals.
+        /// </summary>
+        /// <param name="renderContext">The context providing the display culture.</param>
+        private void AddSummary(IRenderControlContext renderContext)
+        {
+            var model = ViewModel.Instance;
+            var culture = renderContext.Request.Culture ?? CultureInfo.CurrentCulture;
+            var history = model.GetHistoryMeasurementLogs().ToArray();
+            var current = DateTime.Now.AddDays(model.Settings.BillingDayOffset);
+            var month = new DateTime(current.Year, current.Month, 1);
+            var months = Enumerable.Range(0, 12).Select(index => month.AddMonths(index - 11)).ToArray();
+            var logs = BillingPeriod.GetLogs(history, month, model.Settings.BillingDayOffset);
+            var summary = new ControlCard()
+            {
+                Header = _ => "vila:vila.dashboard.summary",
+                Classes = new[] { "vila-summary" }
+            };
+            summary.Add(new ControlCardCounter()
+            {
+                Value = _ => logs.Length,
+                Text = _ => "vila:vila.dashboard.sessions"
+            });
+            summary.Add(new ControlText()
+            {
+                Text = _ => string.Format(culture, "{0:Y}: {1:F2} kWh", month, logs.Sum(x => x.FinalPower)),
+                Format = _ => TypeFormatText.H3
+            });
+            summary.Add(new ControlText()
+            {
+                Text = _ => BillingPeriod.FormatCosts(logs, culture, model.Settings.Currency)
+            });
+            summary.Add(new ControlChart("vila-monthly-chart")
+            {
+                Type = _ => TypeChart.Bar,
+                Labels = _ => months.Select(x => x.ToString("MMM yy", culture)),
+                Data = _ => new[] { new ControlChartDataset()
+                {
+                    Title = "kWh",
+                    Data = new ControlChartDatasetPointCollection(months.Select(x =>
+                        BillingPeriod.GetLogs(history, x, model.Settings.BillingDayOffset).Sum(log => log.FinalPower)).ToArray())
+                } },
+                TitleY = _ => "kWh",
+                Responsive = _ => true,
+                Height = _ => 220,
+                MaintainAspectRatio = _ => false,
+                Minimum = _ => 0
+            });
+            if (history.Length == 0)
+            {
+                summary.Add(new ControlText() { Text = _ => "vila:vila.dashboard.empty" });
+            }
+            Add(summary);
+        }
+
+        /// <summary>
+        /// Adds the populated billing months for a nominal calendar year.
+        /// </summary>
+        /// <param name="renderContext">The context providing the display culture.</param>
+        /// <param name="year">The nominal billing year.</param>
         private void AddYearSection(IRenderControlContext renderContext, int year)
         {
-            if (!ViewModel.Instance.GetHistoryMeasurementLogs().Any(x => x.From.Year == year))
+            var history = ViewModel.Instance.GetHistoryMeasurementLogs().ToArray();
+            if (!Enumerable.Range(1, 12).Any(month => BillingPeriod.GetLogs(history,
+                new DateTime(year, month, 1), ViewModel.Instance.Settings.BillingDayOffset).Length > 0))
             {
                 return;
             }
@@ -67,34 +131,31 @@ namespace ViLa.WebFragment
                 }
             );
 
-            var offset = -ViewModel.Instance.Settings.BillingDayOffset;
-            var culture = CultureInfo.CurrentCulture;
+            var offset = ViewModel.Instance.Settings.BillingDayOffset;
+            var culture = renderContext.Request.Culture ?? CultureInfo.CurrentCulture;
 
-            for (var month = 12; month > 1; month--)
+            for (var month = 12; month >= 1; month--)
             {
-                var from = new DateTime(year, month, 1).AddDays(offset);
-                var till = new DateTime(year, month, DateTime.DaysInMonth(year, month), 23, 59, 59).AddDays(offset);
-                var logs = ViewModel.Instance.GetHistoryMeasurementLogs(from, till).ToList();
+                var logs = BillingPeriod.GetLogs(history, new DateTime(year, month, 1), offset);
 
                 if (!logs.Any())
                 {
                     continue;
                 }
 
+                var monthName = culture.DateTimeFormat.GetMonthName(month);
                 Add
                 (
                     new ControlText()
                     {
                         Text = _ =>
                         {
-                            var monthName = culture.DateTimeFormat.GetMonthName(month);
                             return string.Format
                             (
                                 culture,
-                                "{0} - {1:F2} {2} / {3:F2} kWh",
+                                "{0}: {1} / {2:F2} kWh",
                                 monthName,
-                                logs.Sum(x => x.FinalCost),
-                                ViewModel.Instance.Settings.Currency,
+                                BillingPeriod.FormatCosts(logs, culture, ViewModel.Instance.Settings.Currency),
                                 logs.Sum(x => x.FinalPower)
                             );
                         },
@@ -106,12 +167,12 @@ namespace ViLa.WebFragment
 
                 foreach (var tag in logs
                     .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                    .SelectMany(x => x.Tag.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                    .SelectMany(BillingPeriod.GetTags)
                     .Distinct())
                 {
                     var taggedLogs = logs
                         .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                        .Where(x => x.Tag.Contains(tag))
+                        .Where(x => BillingPeriod.GetTags(x).Contains(tag))
                         .ToList();
 
                     var panel = new ControlPanel()
@@ -121,9 +182,10 @@ namespace ViLa.WebFragment
 
                     panel.Add
                     (
-                        new ControlTag(tag)
+                        new ControlTag()
                         {
-                            BackgroundColor = _ => new PropertyColorBackground(ViewModel.Instance.GetColor(tag))
+                            Value = _ => tag,
+                            Color = _ => new PropertyColorTag(ViewModel.Instance.GetColor(tag))
                         }
                     );
 
@@ -134,9 +196,8 @@ namespace ViLa.WebFragment
                             Text = _ => string.Format
                             (
                                 culture,
-                                "{0:F2} {1} / {2:F2} kWh",
-                                taggedLogs.Sum(x => x.FinalCost),
-                                ViewModel.Instance.Settings.Currency,
+                                "{0} / {1:F2} kWh",
+                                BillingPeriod.FormatCosts(taggedLogs, culture, ViewModel.Instance.Settings.Currency),
                                 taggedLogs.Sum(x => x.FinalPower)
                             ),
                             Format = _ => TypeFormatText.Span,
@@ -147,7 +208,7 @@ namespace ViLa.WebFragment
                     Add(panel);
                 }
 
-                var grid = new ControlPanelGrid()
+                var grid = new ControlGrid()
                 {
                     Fluid = _ => TypePanelContainer.Fluid
                 };

@@ -1,0 +1,13 @@
+{
+  "WebExpress": {
+    "Endpoints": [
+      { "Uri": "http://localhost:8080/" }
+    ],
+    "ExternalUri": "http://localhost:8080/",
+    "Culture": "de-DE",
+    "PackagePath": "./packages",
+    "AssetPath": "./assets",
+    "DataPath": "./data",
+    "ContextPath": ""
+  }
+}

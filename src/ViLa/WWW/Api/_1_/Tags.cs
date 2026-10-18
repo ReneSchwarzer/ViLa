@@ -11,10 +11,19 @@ namespace ViLa.WWW.Api._1_
     [Application<Application>]
     public sealed class Tags : IRestApi
     {
+        /// <summary>
+        /// Initializes the tag lookup endpoint.
+        /// </summary>
         public Tags()
         {
         }
 
+        /// <summary>
+        /// Returns the distinct tags assigned to completed sessions.
+        /// </summary>
+        /// <param name="request">The incoming HTTP request.</param>
+        /// <returns>The JSON tag list.</returns>
+        [Method(RequestMethod.GET)]
         public IResponse Process(IRequest request)
         {
             var json = System.Text.Json.JsonSerializer.Serialize(ViewModel.Instance.Tags);

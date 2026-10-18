@@ -1,7 +1,9 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using ViLa.Model;
+using ViLa.WebControl;
 using WebExpress.WebApp.WebPage;
 using WebExpress.WebApp.WebScope;
 using WebExpress.WebCore;
@@ -54,6 +56,26 @@ namespace ViLa.WWW.Details
             var measurementLog = ViewModel.Instance.GetHistoryMeasurementLog(id);
             var culture = renderContext?.Request?.Culture ?? CultureInfo.CurrentCulture;
 
+            if (measurementLog != null)
+            {
+                var assignment = new ControlFormVehicleAssignment(measurementLog)
+                {
+                    RedirectUri = context => context.Uri
+                };
+                visualTree.Content.MainPanel.AddPrimary(new ControlCard(null,
+                    new ControlText
+                    {
+                        Text = _ => WebUtility.HtmlEncode(measurementLog.VehicleName
+                            ?? I18N.Translate(renderContext, "vila:vila.vehicles.unassigned"))
+                            + " · " + I18N.Translate(renderContext, "vila:vila.vehicles.origin." + measurementLog.VehicleAssignment.ToString().ToLowerInvariant()),
+                        Format = _ => TypeFormatText.H3
+                    }, assignment)
+                {
+                    Header = _ => "vila:vila.vehicles.assignment",
+                    Classes = new[] { "vila-vehicle-editor" }
+                });
+            }
+
             // Muted id text (e.g. "28d065e7-...xml")
             visualTree.Content.MainPanel.AddPrimary(new ControlText()
             {
@@ -68,14 +90,14 @@ namespace ViLa.WWW.Details
                 (
                     culture,
                     "{0:F2} kWh",
-                    measurementLog?.Power ?? 0f
+                    measurementLog?.FinalPower ?? 0f
                 )
                 + " / " + string.Format
                 (
                     culture,
                     "{0:F2} {1}",
-                    measurementLog?.Cost ?? 0f,
-                    ViewModel.Instance.Settings?.Currency ?? string.Empty
+                    measurementLog?.FinalCost ?? 0f,
+                    measurementLog?.Currency ?? ViewModel.Instance.Settings?.Currency ?? string.Empty
                 ),
                 Format = _ => TypeFormatText.H1,
                 TextColor = _ => new PropertyColorText(TypeColorText.Primary)

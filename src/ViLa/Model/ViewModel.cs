@@ -47,6 +47,11 @@ namespace ViLa.Model
         public static ViewModel Instance { get; } = new ViewModel();
 
         /// <summary>
+        /// Gets the persisted vehicle catalog.
+        /// </summary>
+        public VehicleStore Vehicles { get; } = new VehicleStore(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "vehicles.json"));
+
+        /// <summary>
         /// Gets the current time.
         /// </summary>
         public static string Now => DateTime.Now.ToString("dd.MM.yyyy<br>HH:mm:ss");
@@ -216,8 +221,8 @@ namespace ViLa.Model
         {
             try
             {
-                // Initialize the controller
-                GPIO = new GpioController(PinNumberingScheme.Logical);
+                // initialize the controller
+                GPIO = new GpioController();
                 GPIO.OpenPin(PowerMeterPin, PinMode.InputPullUp);
                 GPIO.OpenPin(ElectricContactorPin, PinMode.Output);
 
@@ -498,32 +503,37 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Startet den Ladevorgang.
+        /// Starts a charging session unless a session is already active.
         /// </summary>
         public void StartCharging()
         {
+            if (ActiveCharging)
+            {
+                return;
+            }
+
             Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.begin"));
 
             ActiveMeasurementLog = new MeasurementLog()
             {
                 ID = Guid.NewGuid().ToString(),
+                FinalFrom = DateTime.Now,
                 Measurements = new List<MeasurementItem>()
             };
-
-            // Initialer Messwert
-            //ActiveMeasurementLog.Measurements.Add(new MeasurementItem()
-            //{
-            //    MeasurementTimePoint = DateTime.Now
-            //});
 
             ElectricContactorStatus = true;
         }
 
         /// <summary>
-        /// Beendet den Ladevorgang.
+        /// Completes and stores the active charging session.
         /// </summary>
         public void StopCharging()
         {
+            if (!ActiveCharging)
+            {
+                return;
+            }
+
             Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.stop"));
 
             ActiveMeasurementLog.FinalPower = ActiveMeasurementLog.Power;
@@ -534,7 +544,9 @@ namespace ViLa.Model
             ActiveMeasurementLog.ImpulsePerkWh = Settings.ImpulsePerkWh;
             ActiveMeasurementLog.Currency = Settings.Currency;
 
-            // Messung speichern
+            VehicleRecognition.Apply(ActiveMeasurementLog, Vehicles.GetAll());
+
+            // persist the completed session
             SaveMeasurementLog();
 
             ActiveMeasurementLog = null;
@@ -571,6 +583,45 @@ namespace ViLa.Model
         public MeasurementLog GetHistoryMeasurementLog(string id)
         {
             return HistoryMeasurementLog.Where(x => x.ID.Equals(id)).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Persists a manual vehicle choice or explicitly reruns automatic recognition.
+        /// </summary>
+        /// <param name="id">The completed measurement log identifier.</param>
+        /// <param name="selection">A vehicle identifier, "none", or "auto".</param>
+        public void AssignVehicle(string id, string selection)
+        {
+            var log = GetHistoryMeasurementLog(id) ?? throw new ArgumentException("The measurement does not exist.", nameof(id));
+            var vehicle = Vehicles.GetAll().FirstOrDefault(x => x.Id == selection && (x.Active || x.Id == log.VehicleId));
+            if (selection != "auto" && selection != "none" && vehicle == null)
+            {
+                throw new ArgumentException("The selected vehicle is unavailable.", nameof(selection));
+            }
+            lock (log)
+            {
+                var originalId = log.VehicleId;
+                var originalName = log.VehicleName;
+                var originalAssignment = log.VehicleAssignment;
+                try
+                {
+                    log.VehicleId = vehicle?.Id;
+                    log.VehicleName = vehicle?.Name;
+                    log.VehicleAssignment = selection == "auto" ? VehicleAssignment.Unassigned : VehicleAssignment.Manual;
+                    if (selection == "auto")
+                    {
+                        VehicleRecognition.Apply(log, Vehicles.GetAll());
+                    }
+                    UpdateMeasurementLog(log);
+                }
+                catch
+                {
+                    log.VehicleId = originalId;
+                    log.VehicleName = originalName;
+                    log.VehicleAssignment = originalAssignment;
+                    throw;
+                }
+            }
         }
 
         /// <summary>

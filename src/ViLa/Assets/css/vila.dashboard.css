@@ -1,26 +1,137 @@
-.wx-vila-chart {
-    color: #212529;
+.vila-dashboard,
+.vila-summary {
+    color: var(--wx-body-color, #212529);
+    margin-block: 1rem 1.5rem;
 }
 
-.wx-vila-chart .card,
-.wx-vila-chart .wx-panel-card {
-    background-color: #ffffff;
-    color: #212529;
+.vila-metrics > .row {
+    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0 0 1.25rem;
 }
 
-@media (prefers-color-scheme: dark) {
-    .wx-vila-chart {
-        color: #e9ecef;
+.vila-metrics > .row > * {
+    width: auto;
+    min-width: 0;
+}
+
+.vila-metric,
+.vila-live-card,
+.vila-summary {
+    background: var(--wx-body-bg, #fff);
+    border: 1px solid var(--wx-border-color, #dee2e6);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgb(0 0 0 / 4%);
+}
+
+.vila-metric {
+    border-top: 3px solid #168b80;
+}
+
+.vila-metric-value {
+    font-size: clamp(1.25rem, 2.4vw, 2rem);
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.vila-live-card {
+    padding: 0.75rem;
+}
+
+.vila-status {
+    display: inline-block;
+    border-radius: 2rem;
+    padding: 0.35rem 0.85rem;
+    background: var(--wx-secondary-bg, #e9ecef);
+    margin-bottom: 1rem;
+}
+
+.vila-charging .vila-status {
+    background: var(--wx-success-bg-subtle, #d1e7dd);
+    color: var(--wx-success-text-emphasis, #0a3622);
+}
+
+#vila-power-chart {
+    min-width: 0;
+    height: 280px;
+}
+
+#vila-connection {
+    display: block;
+    color: var(--wx-secondary-color, #495057);
+    margin-top: 0.75rem;
+}
+
+.vila-offline #vila-connection {
+    color: var(--wx-danger-text-emphasis, #842029);
+}
+
+.vila-summary {
+    padding: 1.25rem;
+}
+
+.vila-vehicle-page {
+    padding: 1rem;
+}
+
+.vila-vehicle-editor {
+    margin-block: 1rem;
+    max-width: 54rem;
+}
+
+.vila-vehicle-form {
+    padding: 0.5rem;
+}
+
+.vila-vehicle-grid > .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.vila-vehicle-grid > .row > * {
+    width: auto;
+    min-width: 0;
+}
+
+.vila-vehicle-label {
+    font-weight: 600;
+}
+
+#wx-splitter-content:has(.vila-vehicle-page) > .wx-side-pane,
+#wx-splitter-content:has(.vila-vehicle-page) > .wx-splitter {
+    display: none;
+}
+
+#wx-splitter-content:has(.vila-vehicle-page) > .wx-main-pane {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+@media (max-width: 900px) {
+    #wx-splitter-content:has(.vila-dashboard) > .wx-side-pane,
+    #wx-splitter-content:has(.vila-dashboard) > .wx-splitter {
+        display: none;
     }
 
-    .wx-vila-chart .card,
-    .wx-vila-chart .wx-panel-card {
-        background-color: #1f242a;
-        color: #e9ecef;
-        border-color: #2f3740;
+    #wx-splitter-content:has(.vila-dashboard) > .wx-main-pane {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        height: 100% !important;
     }
 
-    .wx-vila-chart canvas {
-        background-color: transparent;
+    .vila-metrics > .row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .vila-metrics > .row {
+        grid-template-columns: minmax(0, 1fr);
     }
 }

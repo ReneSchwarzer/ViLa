@@ -82,6 +82,15 @@ namespace ViLa.WWW.Api._1_.History
 
             yield return new RestApiTableColumn()
             {
+                Id = "vehicle",
+                Name = "Vehicle",
+                Label = I18N.Translate(request, "vila:vila.vehicles.vehicle"),
+                Icon = new IconCar().ToString(),
+                Visible = true
+            };
+
+            yield return new RestApiTableColumn()
+            {
                 Id = "tag",
                 Name = "tag",
                 Label = I18N.Translate(request, "vila:vila.history.tag"),
@@ -112,6 +121,8 @@ namespace ViLa.WWW.Api._1_.History
             return logs.Select(x => new RestApiTableRow
             {
                 Id = x.Id.ToString(),
+                Uri = request?.ApplicationContext == null ? null : WebExpress.WebCore.WebEx.ComponentHub.SitemapManager
+                    .GetUri<WWW.Details.Index>(request.ApplicationContext, new WebExpress.WebCore.WebParameter.ParameterId(x.Id.ToString()))?.ToString(),
                 RestApi = $"{tagUri}?id={x.Id}",
                 Cells = new List<RestApiTableCell>
                 {
@@ -119,6 +130,7 @@ namespace ViLa.WWW.Api._1_.History
                     new RestApiTableCell { Content = x.Till.ToString("o") },
                     new RestApiTableCell { Content = (double.IsNaN(x.Power) || double.IsInfinity(x.Power) ? 0d : x.Power).ToString("0.00") },
                     new RestApiTableCell { Content = (double.IsNaN(x.Cost) || double.IsInfinity(x.Cost) ? 0d : x.Cost).ToString("0.00") },
+                    new RestApiTableCell { Content = x.Vehicle },
                     new RestApiTableCell { Content = x.Tag ?? string.Empty }
                 }
             });

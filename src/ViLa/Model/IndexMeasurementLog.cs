@@ -44,5 +44,10 @@ namespace ViLa.Model
         /// Exposes the tag for WQL filtering.
         /// </summary>
         public string Tag => Log?.Tag ?? string.Empty;
+
+        /// <summary>
+        /// Gets the vehicle name stored with the measurement.
+        /// </summary>
+        public string Vehicle => Log?.VehicleName ?? string.Empty;
     }
 }

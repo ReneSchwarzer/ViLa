@@ -56,7 +56,10 @@ public class HistoryTableAndTagApiTests
         var columns = GetColumns(table, null!).ToList();
 
         // Assert
-        Assert.Equal(5, columns.Count);
+        Assert.Equal(6, columns.Count);
+
+        var vehicleCol = columns.Single(c => c.Id == "vehicle");
+        Assert.Equal(new IconCar().ToString(), vehicleCol.Icon);
 
         var fromCol = columns.FirstOrDefault(c => c.Id == "from");
         Assert.NotNull(fromCol);

@@ -50,7 +50,7 @@ namespace ViLa.WebFragment
 
             Add(img);
 
-            var card = new ControlPanelCard();
+            var card = new ControlCard();
 
             card.Add(new ControlText()
             {
