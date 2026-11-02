@@ -14,6 +14,7 @@ namespace ViLa.WebFragment
     /// <summary>
     /// Represents a history navigation link item in the header.
     /// </summary>
+    [Order(10)]
     [Section<SectionAppNavigationPrimary>]
     [Application<Application>]
     [Scope<IScopeGeneral>]
@@ -35,7 +36,7 @@ namespace ViLa.WebFragment
             Text = _ => "vila:vila.history.label";
             Uri = _ => sitemapManager.GetUri<WWW.History.Index>(fragmentContext?.ApplicationContext);
             Icon = _ => new IconChartBar();
-            Active = renderContext => renderContext?.Endpoint is WWW.History.Index
+            Active = renderContext => renderContext?.Endpoint is WWW.History.Index or WWW.History.Assignments
                 ? TypeActive.Active
                 : TypeActive.None;
         }

@@ -3,6 +3,8 @@ using System.Linq;
 using ViLa.Model;
 using WebExpress.WebCore;
 using WebExpress.WebCore.WebHtml;
+using WebExpress.WebCore.WebIcon;
+using WebExpress.WebUI.WebIcon;
 using WebExpress.WebUI.WebControl;
 using WebExpress.WebUI.WebPage;
 
@@ -34,24 +36,24 @@ namespace ViLa.WebControl
             Clear();
             var culture = renderContext.Request.Culture ?? CultureInfo.CurrentCulture;
             var snapshot = ChargingSnapshot.Create(ViewModel.Instance, culture);
-            var metrics = new ControlGrid() { Classes = new[] { "vila-metrics" } };
-            metrics.Add(CreateMetric("vila-current", "vila:vila.dashboard.power", snapshot.CurrentPower + " kW"));
-            metrics.Add(CreateMetric("vila-energy", "vila:vila.dashboard.energy", snapshot.Power + " kWh"));
-            metrics.Add(CreateMetric("vila-cost", "vila:vila.dashboard.cost", snapshot.Cost + " " + ViewModel.Instance.Settings.Currency));
-            metrics.Add(CreateMetric("vila-duration", "vila:vila.dashboard.duration", snapshot.MeasurementTime));
+            var metrics = new ControlPanel() { Classes = new[] { "vila-metrics" } };
+            metrics.Add(CreateMetric(new IconBolt(), "vila:vila.dashboard.hint.minute", "vila-current", "vila:vila.dashboard.power", snapshot.CurrentPower + " kW"));
+            metrics.Add(CreateMetric(new IconChargingStation(), "vila:vila.dashboard.hint.session", "vila-energy", "vila:vila.dashboard.energy", snapshot.Power + " kWh"));
+            metrics.Add(CreateMetric(new IconEuroSign(), "vila:vila.dashboard.hint.session", "vila-cost", "vila:vila.dashboard.cost", snapshot.Cost + " " + ViewModel.Instance.Settings.Currency));
+            metrics.Add(CreateMetric(new IconClock(), "vila:vila.dashboard.hint.elapsed", "vila-duration", "vila:vila.dashboard.duration", snapshot.MeasurementTime));
             Add(metrics);
 
-            var card = new ControlCard()
+            var section = new ControlSection("vila-live-section")
             {
                 Header = _ => "vila:vila.dashboard.live",
-                Classes = new[] { "vila-live-card" }
+                Layout = _ => TypeLayoutSection.Rule
             };
-            card.Add(new ControlText("vila-status")
+            section.Add(new ControlText("vila-status")
             {
                 Text = _ => snapshot.ActiveCharging ? "vila:vila.dashboard.active" : "vila:vila.dashboard.idle",
                 Classes = new[] { "vila-status" }
             });
-            card.Add(new ControlChart("vila-power-chart")
+            section.Add(new ControlChart("vila-power-chart")
             {
                 Labels = _ => snapshot.ChartLabels,
                 Data = _ => new[] { new ControlChartDataset()
@@ -67,15 +69,19 @@ namespace ViLa.WebControl
                 Minimum = _ => 0,
                 YBeginAtZero = _ => true
             });
-            card.Add(new ControlText("vila-connection")
+            section.Add(new ControlText("vila-connection")
             {
                 Text = _ => "vila:vila.dashboard.connecting",
                 Format = _ => TypeFormatText.Small,
                 Role = _ => "status"
             });
-            Add(card);
+            Add(section);
 
             var html = (HtmlElementTextContentDiv)base.Render(renderContext, visualTree);
+            if (snapshot.ActiveCharging)
+            {
+                html.Class += " vila-charging";
+            }
             html.AddUserAttribute("data-url", WebEx.ComponentHub.SitemapManager
                 .GetUri<WWW.Api._1_.Charging>(renderContext.Request.ApplicationContext)?.ToString());
             html.AddUserAttribute("data-currency", ViewModel.Instance.Settings.Currency);
@@ -90,22 +96,23 @@ namespace ViLa.WebControl
         /// <summary>
         /// Creates a responsive metric card with a stable value identifier.
         /// </summary>
+        /// <param name="icon">The icon identifying the metric.</param>
+        /// <param name="hint">The localized description of the measurement period.</param>
         /// <param name="id">The identifier updated by the dashboard controller.</param>
         /// <param name="label">The localized metric label.</param>
         /// <param name="value">The initial formatted value.</param>
         /// <returns>The metric card.</returns>
-        private static ControlCard CreateMetric(string id, string label, string value)
+        private static ControlPanel CreateMetric(IIcon icon, string hint, string id, string label, string value)
         {
-            return new ControlCard(null, new ControlText(id)
-            {
-                Text = _ => value,
-                Classes = new[] { "vila-metric-value" }
-            })
-            {
-                Header = _ => label,
-                GridColumn = _ => new PropertyGrid(TypeDevice.Medium, 3),
-                Classes = new[] { "vila-metric" }
-            };
+            var metric = new ControlPanel { Classes = new[] { "vila-metric" } };
+            var badge = new ControlPanel { Classes = new[] { "vila-metric-icon" } };
+            badge.Add(new ControlIcon { Icon = _ => icon });
+            var content = new ControlPanel();
+            content.Add(new ControlText { Text = _ => label });
+            content.Add(new ControlText(id) { Text = _ => value, Classes = new[] { "vila-metric-value" } });
+            content.Add(new ControlText { Text = _ => hint, Format = _ => TypeFormatText.Small });
+            metric.Add(badge, content);
+            return metric;
         }
     }
 }

@@ -65,7 +65,12 @@ namespace ViLa.Model
         /// Gets or sets the log entries.
         /// </summary>
         [XmlIgnore]
-        public List<LogItem> Logging { get; set; } = new List<LogItem>();
+        public List<LogItem> Logging { get; } = new List<LogItem>();
+
+        /// <summary>
+        /// The maximum number of entries kept in <see cref="Logging"/>; older entries are discarded.
+        /// </summary>
+        public const int MaxLogSize = 10000;
 
         /// <summary>
         /// The GPIO controller.
@@ -190,6 +195,11 @@ namespace ViLa.Model
         private List<MeasurementLog> HistoryMeasurementLog { get; } = new List<MeasurementLog>();
 
         /// <summary>
+        /// Guards every read and write of <see cref="HistoryMeasurementLog"/>, which is shared between requests.
+        /// </summary>
+        private readonly object _historyLock = new object();
+
+        /// <summary>
         /// Gets or sets the settings.
         /// </summary>
         public Settings Settings { get; private set; } = new Settings() { Currency = "€" };
@@ -202,7 +212,7 @@ namespace ViLa.Model
         /// <summary>
         /// Gets all assigned labels.
         /// </summary>
-        public IEnumerable<string> Tags => HistoryMeasurementLog
+        public IEnumerable<string> Tags => GetHistoryMeasurementLogs()
             .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
             .SelectMany(x => x.Tag.Split(new[] { ' ', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             .Distinct();
@@ -253,7 +263,11 @@ namespace ViLa.Model
                 try
                 {
                     using var reader = File.OpenText(file);
-                    HistoryMeasurementLog.Add(serializer.Deserialize(reader) as MeasurementLog);
+                    var measurementLog = serializer.Deserialize(reader) as MeasurementLog;
+                    lock (_historyLock)
+                    {
+                        HistoryMeasurementLog.Add(measurementLog);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -266,7 +280,7 @@ namespace ViLa.Model
             {
                 while (true)
                 {
-                    foreach (var his in HistoryMeasurementLog.Where(x => x.Till < DateTime.Now.AddYears(-10)).ToList())
+                    foreach (var his in GetHistoryMeasurementLogs().Where(x => x.Till < DateTime.Now.AddYears(-10)))
                     {
                         ArchiveHistoryMeasurementLog(his.ID);
                     }
@@ -296,7 +310,7 @@ namespace ViLa.Model
 
                 if (delta > ImpulseDuration)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Warning, string.Format(System.Globalization.CultureInfo.CurrentCulture, "vila:vila.log.update.exceeding", delta - ViewModel.ImpulseDuration)));
+                    Log(new LogItem(LogItem.LogLevel.Warning, "vila:vila.log.update.exceeding") { Argument = Convert.ToString(delta - ViewModel.ImpulseDuration, System.Globalization.CultureInfo.InvariantCulture) });
                 }
 
                 if (Stopwatch.IsRunning)
@@ -403,7 +417,14 @@ namespace ViLa.Model
         /// <param name="logItem">The log entry.</param>
         public void Log(LogItem logItem)
         {
-            Logging.Add(logItem);
+            lock (Logging)
+            {
+                Logging.Add(logItem);
+                if (Logging.Count > MaxLogSize)
+                {
+                    Logging.RemoveRange(0, Logging.Count - MaxLogSize);
+                }
+            }
 
             if (ActiveCharging &&
                 logItem.Level != LogItem.LogLevel.Info &&
@@ -563,16 +584,19 @@ namespace ViLa.Model
         /// <return>Messprotokolle, welche sich innerhalb der gegebenen Zeitspanne befinden</return>
         public IEnumerable<MeasurementLog> GetHistoryMeasurementLogs(DateTime from, DateTime till)
         {
-            return HistoryMeasurementLog.Where(x => x.Till >= from && x.Till <= till).OrderByDescending(x => x.Till);
+            return GetHistoryMeasurementLogs().Where(x => x.Till >= from && x.Till <= till).OrderByDescending(x => x.Till);
         }
 
         /// <summary>
         /// Gets all completed measurement logs
         /// </summary>
-        /// <return>Alle gespeicherten Messprotokoll</return>
+        /// <return>A snapshot of all stored measurement logs that is safe to enumerate while other requests change the history.</return>
         public IEnumerable<MeasurementLog> GetHistoryMeasurementLogs()
         {
-            return HistoryMeasurementLog;
+            lock (_historyLock)
+            {
+                return HistoryMeasurementLog.ToArray();
+            }
         }
 
         /// <summary>
@@ -582,7 +606,36 @@ namespace ViLa.Model
         /// <return>Das Messprokoll oder null</return>
         public MeasurementLog GetHistoryMeasurementLog(string id)
         {
-            return HistoryMeasurementLog.Where(x => x.ID.Equals(id)).FirstOrDefault();
+            lock (_historyLock)
+            {
+                return HistoryMeasurementLog.FirstOrDefault(x => x.ID.Equals(id));
+            }
+        }
+
+        /// <summary>
+        /// Moves a completed measurement if its persisted assignment still matches the source column.
+        /// </summary>
+        /// <param name="id">The completed measurement identifier.</param>
+        /// <param name="source">The expected vehicle identifier or "none" for an unassigned measurement.</param>
+        /// <param name="target">The destination vehicle identifier or "none" to clear the assignment.</param>
+        /// <returns>Whether the assignment was saved.</returns>
+        public bool TryMoveMeasurement(string id, string source, string target)
+        {
+            var log = GetHistoryMeasurementLog(id);
+            if (log == null)
+            {
+                return false;
+            }
+            lock (log)
+            {
+                if ((string.IsNullOrEmpty(log.VehicleId) ? "none" : log.VehicleId) != source || source == target
+                    || (target != "none" && !Vehicles.GetAll().Any(x => x.Active && x.Id == target)))
+                {
+                    return false;
+                }
+                AssignVehicle(id, target);
+                return true;
+            }
         }
 
         /// <summary>
@@ -651,9 +704,12 @@ namespace ViLa.Model
                     utf.GetString(memoryStream.ToArray())
                 );
 
-                HistoryMeasurementLog.Add(ActiveMeasurementLog);
+                lock (_historyLock)
+                {
+                    HistoryMeasurementLog.Add(ActiveMeasurementLog);
+                }
 
-                Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.charging.save", fileName)));
+                Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.save") { Argument = Convert.ToString(fileName, System.Globalization.CultureInfo.InvariantCulture) });
             }
         }
 
@@ -685,7 +741,7 @@ namespace ViLa.Model
                     utf.GetString(memoryStream.ToArray())
                 );
 
-                Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.charging.save", fileName)));
+                Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.save") { Argument = Convert.ToString(fileName, System.Globalization.CultureInfo.InvariantCulture) });
             }
         }
 
@@ -701,13 +757,16 @@ namespace ViLa.Model
                 if (measurementLog != null)
                 {
                     File.Delete(Path.Combine(ResolveMeasurementsDirectory(), $"{measurementLog.ID}.xml"));
-                    ViewModel.Instance.Logging.Add(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.delete.file", id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.delete.file") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
 
-                    HistoryMeasurementLog.Remove(measurementLog);
+                    lock (_historyLock)
+                    {
+                        HistoryMeasurementLog.Remove(measurementLog);
+                    }
                 }
                 else
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.delete.error", id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.delete.error") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
                 }
             }
             catch (Exception ex)
@@ -755,13 +814,16 @@ namespace ViLa.Model
 
                     File.Move(source, destination);
 
-                    HistoryMeasurementLog.Remove(measurementLog);
+                    lock (_historyLock)
+                    {
+                        HistoryMeasurementLog.Remove(measurementLog);
+                    }
 
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.archive.move", id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.archive.move") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
                 }
                 else
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, string.Format("vila:vila.archive.error", id)));
+                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.archive.error") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
                 }
             }
             catch (Exception ex)
@@ -782,8 +844,14 @@ namespace ViLa.Model
                 return "#dddddd";
             }
 
-            int hashCode = tag.GetHashCode();
-            int hue = Math.Abs(hashCode) % 360;
+            // FNV-1a over the UTF-8 bytes: string.GetHashCode() is randomized per process,
+            // which would give every tag a new color after each restart.
+            uint hashCode = 2166136261;
+            foreach (var b in Encoding.UTF8.GetBytes(tag))
+            {
+                hashCode = unchecked((hashCode ^ b) * 16777619);
+            }
+            int hue = (int)(hashCode % 360);
             float saturation = 0.5f;
             float lightness = 0.6f;
 

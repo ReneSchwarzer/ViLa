@@ -1,8 +1,10 @@
+using System;
 using WebExpress.WebApp.WebControl;
 using WebExpress.WebApp.WebData;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebFragment;
 using WebExpress.WebCore.WebIcon;
+using WebExpress.WebUI.WebControl;
 using WebExpress.WebUI.WebFragment;
 using WebExpress.WebUI.WebIcon;
 using WebExpress.WebUI.WebPage;
@@ -23,8 +25,12 @@ namespace ViLa.WebFragment
         /// <summary>
         /// Gets the table control.
         /// </summary>
-        public ControlDataTable Table { get; } = new ControlDataTable()
+        public ControlDataTable Table { get; } = new ControlDataTable("history-table")
         {
+            PageSize = _ => ViLa.WebControl.ControlHistoryViewItem.PageSize,
+            Bind = _ => new Binding()
+                .Add(new BindSearch { Source = FragmentHistorySearchFragment.ContentId })
+                .Add(new BindPaging { Source = FragmentHistoryPaginationFragment.ContentId }),
             ServiceFactory = _ => DataServiceDescriptor.TableData(ViLa.App.RestUriHelper.GetUri<WWW.Api._1_.History.Table>()?.ToString())
         };
 
@@ -36,7 +42,7 @@ namespace ViLa.WebFragment
             : base(fragmentContext)
         {
             Icon = _ => new IconTable();
-            Title = _ => "vila:vila.history.label";
+            Title = _ => "vila:vila.history.view.table";
 
             Add(Table);
         }

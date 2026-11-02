@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using ViLa.App;
 using ViLa.Model;
 using WebExpress.WebApp.WebRestApi;
@@ -110,11 +111,8 @@ namespace ViLa.WWW.Api._1_.History
         /// <returns>The rows.</returns>
         protected override IEnumerable<RestApiTableRow> RetrieveRows(IQuery<IndexMeasurementLog> query, IQueryContext context, IEnumerable<RestApiTableColumn> columns, IRequest request)
         {
-            var logs = ViewModel.Instance
-                .GetHistoryMeasurementLogs()
-                .OrderByDescending(x => x.From)
-                .Select(x => new IndexMeasurementLog { Log = x })
-                .ToList();
+            // only the rows need the default chronological order; the total is order independent
+            var logs = query.Apply(History().OrderByDescending(x => x.From).ThenBy(x => x.Log.ID)).AsEnumerable();
 
             var tagUri = RestUriHelper.GetUri<Tag>()?.ToString() ?? "/api/1/history/tag";
 
@@ -130,10 +128,93 @@ namespace ViLa.WWW.Api._1_.History
                     new RestApiTableCell { Content = x.Till.ToString("o") },
                     new RestApiTableCell { Content = (double.IsNaN(x.Power) || double.IsInfinity(x.Power) ? 0d : x.Power).ToString("0.00") },
                     new RestApiTableCell { Content = (double.IsNaN(x.Cost) || double.IsInfinity(x.Cost) ? 0d : x.Cost).ToString("0.00") },
-                    new RestApiTableCell { Content = x.Vehicle },
-                    new RestApiTableCell { Content = x.Tag ?? string.Empty }
+                    CreateVehicleCell(x.Log, request),
+                    new RestApiTableCell
+                    {
+                        Type = "vila-tags",
+                        Content = BillingPeriod.GetTags(x.Log).Select(tag => new { label = tag, color = ViewModel.Instance.GetColor(tag) }).ToArray()
+                    }
                 }
             });
+        }
+
+        /// <summary>
+        /// Counts matching measurements before the table applies its page limits.
+        /// </summary>
+        /// <param name="query">The filtered query.</param>
+        /// <param name="context">The query context.</param>
+        /// <param name="request">The current request.</param>
+        /// <returns>The matching measurement count.</returns>
+        protected override int RetrieveTotal(IQuery<IndexMeasurementLog> query, IQueryContext context, IRequest request)
+        {
+            return query.Apply(History()).Count();
+        }
+
+        /// <summary>
+        /// Builds the unfiltered history source; search, WQL and quickfilters arrive through the query.
+        /// </summary>
+        /// <returns>The measurements available to the table query.</returns>
+        private static IQueryable<IndexMeasurementLog> History()
+        {
+            return ViewModel.Instance.GetHistoryMeasurementLogs().Select(log => new IndexMeasurementLog { Log = log }).AsQueryable();
+        }
+
+        /// <summary>
+        /// Applies the basic search text. The base class only calls this when no WQL expression is
+        /// given, so the two searches never stack. The matches are resolved once here, because the
+        /// query is evaluated both for the total and for the page rows.
+        /// </summary>
+        /// <param name="search">The basic search text.</param>
+        /// <param name="query">The current query.</param>
+        /// <param name="request">The current request.</param>
+        /// <returns>The filtered query.</returns>
+        protected override IQuery<IndexMeasurementLog> Filter(string search, IQuery<IndexMeasurementLog> query, IRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(search))
+            {
+                return query;
+            }
+            var culture = request?.Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+            var vehicles = HistorySearch.VehicleNames();
+            var ids = ViewModel.Instance.GetHistoryMeasurementLogs()
+                .Where(log => HistorySearch.Matches(log, search, culture, vehicles))
+                .Select(log => log.ID)
+                .ToHashSet(StringComparer.Ordinal);
+            return query.Where(x => ids.Contains(x.Log.ID));
+        }
+
+        /// <summary>
+        /// Restricts the history to measurements with a selected tag.
+        /// </summary>
+        /// <param name="filters">The selected tag labels.</param>
+        /// <param name="query">The current query.</param>
+        /// <param name="request">The current request.</param>
+        /// <returns>The filtered query.</returns>
+        protected override IQuery<IndexMeasurementLog> Filter(IEnumerable<string> filters, IQuery<IndexMeasurementLog> query, IRequest request)
+        {
+            var tags = filters.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            return tags.Count == 0 ? query : query.Where(x => BillingPeriod.GetTags(x.Log).Any(tags.Contains));
+        }
+
+        /// <summary>
+        /// Renders a vehicle badge using the catalog color and its contrasting foreground.
+        /// </summary>
+        /// <param name="log">The measurement carrying the vehicle assignment.</param>
+        /// <param name="request">The request providing the display language.</param>
+        /// <returns>The table cell containing the encoded badge.</returns>
+        private static RestApiTableCell CreateVehicleCell(MeasurementLog log, IRequest request)
+        {
+            var vehicle = ViewModel.Instance.Vehicles.GetVehicle(log.VehicleId);
+            var assigned = !string.IsNullOrEmpty(log.VehicleId);
+            var label = assigned ? vehicle?.Name ?? log.VehicleName ?? log.VehicleId
+                : I18N.Translate(request, "vila:vila.vehicles.badge.unassigned");
+            var color = assigned ? vehicle?.Color ?? Vehicle.DefaultColor(log.VehicleId) : "#6c757d";
+            var style = new PropertyColorBackgroundBadge(color).ToStyle();
+            return new RestApiTableCell
+            {
+                Html = true,
+                Content = $"<span class='badge' style='{style}'>{WebUtility.HtmlEncode(label)}</span>"
+            };
         }
     }
 }

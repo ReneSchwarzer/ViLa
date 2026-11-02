@@ -3,19 +3,19 @@ using WebExpress.WebApp.WebSection;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebFragment;
 using WebExpress.WebCore.WebSitemap;
-using WebExpress.WebUI.WebControl;
 using WebExpress.WebUI.WebFragment;
 using WebExpress.WebUI.WebIcon;
 
 namespace ViLa.WebFragment
 {
     /// <summary>
-    /// Adds the vehicle catalog to the primary application navigation.
+    /// Adds the vehicle catalog to the application settings menu.
     /// </summary>
-    [Section<SectionAppNavigationPrimary>]
+    [Order(30)]
+    [Section<SectionAppSettingsPrimary>]
     [Application<Application>]
     [Scope<IScopeGeneral>]
-    public sealed class FragmentHeaderVehicles : FragmentControlNavigationItemLink
+    public sealed class FragmentHeaderVehicles : FragmentControlDropdownItemLink
     {
         /// <summary>
         /// Initializes the localized vehicle navigation link.
@@ -26,9 +26,8 @@ namespace ViLa.WebFragment
             : base(fragmentContext)
         {
             Text = _ => "vila:vila.vehicles.title";
-            Uri = _ => sitemapManager.GetUri<WWW.Vehicles.Index>(fragmentContext.ApplicationContext);
+            Uri = _ => sitemapManager.GetUri<WWW.Settings.Vehicles>(fragmentContext.ApplicationContext);
             Icon = _ => new IconCar();
-            Active = context => context.Endpoint is WWW.Vehicles.Index ? TypeActive.Active : TypeActive.None;
         }
     }
 }

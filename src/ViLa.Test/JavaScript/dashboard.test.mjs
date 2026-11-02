@@ -16,9 +16,7 @@ function createHarness(fetchHandler, hidden = false) {
     const timers = new Map();
     const classes = new Set();
     const updates = [];
-    const options = [];
     let timerId = 0;
-    let disconnected = false;
     const chartElement = {};
     const host = {
         isConnected: true,
@@ -39,14 +37,7 @@ function createHarness(fetchHandler, hidden = false) {
         }
     };
     const context = vm.createContext({
-        document: { hidden, documentElement: {}, getElementById: () => chartElement },
-        getComputedStyle: () => ({ color: "rgb(238, 238, 238)", getPropertyValue: () => "#444" }),
-        MutationObserver: class {
-            /** Starts the stub observer. */
-            observe() {}
-            /** Records observer cleanup. */
-            disconnect() { disconnected = true; }
-        },
+        document: { hidden },
         AbortController,
         fetch: fetchHandler,
         setTimeout: (callback, delay) => { timers.set(++timerId, { callback, delay }); return timerId; },
@@ -58,13 +49,13 @@ function createHarness(fetchHandler, hidden = false) {
             },
             Controller: {
                 registerClass: () => {},
-                getInstanceByElement: () => ({ updateData: data => updates.push(data), options: value => options.push(value) })
+                getInstanceByElement: () => ({ updateData: data => updates.push(data) })
             }
         } }
     });
     vm.runInContext(source, context);
     const controller = new context.vila.ChartCtrl(host);
-    return { controller, host, metrics, timers, classes, updates, options, disconnected: () => disconnected };
+    return { controller, host, metrics, timers, classes, updates };
 }
 
 /**
@@ -83,7 +74,7 @@ test("updates metrics as text and sends numeric values to the WebExpress chart",
     assert.equal(harness.metrics.get("#vila-current").textContent, "6,00 kW");
     assert.equal(harness.metrics.get("#vila-connection").textContent, "Live");
     assert.equal(harness.updates[0].datasets[0].data[0], 6);
-    assert.equal(harness.options[0].scales.y.ticks.color, "rgb(238, 238, 238)");
+    assert.equal(harness.updates.length, 1);
     harness.controller.destroy();
 });
 
@@ -102,14 +93,13 @@ test("preserves values on failure and recovers on the next successful request", 
     harness.controller.destroy();
 });
 
-test("does not poll in a hidden tab and cleans up its timer and observer", () => {
+test("does not poll in a hidden tab and cleans up its timer", () => {
     let requests = 0;
     const harness = createHarness(() => { requests++; }, true);
     assert.equal(requests, 0);
     assert.equal(harness.timers.size, 1);
     harness.controller.destroy();
     assert.equal(harness.timers.size, 0);
-    assert.equal(harness.disconnected(), true);
 });
 
 test("aborts an outstanding request without scheduling another poll after destruction", async () => {
@@ -131,5 +121,24 @@ test("rejects malformed snapshots without replacing existing chart values", asyn
     await settle();
     assert.equal(harness.updates.length, 0);
     assert.equal(harness.metrics.get("#vila-connection").textContent, "Offline");
+    harness.controller.destroy();
+});
+
+test("shows the live section only during an active charging session", async () => {
+    let active = false;
+    const harness = createHarness(async () => ({
+        ok: true,
+        json: async () => ({ ...snapshot, ActiveCharging: active })
+    }));
+    await settle();
+    assert.equal(harness.classes.has("vila-charging"), false);
+    for (const charging of [true, false]) {
+        active = charging;
+        const [id, timer] = [...harness.timers].find(([, value]) => value.delay === 5000);
+        harness.timers.delete(id);
+        await timer.callback();
+        assert.equal(harness.classes.has("vila-charging"), charging);
+    }
+    assert.equal(harness.updates.length, 1);
     harness.controller.destroy();
 });

@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Net;
 using ViLa.Model;
+using WebExpress.WebCore.Internationalization;
 using WebExpress.WebCore.WebHtml;
 using WebExpress.WebCore.WebIcon;
 using WebExpress.WebUI.WebControl;
@@ -68,8 +69,9 @@ namespace ViLa.WebControl
                 headerText = string.Format(culture, "{0:F2} kWh / {1:F2} {2}", finalPower, finalCost, ml.Currency);
             }
 
-            // Body text: date, time range, tag badge, details link.
+            // date and time range
             string bodyText = null;
+            ControlLink detailsLink = null;
             if (ml != null)
             {
                 var culture = renderContext.Request.Culture ?? CultureInfo.CurrentCulture;
@@ -80,18 +82,9 @@ namespace ViLa.WebControl
                 var labelDetails = WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(culture, "vila:vila.charging.details");
                 var detailsUri = WebExpress.WebCore.WebEx.ComponentHub.SitemapManager.GetUri<WWW.Details.Index>(renderContext.Request.ApplicationContext, new WebExpress.WebCore.WebParameter.ParameterId(ml.ID));
 
-                var tagHtml = "";
-                if (!string.IsNullOrWhiteSpace(ml.Tag))
-                {
-                    var color = ViewModel.Instance.GetColor(ml.Tag);
-                    tagHtml = $"<br/><span class=\"badge\" style=\"background-color: {color}; color: #fff;\">{WebUtility.HtmlEncode(ml.Tag)}</span>";
-                }
+                bodyText = $"{shortDate} <small class=\"text-muted\">({finalFrom} - {finalTill} {labelTime})</small>";
+                detailsLink = new ControlLink { Text = _ => labelDetails, Uri = _ => detailsUri };
 
-                bodyText = $"{shortDate} <small class=\"text-muted\">({finalFrom} - {finalTill} {labelTime})</small>{tagHtml}<br/><a href=\"{detailsUri}\">{labelDetails}</a>";
-                if (!string.IsNullOrEmpty(ml.VehicleName))
-                {
-                    bodyText += $"<br/><span class=\"vila-vehicle-label\">{WebUtility.HtmlEncode(ml.VehicleName)}</span>";
-                }
             }
 
             var html = new HtmlElementTextSemanticsSpan()
@@ -125,7 +118,31 @@ namespace ViLa.WebControl
                 TextColor = _ => new PropertyColorText(TypeColorText.Muted)
             };
 
-            html.Add(new ControlPanel(null, header, info) { }.Render(renderContext, visualTree));
+            var content = new ControlPanel(null, header, info);
+            if (ml != null)
+            {
+                content.Add(new ControlText
+                {
+                    Text = context => I18N.Translate(context, "vila:vila.charging.average",
+                        ml.AveragePowerKw?.ToString("N2", context.Request.Culture ?? CultureInfo.CurrentCulture) ?? "–")
+                });
+                content.Add(new ControlPanel(null, new ControlVehicleBadge(ml)));
+                var badges = new ControlPanel()
+                {
+                    Classes = new[] { "d-flex", "flex-wrap", "gap-1", "vila-measurement-tags" }
+                };
+                foreach (var tag in BillingPeriod.GetTags(ml))
+                {
+                    badges.Add(new ControlBadge
+                    {
+                        Value = _ => WebUtility.HtmlEncode(tag),
+                        Classes = new[] { "vila-measurement-tag" },
+                        Styles = new[] { "--vila-tag-color: " + ViewModel.Instance.GetColor(tag) }
+                    });
+                }
+                content.Add(badges, detailsLink);
+            }
+            html.Add(content.Render(renderContext, visualTree));
 
             if (progressValue.HasValue)
             {

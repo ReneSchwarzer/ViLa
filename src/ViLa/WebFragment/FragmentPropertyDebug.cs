@@ -1,4 +1,6 @@
 ﻿using WebExpress.WebApp.WebSection;
+using WebExpress.WebCore;
+using WebExpress.WebCore.WebUri;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebFragment;
 using WebExpress.WebCore.WebHtml;
@@ -24,6 +26,9 @@ namespace ViLa.WebFragment
         public FragmentPropertyDebug(IFragmentContext fragmentContext)
             : base(fragmentContext)
         {
+            Text = context => context.Request.GetParameter("debug")?.Value == "1" ? "vila:vila.log.off" : "vila:vila.log.on";
+            Uri = context => new UriEndpoint(WebEx.ComponentHub.SitemapManager.GetUri<WWW.Log.Index>(context.Request.ApplicationContext)
+                + (context.Request.GetParameter("debug")?.Value == "1" ? string.Empty : "?debug=1"));
         }
 
         /// <summary>  

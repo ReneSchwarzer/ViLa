@@ -21,6 +21,11 @@ namespace ViLa.Model
         public string Massage { get; set; }
 
         /// <summary>
+        /// Gets or sets the value to insert into the localized message.
+        /// </summary>
+        public string Argument { get; set; }
+
+        /// <summary>
         /// Gets or sets the log time.
         /// </summary>
         public DateTime Time { get; set; }

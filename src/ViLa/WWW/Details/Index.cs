@@ -1,12 +1,14 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using ViLa.Model;
 using ViLa.WebControl;
 using WebExpress.WebApp.WebPage;
-using WebExpress.WebApp.WebScope;
+using WebExpress.WebApp.WebControl;
+using WebExpress.WebApp.WebData;
 using WebExpress.WebCore;
+using WebExpress.WebUI.WebIcon;
+using WebExpress.WebApp.WebScope;
 using WebExpress.WebCore.Internationalization;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebPage;
@@ -56,26 +58,6 @@ namespace ViLa.WWW.Details
             var measurementLog = ViewModel.Instance.GetHistoryMeasurementLog(id);
             var culture = renderContext?.Request?.Culture ?? CultureInfo.CurrentCulture;
 
-            if (measurementLog != null)
-            {
-                var assignment = new ControlFormVehicleAssignment(measurementLog)
-                {
-                    RedirectUri = context => context.Uri
-                };
-                visualTree.Content.MainPanel.AddPrimary(new ControlCard(null,
-                    new ControlText
-                    {
-                        Text = _ => WebUtility.HtmlEncode(measurementLog.VehicleName
-                            ?? I18N.Translate(renderContext, "vila:vila.vehicles.unassigned"))
-                            + " · " + I18N.Translate(renderContext, "vila:vila.vehicles.origin." + measurementLog.VehicleAssignment.ToString().ToLowerInvariant()),
-                        Format = _ => TypeFormatText.H3
-                    }, assignment)
-                {
-                    Header = _ => "vila:vila.vehicles.assignment",
-                    Classes = new[] { "vila-vehicle-editor" }
-                });
-            }
-
             // Muted id text (e.g. "28d065e7-...xml")
             visualTree.Content.MainPanel.AddPrimary(new ControlText()
             {
@@ -120,35 +102,78 @@ namespace ViLa.WWW.Details
                 TextColor = _ => new PropertyColorText(TypeColorText.Dark)
             });
 
-            if (measurementLog is null || measurementLog.Measurements is null || measurementLog.Measurements.Count == 0)
+            if (measurementLog?.Measurements?.Count > 0)
             {
-                return;
+                var labels = measurementLog.Measurements
+                    .Select(x => ((int)(x.MeasurementTimePoint - measurementLog.From).TotalMinutes).ToString(culture))
+                    .ToArray();
+                var data = measurementLog.Measurements
+                    .Select(x => x.Power * 60f)
+                    .ToArray();
+
+                visualTree.Content.MainPanel.AddPrimary(new ControlChart("chart")
+                {
+                    Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None),
+                    Labels = _ => labels,
+                    Data = _ => new[] { new ControlChartDataset()
+                    {
+                        Data = new ControlChartDatasetPointCollection(data),
+                        Title = I18N.Translate(renderContext, "vila:vila.history.label")
+                    } },
+                    Title = _ => string.Empty,
+                    TitleX = _ => I18N.Translate(renderContext, "vila:vila.charging.title.x"),
+                    TitleY = _ => I18N.Translate(renderContext, "vila:vila.charging.title.y"),
+                    Styles = new[] { "max-width: 80%;" },
+                    Minimum = _ => 0f
+                });
             }
 
-            // Chart of power over time, same semantics as the master 1.4.7 PageDetails.
-            // X axis = minutes since From, Y axis = Power * 60 (kW, since Power is kWh per minute slot).
-            var labels = measurementLog.Measurements
-                .Select(x => ((int)(x.MeasurementTimePoint - measurementLog.From).TotalMinutes).ToString(culture))
-                .ToArray();
-            var data = measurementLog.Measurements
-                .Select(x => x.Power * 60f)
-                .ToArray();
-
-            visualTree.Content.MainPanel.AddPrimary(new ControlChart("chart")
+            if (measurementLog != null)
             {
-                Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.Four, PropertySpacing.Space.None, PropertySpacing.Space.None),
-                Labels = _ => labels,
-                Data = _ => new[] { new ControlChartDataset()
+                var deleteUri = WebEx.ComponentHub.SitemapManager.GetUri<WWW.Api._1_.History.Delete>(renderContext.Request.ApplicationContext);
+                var confirm = new ControlModal("delete-measurement-" + id)
                 {
-                    Data = new ControlChartDatasetPointCollection(data),
-                    Title = I18N.Translate(renderContext, "vila:vila.history.label")
-                } },
-                Title = _ => string.Empty,
-                TitleX = _ => I18N.Translate(renderContext, "vila:vila.charging.title.x"),
-                TitleY = _ => I18N.Translate(renderContext, "vila:vila.charging.title.y"),
-                Styles = new[] { "max-width: 80%;" },
-                Minimum = _ => 0f
-            });
+                    Header = _ => "vila:vila.details.delete",
+                    CloseLabel = _ => "webexpress.webui:form.cancel.label"
+                };
+                confirm.Add(new ControlHtml
+                {
+                    Html = context => $"<form method='post' action='{System.Net.WebUtility.HtmlEncode(deleteUri.ToString())}'>" +
+                        $"<input type='hidden' name='id' value='{System.Net.WebUtility.HtmlEncode(id)}'>" +
+                        $"<p>{I18N.Translate(context, "vila:vila.delete.description")}</p>" +
+                        $"<p><code>{System.Net.WebUtility.HtmlEncode(id)}</code></p>" +
+                        $"<label for='confirm-{id}'>{I18N.Translate(context, "vila:vila.details.confirm.id")}</label>" +
+                        $"<input id='confirm-{id}' class='form-control mb-3' name='confirmation' type='text' required " +
+                        $"pattern='{System.Net.WebUtility.HtmlEncode(id)}' autocomplete='off' spellcheck='false'>" +
+                        $"<button class='btn btn-danger' type='submit'>{I18N.Translate(context, "vila:vila.details.delete")}</button></form>"
+                });
+                visualTree.Content.MainPanel.AddPrimary(confirm);
+                var editorId = "measurement-description-editor-" + measurementLog.ID;
+                var section = new ControlSection { Header = _ => "vila:vila.description.title" };
+                var description = new ControlPanel { Classes = new[] { "vila-description" } };
+                description.Add(new ControlContent
+                {
+                    Content = _ => measurementLog.Description,
+                    Placeholder = _ => "vila:vila.description.empty"
+                });
+                visualTree.Content.MainPanel.Headline.AddSecondary(new ControlButton
+                {
+                    Text = _ => "vila:vila.description.edit",
+                    Icon = _ => new IconPenToSquare(),
+                    PrimaryAction = _ => new ActionModal(editorId)
+                });
+                description.Add(new ViLa.WebControl.ControlDescriptionEditor(editorId)
+                {
+                    ItemId = _ => measurementLog.ID,
+                    Draft = _ => false,
+                    Title = { Name = _ => "Title", Disabled = _ => true },
+                    Body = { Name = _ => "Body" },
+                    ServiceFactory = context => DataServiceDescriptor.FormData(WebEx.ComponentHub.SitemapManager
+                        .GetUri<WWW.Api._1_.History.Description>(context.Request.ApplicationContext).ToString())
+                });
+                section.Add(description);
+                visualTree.Content.MainPanel.AddPrimary(section);
+            }
         }
     }
 }

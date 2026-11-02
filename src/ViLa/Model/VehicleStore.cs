@@ -45,6 +45,19 @@ namespace ViLa.Model
         }
 
         /// <summary>
+        /// Resolves the current profile for a stored vehicle assignment.
+        /// </summary>
+        /// <param name="id">The assigned vehicle identifier.</param>
+        /// <returns>The vehicle profile, or null if the vehicle is no longer present.</returns>
+        public Vehicle GetVehicle(string id)
+        {
+            lock (_sync)
+            {
+                return _vehicles.FirstOrDefault(vehicle => vehicle.Id == id);
+            }
+        }
+
+        /// <summary>
         /// Creates or updates a vehicle and commits the catalog before publishing the change.
         /// </summary>
         /// <param name="id">The existing identifier, or null for a new vehicle.</param>
@@ -52,23 +65,29 @@ namespace ViLa.Model
         /// <param name="maxPowerKw">The expected maximum charging power in kilowatts.</param>
         /// <param name="automaticAssignment">Whether automatic assignment is enabled.</param>
         /// <param name="active">Whether the vehicle is available for new assignments.</param>
+        /// <param name="color">The hexadecimal vehicle color, or null to retain its current color.</param>
         /// <returns>The saved vehicle.</returns>
-        public Vehicle Save(string id, string name, double maxPowerKw, bool automaticAssignment, bool active)
+        public Vehicle Save(string id, string name, double maxPowerKw, bool automaticAssignment, bool active, string color = null)
         {
+            if (color != null && !Vehicle.IsValidColor(color))
+            {
+                throw new ArgumentException("Invalid vehicle color.", nameof(color));
+            }
             if (!IsValid(name, maxPowerKw))
             {
                 throw new ArgumentException("A vehicle requires a name of at most 100 characters and a power between zero and 1000 kW.");
             }
             lock (_sync)
             {
-                if (id != null && !_vehicles.Any(x => x.Id == id))
+                var existing = _vehicles.FirstOrDefault(x => x.Id == id);
+                if (id != null && existing == null)
                 {
                     throw new ArgumentException("The vehicle does not exist.", nameof(id));
                 }
                 var vehicle = new Vehicle
                 {
                     Id = id ?? Guid.NewGuid().ToString(), Name = name.Trim(), MaxPowerKw = maxPowerKw,
-                    AutomaticAssignment = automaticAssignment, Active = active
+                    AutomaticAssignment = automaticAssignment, Active = active, Color = color ?? existing?.Color
                 };
                 var updated = _vehicles.Where(x => x.Id != vehicle.Id).Append(vehicle).ToList();
                 Directory.CreateDirectory(Path.GetDirectoryName(_path));

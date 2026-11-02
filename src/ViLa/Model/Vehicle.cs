@@ -1,12 +1,13 @@
 using System;
 using System.Globalization;
+using System.Linq;
 
 namespace ViLa.Model
 {
     /// <summary>
     /// Describes a vehicle and its expected maximum AC charging power.
     /// </summary>
-    public sealed record Vehicle
+    public sealed record Vehicle : WebExpress.WebIndex.IIndexItem
     {
         /// <summary>
         /// Gets the stable vehicle identifier.
@@ -17,6 +18,43 @@ namespace ViLa.Model
         /// Gets the vehicle display name.
         /// </summary>
         public string Name { get; init; }
+
+        /// <summary>
+        /// Gets the identifier used by vehicle queries.
+        /// </summary>
+        Guid WebExpress.WebIndex.IIndexItem.Id => Guid.Parse(Id);
+
+        private static readonly string[] Palette = ["#2879b9", "#a44985", "#25816f", "#b86420", "#6957ab", "#8b7532"];
+        private string _color;
+
+        /// <summary>
+        /// Gets the configured color or a stable palette color for older profiles.
+        /// </summary>
+        public string Color
+        {
+            get => IsValidColor(_color) ? _color : DefaultColor(Id);
+            init => _color = value;
+        }
+
+        /// <summary>
+        /// Selects a stable palette color from the vehicle identifier.
+        /// </summary>
+        /// <param name="id">The vehicle identifier.</param>
+        /// <returns>The default hexadecimal color.</returns>
+        public static string DefaultColor(string id)
+        {
+            return Palette[Guid.TryParse(id, out var guid) ? guid.ToByteArray()[0] % Palette.Length : 0];
+        }
+
+        /// <summary>
+        /// Checks whether a color consists of six hexadecimal RGB digits.
+        /// </summary>
+        /// <param name="color">The color to check.</param>
+        /// <returns>Whether the color can be used as a vehicle color.</returns>
+        public static bool IsValidColor(string color)
+        {
+            return color?.Length == 7 && color[0] == '#' && color.Skip(1).All(Uri.IsHexDigit);
+        }
 
         /// <summary>
         /// Gets the expected maximum charging power in kilowatts.

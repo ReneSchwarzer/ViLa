@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using ViLa.Model;
+using ViLa.WebControl;
 using WebExpress.WebApp.WebScope;
 using WebExpress.WebApp.WebSection;
 using WebExpress.WebCore.WebAttribute;
@@ -20,7 +21,7 @@ namespace ViLa.WebFragment
     [Section<SectionPropertyPrimary>]
     [Application<Application>]
     [Scope<IScopeGeneral>]
-    public sealed class FragmentPropertyCost : FragmentControlList
+    public sealed class FragmentPropertyCost : FragmentControlPanel
     {
         /// <summary>
         /// Initializes a new instance of the class.
@@ -29,6 +30,7 @@ namespace ViLa.WebFragment
         public FragmentPropertyCost(IFragmentContext fragmentContext)
             : base(fragmentContext)
         {
+            Classes = new[] { "list-group", "list-group-flush" };
             Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.Two);
         }
 
@@ -49,7 +51,7 @@ namespace ViLa.WebFragment
                 return;
             }
 
-            var item = new ControlListItem();
+            var item = new ControlPanel { Classes = new[] { "list-group-item" } };
             item.Add
             (
                 new ControlText()
@@ -63,6 +65,7 @@ namespace ViLa.WebFragment
             (
                 new ControlAttribute()
                 {
+                    Separator = _ => ' ',
                     Icon = _ => new IconEuroSign(),
                     Value = _ => BillingPeriod.FormatCosts(values, culture, ViewModel.Instance.Settings.Currency),
                     TextColor = _ => new PropertyColorText(TypeColorText.Secondary)
@@ -72,31 +75,17 @@ namespace ViLa.WebFragment
             (
                 new ControlAttribute()
                 {
+                    Separator = _ => ' ',
                     Icon = _ => new IconBolt(),
                     Value = _ => string.Format(culture, "{0:F2} kWh", values.Sum(x => x.FinalPower)),
                     TextColor = _ => new PropertyColorText(TypeColorText.Secondary)
                 }
             );
 
-            foreach (var tag in values
-                .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                .SelectMany(BillingPeriod.GetTags)
-                .Distinct())
+            foreach (var group in values.GroupBy(log => log.VehicleId ?? string.Empty))
             {
-                var taggedValues = values
-                    .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                    .Where(x => BillingPeriod.GetTags(x).Contains(tag))
-                    .ToList();
-
-                var panel = new ControlPanel();
-                panel.Add
-                (
-                    new ControlTag()
-                    {
-                        Value = _ => tag,
-                        Color = _ => new PropertyColorTag(ViewModel.Instance.GetColor(tag))
-                    }
-                );
+                var panel = new ControlPanel { Classes = new[] { "vila-property-breakdown" } };
+                panel.Add(new ControlVehicleBadge(group.First()));
                 panel.Add
                 (
                     new ControlText()
@@ -105,12 +94,11 @@ namespace ViLa.WebFragment
                         (
                             culture,
                             "{0} / {1:F2} kWh",
-                            BillingPeriod.FormatCosts(taggedValues, culture, ViewModel.Instance.Settings.Currency),
-                            taggedValues.Sum(x => x.FinalPower)
+                            BillingPeriod.FormatCosts(group, culture, ViewModel.Instance.Settings.Currency),
+                            group.Sum(x => x.FinalPower)
                         ),
                         Format = _ => TypeFormatText.Span,
-                        TextColor = _ => new PropertyColorText(TypeColorText.Secondary),
-                        Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
+                        TextColor = _ => new PropertyColorText(TypeColorText.Secondary)
                     }
                 );
 
@@ -128,10 +116,7 @@ namespace ViLa.WebFragment
         /// <returns>The rendered HTML node.</returns>
         public override IHtmlNode Render(IRenderControlContext renderContext, IVisualTreeControl visualTree)
         {
-            foreach (var item in Items.ToArray())
-            {
-                Remove(item);
-            }
+            Clear();
 
             var culture = renderContext.Request.Culture ?? CultureInfo.CurrentCulture;
             var now = DateTime.Now;

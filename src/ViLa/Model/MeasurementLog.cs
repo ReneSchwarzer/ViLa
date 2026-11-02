@@ -54,6 +54,21 @@ namespace ViLa.Model
         public DateTime Till => FinalTill != default ? FinalTill : Measurements.LastOrDefault()?.MeasurementTimePoint ?? FinalFrom;
 
         /// <summary>
+        /// Gets the average charging power in kilowatts over the completed session.
+        /// </summary>
+        [XmlIgnore]
+        public double? AveragePowerKw
+        {
+            get
+            {
+                var start = FinalFrom != default ? FinalFrom : From;
+                var hours = (Till - start).TotalHours;
+                return start != default && hours > 0 && float.IsFinite(FinalPower) && FinalPower >= 0
+                    ? FinalPower / hours : null;
+            }
+        }
+
+        /// <summary>
         /// Gets the total number of measured impulses.
         /// </summary>
         [XmlIgnore]
@@ -132,6 +147,12 @@ namespace ViLa.Model
         /// </summary>
         [XmlAttribute("currency")]
         public string Currency { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rich text description of the completed measurement.
+        /// </summary>
+        [XmlElement("description")]
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the log items.

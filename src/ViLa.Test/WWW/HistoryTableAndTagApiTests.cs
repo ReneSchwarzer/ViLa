@@ -43,7 +43,7 @@ public class HistoryTableAndTagApiTests
     private static IEnumerable<RestApiTableRow> GetRows(Table table, IRequest request)
     {
         var method = typeof(Table).GetMethod("RetrieveRows", BindingFlags.NonPublic | BindingFlags.Instance);
-        return (IEnumerable<RestApiTableRow>)method!.Invoke(table, new object[] { null!, null!, null!, request })!;
+        return (IEnumerable<RestApiTableRow>)method!.Invoke(table, new object[] { new WebExpress.WebIndex.Queries.Query<IndexMeasurementLog>(), null!, null!, request })!;
     }
 
     [Fact]

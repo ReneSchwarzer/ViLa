@@ -72,6 +72,18 @@ public class ViewModelTest
     }
 
     /// <summary>
+    /// Tests that tag colors do not depend on the per-process string hash, so a tag keeps
+    /// its color across service restarts.
+    /// </summary>
+    [Theory]
+    [InlineData("Work", "#C5CC66")]
+    [InlineData("Home", "#77CC66")]
+    public void GetColor_WithValidTag_IsStableAcrossProcesses(string tag, string expectedColor)
+    {
+        Assert.Equal(expectedColor, ViewModel.Instance.GetColor(tag));
+    }
+
+    /// <summary>
     /// Tests adding log entries to the logging list.
     /// </summary>
     [Fact]

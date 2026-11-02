@@ -2,7 +2,7 @@
 
 ## Vehicle profiles
 
-The Autos navigation entry opens the catalog at `/vila/vehicles`. Each profile has a stable identifier, a display name, a maximum AC charging power in kW, an automatic assignment setting, and an availability setting. Names may contain up to 100 characters. Power must be finite, greater than zero, and at most 1000 kW. The German form accepts decimal commas and decimal points without thousands separators.
+The Cars entry in the settings menu opens the catalog at `/vila/settings/vehicles`. Each profile has a stable identifier, a display name, a maximum AC charging power in kW, an automatic assignment setting, and an availability setting. Names may contain up to 100 characters. Power must be finite, greater than zero, and at most 1000 kW. The German form accepts decimal commas and decimal points without thousands separators.
 
 The power setting describes the maximum charging power that the vehicle can actually reach at this installation. For example, a car with an 11 kW onboard charger connected to a 7.4 kW supply should use 7.4 kW. Motor output and battery capacity do not describe this value. Vehicles with the same effective charging power cannot be distinguished by the power profile alone.
 

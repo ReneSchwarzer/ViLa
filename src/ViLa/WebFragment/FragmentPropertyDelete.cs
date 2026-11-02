@@ -1,40 +1,35 @@
-﻿using WebExpress.WebApp.WebSection;
+using WebExpress.WebApp.WebSection;
+using WebExpress.WebCore;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebFragment;
-using WebExpress.WebCore.WebHtml;
+using WebExpress.WebCore.WebParameter;
+using WebExpress.WebCore.WebUri;
+using WebExpress.WebUI.WebControl;
 using WebExpress.WebUI.WebFragment;
-using WebExpress.WebUI.WebPage;
+using WebExpress.WebUI.WebIcon;
 
 namespace ViLa.WebFragment
 {
-    /// <summary>  
-    /// Represents a fragment for a button used to delete a property.  
+    /// <summary>
+    /// Adds the DELETE action to the measurement detail menu.
     /// </summary>
-    [Section<SectionPropertySecondary>]
+    [Section<SectionHeadlineMoreSecondary>]
     [Application<Application>]
-    [Scope<ViLa.WWW.Details.Index>]
-    public sealed class FragmentPropertyDelete : FragmentControlButtonLink
+    [Scope<WWW.Details.Index>]
+    [Order(3)]
+    public sealed class FragmentPropertyDelete : FragmentControlDropdownItemLink
     {
-        /// <summary>  
-        /// Initializes a new instance of the class.  
-        /// </summary>  
-        /// <param name="fragmentContext">
-        /// The context for the fragment.
-        /// </param>
+        /// <summary>
+        /// Initializes the menu item for the current measurement.
+        /// </summary>
+        /// <param name="fragmentContext">The fragment registration context.</param>
         public FragmentPropertyDelete(IFragmentContext fragmentContext)
             : base(fragmentContext)
         {
-        }
-
-        /// <summary>  
-        /// Renders the control into an HTML node.  
-        /// </summary>  
-        /// <param name="renderContext">The render context.</param>  
-        /// <param name="visualTree">The visual tree control.</param>  
-        /// <returns>The rendered HTML node.</returns>
-        public override IHtmlNode Render(IRenderControlContext renderContext, IVisualTreeControl visualTree)
-        {
-            return base.Render(renderContext, visualTree);
+            Text = _ => "vila:vila.details.delete";
+            Color = _ => TypeColorText.Danger;
+            Icon = _ => new IconTrash();
+            PrimaryAction = context => new ActionModal("delete-measurement-" + context.Request.GetParameter<ParameterId>()?.Value);
         }
     }
 }

@@ -1,3 +1,4 @@
+using ViLa.WebControl;
 using WebExpress.WebApp.WebControl;
 using WebExpress.WebApp.WebData;
 using WebExpress.WebCore.WebAttribute;
@@ -26,7 +27,7 @@ namespace ViLa.WebFragment
         /// <summary>
         /// Gets the search control.
         /// </summary>
-        public ControlAdvancedSearch Search { get; } = new ControlAdvancedSearch(ContentId)
+        public ControlAdvancedSearch Search { get; } = new ControlWqlSearch(ContentId)
         {
             ServiceFactory = _ => DataServiceDescriptor.QueryData(ViLa.App.RestUriHelper.GetUri<WWW.Api._1_.History.Wql>()?.ToString())
         };

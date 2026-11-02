@@ -52,7 +52,7 @@ namespace ViLa.WebFragment
         }
 
         /// <summary>
-        /// Adds a twelve month consumption chart and the current billing totals.
+        /// Compares monthly consumption across four billing years and displays the current billing totals.
         /// </summary>
         /// <param name="renderContext">The context providing the display culture.</param>
         private void AddSummary(IRenderControlContext renderContext)
@@ -60,50 +60,97 @@ namespace ViLa.WebFragment
             var model = ViewModel.Instance;
             var culture = renderContext.Request.Culture ?? CultureInfo.CurrentCulture;
             var history = model.GetHistoryMeasurementLogs().ToArray();
+            AddActivity(history, DateTime.Today, culture);
             var current = DateTime.Now.AddDays(model.Settings.BillingDayOffset);
             var month = new DateTime(current.Year, current.Month, 1);
-            var months = Enumerable.Range(0, 12).Select(index => month.AddMonths(index - 11)).ToArray();
+            var months = Enumerable.Range(1, 12).ToArray();
+            var totals = history.GroupBy(log =>
+            {
+                var billingDate = log.Till.AddDays(model.Settings.BillingDayOffset);
+                return (billingDate.Year, billingDate.Month);
+            }).ToDictionary(group => group.Key, group => group.Sum(log => log.FinalPower));
             var logs = BillingPeriod.GetLogs(history, month, model.Settings.BillingDayOffset);
-            var summary = new ControlCard()
+            var summary = new ControlSection("vila-consumption-section")
             {
                 Header = _ => "vila:vila.dashboard.summary",
-                Classes = new[] { "vila-summary" }
+                Layout = _ => TypeLayoutSection.Rule
             };
-            summary.Add(new ControlCardCounter()
+            if (history.Length == 0)
             {
-                Value = _ => logs.Length,
-                Text = _ => "vila:vila.dashboard.sessions"
-            });
-            summary.Add(new ControlText()
-            {
-                Text = _ => string.Format(culture, "{0:Y}: {1:F2} kWh", month, logs.Sum(x => x.FinalPower)),
-                Format = _ => TypeFormatText.H3
-            });
+                summary.Add(new ControlEmptyState { Message = _ => "vila:vila.dashboard.empty" });
+                Add(summary);
+                return;
+            }
             summary.Add(new ControlText()
             {
                 Text = _ => BillingPeriod.FormatCosts(logs, culture, model.Settings.Currency)
             });
+            summary.Add(new ControlText { Text = _ => "vila:vila.dashboard.comparison" });
             summary.Add(new ControlChart("vila-monthly-chart")
             {
                 Type = _ => TypeChart.Bar,
-                Labels = _ => months.Select(x => x.ToString("MMM yy", culture)),
-                Data = _ => new[] { new ControlChartDataset()
+                Labels = _ => months.Select(culture.DateTimeFormat.GetAbbreviatedMonthName),
+                Data = _ => Enumerable.Range(0, 4).Select(offset =>
                 {
-                    Title = "kWh",
-                    Data = new ControlChartDatasetPointCollection(months.Select(x =>
-                        BillingPeriod.GetLogs(history, x, model.Settings.BillingDayOffset).Sum(log => log.FinalPower)).ToArray())
-                } },
+                    var year = current.Year - offset;
+                    var count = offset == 0 ? current.Month : 12;
+                    return new ControlChartDataset
+                    {
+                        Title = year.ToString(culture),
+                        Data = new ControlChartDatasetPointCollection(months.Take(count).Select(number =>
+                            totals.TryGetValue((year, number), out var energy) ? energy : 0).ToArray())
+                    };
+                }).ToArray(),
                 TitleY = _ => "kWh",
                 Responsive = _ => true,
                 Height = _ => 220,
                 MaintainAspectRatio = _ => false,
                 Minimum = _ => 0
             });
-            if (history.Length == 0)
-            {
-                summary.Add(new ControlText() { Text = _ => "vila:vila.dashboard.empty" });
-            }
             Add(summary);
+        }
+
+        /// <summary>
+        /// Displays completed charging sessions per day for the last 365 calendar days.
+        /// </summary>
+        /// <param name="history">The completed measurements.</param>
+        /// <param name="today">The inclusive end of the activity window.</param>
+        /// <param name="culture">The culture used for the calendar labels.</param>
+        private void AddActivity(MeasurementLog[] history, DateTime today, CultureInfo culture)
+        {
+            var first = today.AddDays(-364);
+            var counts = history.Where(x => x.Till.Date >= first && x.Till.Date <= today)
+                .GroupBy(x => x.Till.Date).ToDictionary(group => group.Key, group => group.Count());
+            var firstMonth = new DateTime(first.Year, first.Month, 1);
+            var months = Enumerable.Range(0, 13).Select(firstMonth.AddMonths).TakeWhile(month => month <= today).ToArray();
+            var days = Enumerable.Range(1, 31).ToArray();
+            var section = new ControlSection("vila-activity-section")
+            {
+                Header = _ => "vila:vila.dashboard.activity",
+                Layout = _ => TypeLayoutSection.Rule
+            };
+            section.Add(new ControlText { Text = _ => "vila:vila.dashboard.activity.help" });
+            var scroll = new ControlPanel { Classes = new[] { "vila-heatmap-scroll" } };
+            scroll.Add(new ControlHeatMap("vila-activity")
+            {
+                RowLabels = _ => months.Select(month => month.ToString("MMM yyyy", culture)),
+                ColumnLabels = _ => days.Select(day => day.ToString(culture)),
+                Min = _ => 0,
+                Max = _ => counts.Values.DefaultIfEmpty(1).Max(),
+                LowColor = _ => "#e4eeed",
+                HighColor = _ => "#08756b",
+                Values = _ => months.Select(month => days.Select(day =>
+                {
+                    var date = month.AddDays(day - 1);
+                    if (date.Month != month.Month || date < first || date > today)
+                    {
+                        return double.NaN;
+                    }
+                    return counts.TryGetValue(date, out var count) ? count : 0;
+                }))
+            });
+            section.Add(scroll);
+            Add(section);
         }
 
         /// <summary>
@@ -165,30 +212,10 @@ namespace ViLa.WebFragment
                     }
                 );
 
-                foreach (var tag in logs
-                    .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                    .SelectMany(BillingPeriod.GetTags)
-                    .Distinct())
+                foreach (var group in logs.GroupBy(log => log.VehicleId ?? string.Empty))
                 {
-                    var taggedLogs = logs
-                        .Where(x => !string.IsNullOrWhiteSpace(x.Tag))
-                        .Where(x => BillingPeriod.GetTags(x).Contains(tag))
-                        .ToList();
-
-                    var panel = new ControlPanel()
-                    {
-                        Fluid = _ => TypePanelContainer.Fluid
-                    };
-
-                    panel.Add
-                    (
-                        new ControlTag()
-                        {
-                            Value = _ => tag,
-                            Color = _ => new PropertyColorTag(ViewModel.Instance.GetColor(tag))
-                        }
-                    );
-
+                    var panel = new ControlPanel { Classes = new[] { "vila-property-breakdown" } };
+                    panel.Add(new ControlVehicleBadge(group.First()));
                     panel.Add
                     (
                         new ControlText()
@@ -197,8 +224,8 @@ namespace ViLa.WebFragment
                             (
                                 culture,
                                 "{0} / {1:F2} kWh",
-                                BillingPeriod.FormatCosts(taggedLogs, culture, ViewModel.Instance.Settings.Currency),
-                                taggedLogs.Sum(x => x.FinalPower)
+                                BillingPeriod.FormatCosts(group, culture, ViewModel.Instance.Settings.Currency),
+                                group.Sum(x => x.FinalPower)
                             ),
                             Format = _ => TypeFormatText.Span,
                             Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.None, PropertySpacing.Space.None, PropertySpacing.Space.Two, PropertySpacing.Space.None)
