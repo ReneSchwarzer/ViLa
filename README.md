@@ -33,6 +33,38 @@ dotnet run --project src/ViLa.App/ViLa.App.csproj --no-build
 
 Measurement configuration remains in `config/vila.settings.xml`. Verify the meter impulse factor, tariff, currency, and operating mode for the installation. Existing measurement files are read from `data/measurements` beside the executable when that directory exists, otherwise from the legacy `measurements` directory.
 
+## Visual Studio container profile
+
+Open `src/ViLa.slnx`, select `ViLa.App` as the startup project and choose **Container (Dockerfile)** in the launch menu. With Visual Studio Container Tools and a Linux Docker engine running, press F5 to open `http://localhost:8080/vila/`.
+
+Visual Studio uses the local WebExpress feed in `%USERPROFILE%\Documents\.nuget` if present. For a different feed, set `WEBEXPRESS_FEED` before starting Visual Studio. For hardware debugging, also set `VILA_GPIO_CHIP` and `VILA_GPIO_GID` as described below when the Docker host exposes the device. The desktop profile can start without GPIO hardware.
+
+## Docker on a Raspberry Pi
+
+Run Docker Engine with the Compose plugin on a Raspberry Pi running 64 bit Linux. The build uses .NET 10 and a local NuGet feed containing the four WebExpress `2.0.0-alpha` packages listed above. Set `WEBEXPRESS_FEED` to the absolute path of that directory on the build host.
+
+Identify the GPIO chip connected to the header with `gpioinfo` on the Pi. ViLa uses line 3 for the S0 input and line 13 for the contactor output. For example, if both lines belong to `gpiochip0`, inspect its permissions and prepare the environment file from the repository root.
+
+```sh
+ls -l /dev/gpiochip0
+stat -c '%g' /dev/gpiochip0
+cp .env.example .env
+openssl rand -base64 32
+```
+
+Set `VILA_GPIO_CHIP` to the chip number and `VILA_GPIO_GID` to the numeric group printed by `stat`. The device must grant that group read and write access. Compose passes the selected device and group to the application user. Set `VILA_SIGNING_KEY` to the generated key and `VILA_EXTERNAL_URI` to the public base address, for example `http://raspberrypi.local:8080/`.
+
+Start the service and inspect its status with the following commands.
+
+```sh
+docker compose up -d --build
+docker compose ps
+```
+
+Open `/vila/` at the configured base address. The HTTP health check verifies the web host. To verify GPIO initialization, open the ViLa log and check for the GPIO initialization entry. Verify S0 readings and contactor operation on the installed hardware.
+
+Docker volumes retain measurements and vehicles in `/app/data`, meter settings in `/app/Config`, generated assets in `/app/assets` and installed plugins in `/app/packages`. On first start the configuration volume receives the settings shipped with the application. Check the impulse factor, tariff and operating mode before use.
+
 ## Validation
 
 The automated checks run with the following commands. The JavaScript tests require Node.js and use its built-in test runner without additional packages.

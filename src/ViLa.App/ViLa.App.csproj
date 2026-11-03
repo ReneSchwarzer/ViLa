@@ -11,6 +11,14 @@
 		<ApplicationIcon>ViLa.ico</ApplicationIcon>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<StartupObject>ViLa.App.Program</StartupObject>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
+		<DockerfileFile>$(MSBuildProjectDirectory)\..\..\Dockerfile</DockerfileFile>
+		<ContainerBuildContext>$(MSBuildProjectDirectory)\..\..</ContainerBuildContext>
+		<WEBEXPRESS_FEED Condition="'$(WEBEXPRESS_FEED)' == '' and Exists('$(USERPROFILE)\Documents\.nuget')">$(USERPROFILE)\Documents\.nuget</WEBEXPRESS_FEED>
+		<DockerfileBuildArguments Condition="'$(WEBEXPRESS_FEED)' != ''">--build-context "nuget=$(WEBEXPRESS_FEED)"</DockerfileBuildArguments>
+		<DockerfileRunArguments>-p 127.0.0.1:8080:8080</DockerfileRunArguments>
+		<DockerfileRunArguments Condition="'$(VILA_GPIO_CHIP)' != '' and '$(VILA_GPIO_GID)' != ''">$(DockerfileRunArguments) --device /dev/gpiochip$(VILA_GPIO_CHIP):/dev/gpiochip$(VILA_GPIO_CHIP):rw --group-add $(VILA_GPIO_GID) -e VILA_GPIO_CHIP=$(VILA_GPIO_CHIP)</DockerfileRunArguments>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -24,7 +32,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="Config\vila.settings.xml">
+		<None Update="config\vila.settings.xml">
+			<TargetPath>Config/vila.settings.xml</TargetPath>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="settings\webexpress.settings.json">
@@ -35,10 +45,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.24.2-preview.1" PrivateAssets="all" />
 		<PackageReference Include="WebExpress.WebApp" Version="2.0.0-alpha" />
 	</ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release' and '$(DOTNET_RUNNING_IN_CONTAINER)' != 'true'">
 		<Exec Command="$(SolutionDir)$(AssemblyName)\bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).exe -s $(SolutionDir)..\Vila.spec -c $(Configuration) -t $(TargetFramework) -o $(SolutionDir)..\pkg\$(Configuration)" />
 	</Target>
 

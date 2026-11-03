@@ -1,0 +1,30 @@
+services:
+  vila:
+    image: vila:2.0.0
+    build:
+      context: .
+      additional_contexts:
+        nuget: ${WEBEXPRESS_FEED:?set WEBEXPRESS_FEED to the local WebExpress package directory}
+    ports:
+      - "${VILA_PORT:-8080}:8080"
+    environment:
+      WEBEXPRESS_WebExpress__ExternalUri: ${VILA_EXTERNAL_URI:-http://localhost:${VILA_PORT:-8080}/}
+      WEBEXPRESS_WebExpress__Authentication__SigningKey: ${VILA_SIGNING_KEY:?set VILA_SIGNING_KEY in .env}
+      VILA_GPIO_CHIP: "${VILA_GPIO_CHIP:-0}"
+    devices:
+      - "/dev/gpiochip${VILA_GPIO_CHIP:-0}:/dev/gpiochip${VILA_GPIO_CHIP:-0}:rw"
+    group_add:
+      - "${VILA_GPIO_GID:?set VILA_GPIO_GID to the numeric group of the GPIO device}"
+    volumes:
+      - vila-data:/app/data
+      - vila-config:/app/Config
+      - vila-assets:/app/assets
+      - vila-packages:/app/packages
+    restart: unless-stopped
+    stop_grace_period: 45s
+
+volumes:
+  vila-data:
+  vila-config:
+  vila-assets:
+  vila-packages:

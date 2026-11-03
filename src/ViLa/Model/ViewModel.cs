@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Device.Gpio;
+using System.Device.Gpio.Drivers;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -232,7 +233,10 @@ namespace ViLa.Model
             try
             {
                 // initialize the controller
-                GPIO = new GpioController();
+                var chipNumber = Environment.GetEnvironmentVariable("VILA_GPIO_CHIP");
+                GPIO = chipNumber == null
+                    ? new GpioController()
+                    : new GpioController(new LibGpiodDriver(int.Parse(chipNumber, CultureInfo.InvariantCulture)));
                 GPIO.OpenPin(PowerMeterPin, PinMode.InputPullUp);
                 GPIO.OpenPin(ElectricContactorPin, PinMode.Output);
 

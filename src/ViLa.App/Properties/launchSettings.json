@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "ViLa.App": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:8080/vila/",
+      "useSSL": false,
+      "publishAllPorts": false
+    }
+  }
+}
