@@ -1,6 +1,6 @@
 services:
   vila:
-    image: vila:2.0.0
+    image: rschwarzer/vila:2.0.0
     build:
       context: .
       additional_contexts:
