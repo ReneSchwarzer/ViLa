@@ -1,0 +1,17 @@
+<Project>
+  <!-- keep container hooks limited to the Docker launch profile -->
+  <PropertyGroup Condition="'$(ActiveDebugProfile)' != 'Container (Dockerfile)' and '$(ActiveDebugProfile)' != 'Docker (Dockerfile)' and '$(ContainersToolsLaunchingInVS)' != 'true'">
+    <BuildDependsOn>$(BuildDependsOn.Replace('ContainerWaitForWarmupCompletion;', '').Replace('ContainerPrepareForBuild;', '').Replace('ContainerLaunch;', ''))</BuildDependsOn>
+    <CleanDependsOn>$(CleanDependsOn.Replace('ContainerClean;', ''))</CleanDependsOn>
+  </PropertyGroup>
+  <Target Name="ContainerPrepareForBuild" Condition="'$(ActiveDebugProfile)' == 'Container (Dockerfile)' or '$(ActiveDebugProfile)' == 'Docker (Dockerfile)'">
+    <KillAppInsideContainer Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'" IntermediateOutputPath="$(ContainerIntermediateOutputPath)" ProjectFilePath="$(MSBuildProjectFullPath)" ErrorLogFilePath="$(ContainerSemaphoreFilePath)" ProjectCapability="@(ProjectCapability)" ProjectTypeGuids="$(ProjectTypeGuids)" OutputType="$(OutputType)" PublishAot="$(PublishAot)" Configuration="$(Configuration)" FunctionsExecutionModel="$(FunctionsExecutionModel)" LocalRegistry="$(LocalRegistry)" />
+  </Target>
+  <Target Name="ContainerClean" Condition="'$(ActiveDebugProfile)' == 'Container (Dockerfile)' or '$(ActiveDebugProfile)' == 'Docker (Dockerfile)'">
+    <Clean IntermediateOutputPath="$(ContainerIntermediateOutputPath)" ProjectFilePath="$(MSBuildProjectFullPath)" Configuration="$(Configuration)" LocalRegistry="$(LocalRegistry)" ErrorLogFilePath="$(ContainerSemaphoreFilePath)" />
+  </Target>
+  <Target Name="ContainerWaitForWarmupCompletion" Condition="'$(ActiveDebugProfile)' == 'Container (Dockerfile)' or '$(ActiveDebugProfile)' == 'Docker (Dockerfile)'">
+    <WaitForWarmupCompletion IntermediateOutputPath="$(ContainerIntermediateOutputPath)" ProjectFilePath="$(MSBuildProjectFullPath)" Configuration="$(Configuration)" LocalRegistry="$(LocalRegistry)" ErrorLogFilePath="$(ContainerSemaphoreFilePath)" />
+  </Target>
+  <Target Name="ContainerLaunch" Condition="('$(ActiveDebugProfile)' == 'Container (Dockerfile)' or '$(ActiveDebugProfile)' == 'Docker (Dockerfile)') and (Exists('$(ContainerSemaphoreFilePath)'))" DependsOnTargets="$(ContainerLaunchDependsOn)" />
+</Project>

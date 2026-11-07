@@ -1,6 +1,3 @@
-using System.IO;
-using System.Text;
-using System.Xml.Serialization;
 using ViLa.Model;
 using Xunit;
 
@@ -17,7 +14,7 @@ public class SettingsTest
     [Fact]
     public void Properties_SetAndGet_ReturnsExpectedValues()
     {
-        // Arrange
+        // arrange
         var settings = new Settings
         {
             DebugMode = true,
@@ -31,7 +28,7 @@ public class SettingsTest
             Mode = Mode.AutomaticControlled
         };
 
-        // Assert
+        // validation
         Assert.True(settings.DebugMode);
         Assert.Equal(1000, settings.ImpulsePerkWh);
         Assert.Equal(0.35f, settings.ElectricityPricePerkWh);
@@ -44,12 +41,12 @@ public class SettingsTest
     }
 
     /// <summary>
-    /// Tests XML serialization and deserialization of settings.
+    /// Tests JSON serialization and deserialization of settings.
     /// </summary>
     [Fact]
-    public void XmlSerialization_RoundTrip_PreservesProperties()
+    public void JsonSerialization_RoundTrip_PreservesProperties()
     {
-        // Arrange
+        // arrange
         var settings = new Settings
         {
             DebugMode = true,
@@ -63,15 +60,11 @@ public class SettingsTest
             Mode = Mode.TimeControlled
         };
 
-        var serializer = new XmlSerializer(typeof(Settings));
-        using var memoryStream = new MemoryStream();
+        // act
+        var json = SettingsStore.Serialize(settings);
+        var deserialized = SettingsStore.Deserialize(json);
 
-        // Act
-        serializer.Serialize(memoryStream, settings);
-        memoryStream.Position = 0;
-        var deserialized = (Settings?)serializer.Deserialize(memoryStream);
-
-        // Assert
+        // validation
         Assert.NotNull(deserialized);
         Assert.True(deserialized.DebugMode);
         Assert.Equal(2000, deserialized.ImpulsePerkWh);

@@ -45,6 +45,56 @@ namespace ViLa.Model
         }
 
         /// <summary>
+        /// Adds missing profiles while preserving every existing vehicle.
+        /// </summary>
+        /// <param name="vehicles">The validated profiles from a backup.</param>
+        /// <returns>The number of profiles added.</returns>
+        public int ImportMissing(Vehicle[] vehicles)
+        {
+            ValidateImport(vehicles);
+            lock (_sync)
+            {
+                var ids = _vehicles.Select(x => Guid.Parse(x.Id)).ToHashSet();
+                var additions = vehicles.Where(x => ids.Add(Guid.Parse(x.Id))).ToArray();
+                if (additions.Length == 0)
+                {
+                    return 0;
+                }
+                var updated = _vehicles.Concat(additions).ToList();
+                Directory.CreateDirectory(Path.GetDirectoryName(_path));
+                var temporary = _path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+                try
+                {
+                    File.WriteAllText(temporary, JsonSerializer.Serialize(updated));
+                    File.Move(temporary, _path, true);
+                    _vehicles = updated;
+                }
+                finally
+                {
+                    if (File.Exists(temporary))
+                    {
+                        File.Delete(temporary);
+                    }
+                }
+                return additions.Length;
+            }
+        }
+
+        /// <summary>
+        /// Validates all incoming profiles before any backup data is written.
+        /// </summary>
+        /// <param name="vehicles">The profiles to validate.</param>
+        public static void ValidateImport(Vehicle[] vehicles)
+        {
+            if (vehicles == null || vehicles.Any(x => x == null || !Guid.TryParse(x.Id, out _)
+                || !IsValid(x.Name, x.MaxPowerKw))
+                || vehicles.Select(x => Guid.Parse(x.Id)).Distinct().Count() != vehicles.Length)
+            {
+                throw new InvalidDataException("The backup contains invalid or duplicate vehicles.");
+            }
+        }
+
+        /// <summary>
         /// Resolves the current profile for a stored vehicle assignment.
         /// </summary>
         /// <param name="id">The assigned vehicle identifier.</param>

@@ -6,6 +6,7 @@ using WebExpress.WebCore.WebHtml;
 using WebExpress.WebCore.WebSitemap;
 using WebExpress.WebUI.WebFragment;
 using WebExpress.WebUI.WebPage;
+using WebExpress.WebUI.WebIcon;
 
 namespace ViLa.WebFragment
 {
@@ -27,6 +28,7 @@ namespace ViLa.WebFragment
             : base(fragmentContext)
         {
             Text = _ => "vila:vila.setting.mode.label";
+            Icon = _ => new IconSliders();
             Uri = _ => sitemapManager.GetUri<WWW.Settings.Mode>(fragmentContext?.ApplicationContext);
         }
 

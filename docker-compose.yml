@@ -17,7 +17,7 @@ services:
       - "${VILA_GPIO_GID:?set VILA_GPIO_GID to the numeric group of the GPIO device}"
     volumes:
       - vila-data:/app/data
-      - vila-config:/app/Config
+      - vila-settings:/app/settings
       - vila-assets:/app/assets
       - vila-packages:/app/packages
     restart: unless-stopped
@@ -26,5 +26,6 @@ services:
 volumes:
   vila-data:
   vila-config:
+  vila-settings:
   vila-assets:
   vila-packages:

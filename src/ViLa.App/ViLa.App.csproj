@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+	<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -32,8 +33,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="config\vila.settings.xml">
-			<TargetPath>Config/vila.settings.xml</TargetPath>
+		<None Update="settings\vila.settings.json">
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -53,4 +53,6 @@
 		<Exec Command="$(SolutionDir)$(AssemblyName)\bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).exe -s $(SolutionDir)..\Vila.spec -c $(Configuration) -t $(TargetFramework) -o $(SolutionDir)..\pkg\$(Configuration)" />
 	</Target>
 
+	<Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+	<Import Project="ViLa.ContainerProfiles.targets" />
 </Project>

@@ -3,6 +3,7 @@ using WebExpress.WebApp.WebSettingPage;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebPage;
 using WebExpress.WebCore.WebSettingPage;
+using WebExpress.WebUI.WebIcon;
 
 namespace ViLa.WWW.Settings
 {
@@ -10,6 +11,7 @@ namespace ViLa.WWW.Settings
     /// Represents a settings page for mode configuration in a visual tree web application.
     /// </summary>
     [Title("vila:vila.setting.mode.label")]
+    [WebIcon<IconSliders>]
     [Application<Application>]
     [Scope<IScopeGeneral>]
     [Cache]

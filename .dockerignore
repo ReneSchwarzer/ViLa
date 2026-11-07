@@ -7,11 +7,11 @@
 !src/ViLa.App/
 !src/ViLa.App/Program.cs
 !src/ViLa.App/ViLa.App.csproj
+!src/ViLa.App/ViLa.ContainerProfiles.targets
 !src/ViLa.App/ViLa.ico
-!src/ViLa.App/config/
-!src/ViLa.App/config/vila.settings.xml
 !src/ViLa.App/settings/
 !src/ViLa.App/settings/webexpress.settings.json
+!src/ViLa.App/settings/vila.settings.json
 **/bin/
 **/obj/
 **/*.user

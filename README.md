@@ -31,7 +31,9 @@ $env:WEBEXPRESS_WebExpress__ExternalUri = 'http://localhost:8096/'
 dotnet run --project src/ViLa.App/ViLa.App.csproj --no-build
 ```
 
-Measurement configuration remains in `config/vila.settings.xml`. Verify the meter impulse factor, tariff, currency, and operating mode for the installation. Existing measurement files are read from `data/measurements` beside the executable when that directory exists, otherwise from the legacy `measurements` directory.
+Measurement configuration is stored in `settings/vila.settings.json` under `Plugins:vila`, using the settings directory selected by the WebExpress host. Operating modes are named strings such as `ManuallyControlled`. The shared WebExpress configuration loader applies overrides from `webexpress.settings.json` and environment variables such as `WEBEXPRESS_Plugins__vila__ImpulsePerkWh`. Verify the meter impulse factor, tariff, currency, and operating mode for the installation. Existing measurement files are read from `data/measurements` beside the executable when that directory exists, otherwise from the legacy `measurements` directory.
+
+Legacy configuration is migrated from `Config/vila.settings.xml`, with a fallback to `vila.settings.xml` beside the executable, when the JSON settings file is absent. The XML source is retained. Existing JSON takes precedence, so remove the shipped default JSON file before the first start when migrating an installation with customized XML settings. Invalid JSON is not replaced with legacy values.
 
 ## Visual Studio container profile
 
@@ -63,7 +65,15 @@ docker compose ps
 
 Open `/vila/` at the configured base address. The HTTP health check verifies the web host. To verify GPIO initialization, open the ViLa log and check for the GPIO initialization entry. Verify S0 readings and contactor operation on the installed hardware.
 
-Docker volumes retain measurements and vehicles in `/app/data`, meter settings in `/app/Config`, generated assets in `/app/assets` and installed plugins in `/app/packages`. On first start the configuration volume receives the settings shipped with the application. Check the impulse factor, tariff and operating mode before use.
+Docker volumes retain measurements and vehicles in `/app/data`, JSON settings in `/app/settings`, generated assets in `/app/assets` and installed plugins in `/app/packages`. The existing `/app/Config` volume remains mounted for legacy migration. On first start the settings volume receives the JSON files shipped with the application. Check the impulse factor, tariff and operating mode before use.
+
+## Data import and export
+
+The settings page **Data import and export** downloads a versioned ZIP backup containing saved measurements, sampled readings, comments, descriptions, tags, vehicle assignments, vehicle profiles and current application settings. The two download options exclude or include archived measurements. An ongoing charging session is not persisted yet and is excluded. Finish the session before exporting if its data must be included.
+
+Backup format version 2 stores settings in `settings.json`, vehicle profiles in `vehicles.json`, and measurement records as XML. Version 1 backups containing `settings.xml` remain importable and are converted to the local JSON settings format when no existing settings are present. The Backup entry in the application settings menu opens this page.
+
+The import adds missing records by their stable IDs and preserves existing settings, vehicles and measurements, including IDs already present in the archive or an ongoing session. Imported history and vehicles become available immediately. Repeating an import does not duplicate records. Archived records retain their archive location. The entire backup is validated before writing; unsupported versions, invalid records, duplicate identities and unexpected paths are rejected. ZIP uploads and expanded content are limited to 256 MiB and 100,000 entries. Storage failures can leave some new records imported, so the page reports this condition and permits a safe retry.
 
 ## Validation
 

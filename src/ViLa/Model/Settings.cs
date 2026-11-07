@@ -2,6 +2,9 @@
 
 namespace ViLa.Model
 {
+    /// <summary>
+    /// Defines the ViLa plugin settings and retains XML mappings for legacy imports.
+    /// </summary>
     [XmlRoot(ElementName = "settings", IsNullable = false)]
     public class Settings
     {

@@ -1,0 +1,15 @@
+{
+  "Plugins": {
+    "vila": {
+      "DebugMode": false,
+      "ImpulsePerkWh": 500,
+      "ElectricityPricePerkWh": 0.28,
+      "MaxWattage": 40,
+      "MinWattage": 0,
+      "MaxChargingTime": 24,
+      "Currency": "€",
+      "BillingDayOffset": 0,
+      "Mode": "ManuallyControlled"
+    }
+  }
+}

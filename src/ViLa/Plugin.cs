@@ -26,9 +26,12 @@ namespace ViLa
         /// <param name="context">
         /// The context that applies to the execution of the plugin.
         /// </param>
-        public Plugin(IPluginContext context)
+        /// <param name="serverContext">The host supplying the shared settings directory and configuration.</param>
+        public Plugin(IPluginContext context, IHttpServerContext serverContext)
         {
             ViewModel.Instance.Context = context;
+            ViewModel.Instance.SettingsStorage = new SettingsStore(System.AppDomain.CurrentDomain.BaseDirectory,
+                serverContext.SettingsPath, serverContext.Configuration);
             ViewModel.Instance.Init();
 
             WebEx.Favicon = "assets/img/vila.svg";

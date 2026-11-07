@@ -206,6 +206,11 @@ namespace ViLa.Model
         public Settings Settings { get; private set; } = new Settings() { Currency = "€" };
 
         /// <summary>
+        /// Gets or sets the settings storage selected by the host.
+        /// </summary>
+        public SettingsStore SettingsStorage { get; set; } = new SettingsStore(AppDomain.CurrentDomain.BaseDirectory);
+
+        /// <summary>
         /// Gets the culture.
         /// </summary>
         public CultureInfo Culture { get; set; }
@@ -450,19 +455,52 @@ namespace ViLa.Model
         {
             Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.setting.save"));
 
-            // Save settings
-            var serializer = new XmlSerializer(typeof(Settings));
+            SettingsStorage.Save(Settings);
+            ResetSettings();
+        }
 
-            using var memoryStream = new MemoryStream();
-            serializer.Serialize(memoryStream, Settings);
+        /// <summary>
+        /// Exports the persisted application data and current settings.
+        /// </summary>
+        /// <param name="includeArchive">Whether archived measurements are included.</param>
+        /// <returns>The portable ZIP backup.</returns>
+        public byte[] ExportData(bool includeArchive = false)
+        {
+            lock (DataBackup.StorageLock)
+            {
+                lock (_historyLock)
+                {
+                    return new DataBackup(AppDomain.CurrentDomain.BaseDirectory, Vehicles, SettingsStorage).Export(Settings, includeArchive);
+                }
+            }
+        }
 
-            var utf = new UTF8Encoding();
-
-            File.WriteAllText
-            (
-                ResolveConfigPath("vila.settings.xml"),
-                utf.GetString(memoryStream.ToArray())
-            );
+        /// <summary>
+        /// Adds missing backup records and makes imported history available immediately.
+        /// </summary>
+        /// <param name="content">The uploaded ZIP backup.</param>
+        /// <returns>The counts of imported and preserved records.</returns>
+        public BackupImportResult ImportData(byte[] content)
+        {
+            lock (DataBackup.StorageLock)
+            {
+                lock (_historyLock)
+                {
+                    var reserved = HistoryMeasurementLog.Select(x => x.ID).ToList();
+                    if (ActiveMeasurementLog != null)
+                    {
+                        reserved.Add(ActiveMeasurementLog.ID);
+                    }
+                    return new DataBackup(AppDomain.CurrentDomain.BaseDirectory, Vehicles, SettingsStorage).Import(content, reserved, result =>
+                    {
+                        HistoryMeasurementLog.AddRange(result.Measurements);
+                        if (result.SettingsAdded)
+                        {
+                            ResetSettings();
+                        }
+                    });
+                }
+            }
         }
 
         /// <summary>
@@ -472,17 +510,9 @@ namespace ViLa.Model
         {
             Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.setting.load"));
 
-            // Load settings
-            var serializer = new XmlSerializer(typeof(Settings));
-
-            // 0.0.11 migration: csproj copies vila.settings.xml to <BaseDirectory>/Config/,
-            // but the code looked in <BaseDirectory>/. Fallback: Config/ first, then BaseDirectory.
-            var settingsPath = ResolveConfigPath("vila.settings.xml");
-
             try
             {
-                using var reader = File.OpenText(settingsPath);
-                Settings = serializer.Deserialize(reader) as Settings;
+                Settings = SettingsStorage.Load();
             }
             catch
             {
@@ -490,23 +520,6 @@ namespace ViLa.Model
             }
 
             Log(new LogItem(LogItem.LogLevel.Debug, "ImpulsePerkWh = " + Settings?.ImpulsePerkWh));
-        }
-
-        /// <summary>
-        /// Looks up a config file first in the Config/ subfolder (0.0.11 default),
-        /// then falls back to BaseDirectory (1.4.7 default).
-        /// </summary>
-        private static string ResolveConfigPath(string fileName)
-        {
-            var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
-            var configPath = Path.Combine(baseDir, "Config", fileName);
-            if (File.Exists(configPath))
-            {
-                return configPath;
-            }
-
-            var rootPath = Path.Combine(baseDir, fileName);
-            return rootPath;
         }
 
         /// <summary>
@@ -606,7 +619,7 @@ namespace ViLa.Model
         /// <summary>
         /// Gets a single completed measurement log
         /// </summary>
-        /// <param name="id">Die ID des Messprotokolls</param>
+        /// <param name="id">The measurement log identifier.</param>
         /// <return>Das Messprokoll oder null</return>
         public MeasurementLog GetHistoryMeasurementLog(string id)
         {
@@ -682,157 +695,169 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Speichert ein abgeschlossenes Messprotokoll
+        /// Persists a completed measurement log and publishes it in the history.
         /// </summary>
         public void SaveMeasurementLog()
         {
-            var serializer = new XmlSerializer(typeof(MeasurementLog));
-            var xmlns = new XmlSerializerNamespaces();
-            xmlns.Add(string.Empty, string.Empty);
-
-            using (var memoryStream = new MemoryStream())
+            lock (DataBackup.StorageLock)
             {
-                serializer.Serialize(memoryStream, ActiveMeasurementLog, xmlns);
+                var serializer = new XmlSerializer(typeof(MeasurementLog));
+                var xmlns = new XmlSerializerNamespaces();
+                xmlns.Add(string.Empty, string.Empty);
 
-                var utf = new UTF8Encoding();
-                var fileName = Path.Combine(ResolveMeasurementsDirectory(), string.Format("{0}.xml", ActiveMeasurementLog.ID));
-
-                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+                using (var memoryStream = new MemoryStream())
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+                    serializer.Serialize(memoryStream, ActiveMeasurementLog, xmlns);
+
+                    var utf = new UTF8Encoding();
+                    var fileName = Path.Combine(ResolveMeasurementsDirectory(), string.Format("{0}.xml", ActiveMeasurementLog.ID));
+
+                    if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+                    }
+
+                    File.WriteAllText
+                    (
+                        fileName,
+                        utf.GetString(memoryStream.ToArray())
+                    );
+
+                    lock (_historyLock)
+                    {
+                        HistoryMeasurementLog.Add(ActiveMeasurementLog);
+                    }
+
+                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.save") { Argument = Convert.ToString(fileName, System.Globalization.CultureInfo.InvariantCulture) });
                 }
-
-                File.WriteAllText
-                (
-                    fileName,
-                    utf.GetString(memoryStream.ToArray())
-                );
-
-                lock (_historyLock)
-                {
-                    HistoryMeasurementLog.Add(ActiveMeasurementLog);
-                }
-
-                Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.save") { Argument = Convert.ToString(fileName, System.Globalization.CultureInfo.InvariantCulture) });
             }
         }
 
         /// <summary>
-        /// Modifies a completed measurement log
+        /// Persists changes to a completed measurement log.
         /// </summary>
-        /// <param name="measurement">Das Messprotokoll, welches upgedatet werden soll</param>
+        /// <param name="measurement">The measurement log to persist.</param>
         public void UpdateMeasurementLog(MeasurementLog measurement)
         {
-            var serializer = new XmlSerializer(typeof(MeasurementLog));
-            var xmlns = new XmlSerializerNamespaces();
-            xmlns.Add(string.Empty, string.Empty);
-
-            using (var memoryStream = new MemoryStream())
+            lock (DataBackup.StorageLock)
             {
-                serializer.Serialize(memoryStream, measurement, xmlns);
+                var serializer = new XmlSerializer(typeof(MeasurementLog));
+                var xmlns = new XmlSerializerNamespaces();
+                xmlns.Add(string.Empty, string.Empty);
 
-                var utf = new UTF8Encoding();
-                var fileName = Path.Combine(ResolveMeasurementsDirectory(), string.Format("{0}.xml", measurement.ID));
-
-                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+                using (var memoryStream = new MemoryStream())
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+                    serializer.Serialize(memoryStream, measurement, xmlns);
+
+                    var utf = new UTF8Encoding();
+                    var fileName = Path.Combine(ResolveMeasurementsDirectory(), string.Format("{0}.xml", measurement.ID));
+
+                    if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+                    }
+
+                    File.WriteAllText
+                    (
+                        fileName,
+                        utf.GetString(memoryStream.ToArray())
+                    );
+
+                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.save") { Argument = Convert.ToString(fileName, System.Globalization.CultureInfo.InvariantCulture) });
                 }
-
-                File.WriteAllText
-                (
-                    fileName,
-                    utf.GetString(memoryStream.ToArray())
-                );
-
-                Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.charging.save") { Argument = Convert.ToString(fileName, System.Globalization.CultureInfo.InvariantCulture) });
             }
         }
 
         /// <summary>
-        /// Deletes a completed measurement log
+        /// Deletes a completed measurement log and removes it from the history.
         /// </summary>
-        /// <param name="id">Die ID des Messprotokolls</param>
+        /// <param name="id">The measurement log identifier.</param>
         public void RemoveHistoryMeasurementLog(string id)
         {
-            try
+            lock (DataBackup.StorageLock)
             {
-                var measurementLog = GetHistoryMeasurementLog(id);
-                if (measurementLog != null)
+                try
                 {
-                    File.Delete(Path.Combine(ResolveMeasurementsDirectory(), $"{measurementLog.ID}.xml"));
-                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.delete.file") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
-
-                    lock (_historyLock)
+                    var measurementLog = GetHistoryMeasurementLog(id);
+                    if (measurementLog != null)
                     {
-                        HistoryMeasurementLog.Remove(measurementLog);
+                        File.Delete(Path.Combine(ResolveMeasurementsDirectory(), $"{measurementLog.ID}.xml"));
+                        Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.delete.file") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
+
+                        lock (_historyLock)
+                        {
+                            HistoryMeasurementLog.Remove(measurementLog);
+                        }
+                    }
+                    else
+                    {
+                        Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.delete.error") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.delete.error") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
+                    Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
                 }
-            }
-            catch (Exception ex)
-            {
-                Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
         }
 
         /// <summary>
-        /// Archiviert ein abgeschlossenes Messprotokoll
+        /// Moves a completed measurement log into the archive.
         /// </summary>
-        /// <param name="id">Die ID des Messprotokolls</param>
+        /// <param name="id">The measurement log identifier.</param>
         public void ArchiveHistoryMeasurementLog(string id)
         {
-            try
+            lock (DataBackup.StorageLock)
             {
-                var measurementLog = GetHistoryMeasurementLog(id);
-                if (measurementLog != null)
+                try
                 {
-                    var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
-                    var archive = Path.Combine(baseDir, "data", "archive");
-                    if (!Directory.Exists(archive))
+                    var measurementLog = GetHistoryMeasurementLog(id);
+                    if (measurementLog != null)
                     {
-                        archive = Path.Combine(baseDir, "archive");
+                        var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+                        var archive = Path.Combine(baseDir, "data", "archive");
                         if (!Directory.Exists(archive))
                         {
-                            Directory.CreateDirectory(archive);
+                            archive = Path.Combine(baseDir, "archive");
+                            if (!Directory.Exists(archive))
+                            {
+                                Directory.CreateDirectory(archive);
+                            }
                         }
-                    }
 
-                    var year = Path.Combine(archive, DateTime.Now.Year.ToString());
-                    if (!Directory.Exists(year))
+                        var year = Path.Combine(archive, DateTime.Now.Year.ToString());
+                        if (!Directory.Exists(year))
+                        {
+                            Directory.CreateDirectory(year);
+                        }
+
+                        var month = Path.Combine(year, DateTime.Now.ToString("MM"));
+                        if (!Directory.Exists(month))
+                        {
+                            Directory.CreateDirectory(month);
+                        }
+
+                        var source = Path.Combine(ResolveMeasurementsDirectory(), id + ".xml");
+                        var destination = Path.Combine(month, id + ".xml");
+
+                        File.Move(source, destination);
+
+                        lock (_historyLock)
+                        {
+                            HistoryMeasurementLog.Remove(measurementLog);
+                        }
+
+                        Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.archive.move") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
+                    }
+                    else
                     {
-                        Directory.CreateDirectory(year);
+                        Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.archive.error") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
                     }
-
-                    var month = Path.Combine(year, DateTime.Now.ToString("MM"));
-                    if (!Directory.Exists(month))
-                    {
-                        Directory.CreateDirectory(month);
-                    }
-
-                    var source = Path.Combine(ResolveMeasurementsDirectory(), id + ".xml");
-                    var destination = Path.Combine(month, id + ".xml");
-
-                    File.Move(source, destination);
-
-                    lock (_historyLock)
-                    {
-                        HistoryMeasurementLog.Remove(measurementLog);
-                    }
-
-                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.archive.move") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
                 }
-                else
+                catch (Exception ex)
                 {
-                    Log(new LogItem(LogItem.LogLevel.Info, "vila:vila.archive.error") { Argument = Convert.ToString(id, System.Globalization.CultureInfo.InvariantCulture) });
+                    Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
                 }
-            }
-            catch (Exception ex)
-            {
-                Log(new LogItem(LogItem.LogLevel.Exception, ex.ToString()));
             }
         }
 
