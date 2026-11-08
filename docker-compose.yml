@@ -1,8 +1,10 @@
 services:
   vila:
+    hostname: vila
     image: rschwarzer/vila:2.0.0
     build:
-      context: .
+      context: ..
+      dockerfile: ViLa/Dockerfile
       additional_contexts:
         nuget: ${WEBEXPRESS_FEED:?set WEBEXPRESS_FEED to the local WebExpress package directory}
     ports:
@@ -25,7 +27,6 @@ services:
 
 volumes:
   vila-data:
-  vila-config:
   vila-settings:
   vila-assets:
   vila-packages:
