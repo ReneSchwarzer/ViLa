@@ -71,7 +71,8 @@ namespace ViLa.WWW.Api._1_
             var includeArchive = string.Equals(request?.GetParameter("includeArchive")?.Value, "true", System.StringComparison.OrdinalIgnoreCase);
             var response = new ResponseOK { Content = ViewModel.Instance.ExportData(includeArchive) };
             response.Header.ContentType = "application/zip";
-            response.Header.ContentDisposition = "attachment; filename=\"ViLa-backup.zip\"";
+            var fileName = "vila_" + DateTime.Now.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture) + ".zip";
+            response.Header.ContentDisposition = "attachment; filename=\"" + fileName + "\"";
             return response;
         }
     }

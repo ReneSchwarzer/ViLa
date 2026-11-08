@@ -63,7 +63,9 @@ Default settings are created in `settings/webexpress.settings.json` and `setting
 sudo VILA_PORT=8090 VILA_GPIO_CHIP=0 ./install.sh
 ```
 
-Afterwards the web interface is available at `http://<hostname>:8080/vila/`. Update with `cd <install directory> && docker compose pull && docker compose up -d`.
+Afterwards the web interface is available at `http://<hostname>/vila/`. Update with `cd <install directory> && docker compose pull && docker compose up -d`.
+
+The default host port is `80`, mapped to container port `8080`. Existing `.env` files are preserved by the installer. To change an existing installation, set `VILA_PORT=80` and adjust `VILA_EXTERNAL_URI` to `http://<hostname>/` in `/opt/vila/.env`, then run `sudo docker compose -f /opt/vila/docker-compose.yml up -d` to apply the new port mapping.
 
 ## Uninstall on a Raspberry Pi
 

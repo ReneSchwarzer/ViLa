@@ -8,9 +8,9 @@ services:
       additional_contexts:
         nuget: ${WEBEXPRESS_FEED:?set WEBEXPRESS_FEED to the local WebExpress package directory}
     ports:
-      - "${VILA_PORT:-8080}:8080"
+      - "${VILA_PORT:-80}:8080"
     environment:
-      WEBEXPRESS_WebExpress__ExternalUri: ${VILA_EXTERNAL_URI:-http://localhost:${VILA_PORT:-8080}/}
+      WEBEXPRESS_WebExpress__ExternalUri: ${VILA_EXTERNAL_URI:-http://localhost:${VILA_PORT:-80}/}
       WEBEXPRESS_WebExpress__Authentication__SigningKey: ${VILA_SIGNING_KEY:?set VILA_SIGNING_KEY in .env}
       VILA_GPIO_CHIP: "${VILA_GPIO_CHIP:-0}"
     devices:

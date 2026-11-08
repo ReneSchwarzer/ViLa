@@ -15,7 +15,7 @@
 # Options (environment variables, all optional):
 #   VILA_DIR           installation directory               (default: /opt/vila)
 #   VILA_IMAGE         image to run                         (default: rschwarzer/vila:2.0.0-alpha)
-#   VILA_PORT          host port                            (default: 8080)
+#   VILA_PORT          host port                            (default: 80)
 #   VILA_EXTERNAL_URI  public base URI                      (default: http://<hostname>:<port>/)
 #   VILA_GPIO_CHIP     GPIO chip number                     (default: auto, 4 on Raspberry Pi 5, otherwise 0)
 #   VILA_UID           numeric user id of the container user (default: 1654, the "app" user of .NET images)
@@ -28,7 +28,7 @@ main() {
 
 VILA_DIR="${VILA_DIR:-/opt/vila}"
 VILA_IMAGE="${VILA_IMAGE:-rschwarzer/vila:2.0.0-alpha}"
-VILA_PORT="${VILA_PORT:-8080}"
+VILA_PORT="${VILA_PORT:-80}"
 VILA_UID="${VILA_UID:-1654}"
 
 log()  { printf '\033[1;32m==>\033[0m %s\n' "$*"; }
@@ -182,9 +182,9 @@ services:
     container_name: vila
     image: ${VILA_IMAGE:-rschwarzer/vila:2.0.0-alpha}
     ports:
-      - "${VILA_PORT:-8080}:8080"
+      - "${VILA_PORT:-80}:8080"
     environment:
-      WEBEXPRESS_WebExpress__ExternalUri: ${VILA_EXTERNAL_URI:-http://localhost:${VILA_PORT:-8080}/}
+      WEBEXPRESS_WebExpress__ExternalUri: ${VILA_EXTERNAL_URI:-http://localhost:${VILA_PORT:-80}/}
       WEBEXPRESS_WebExpress__Authentication__SigningKey: ${VILA_SIGNING_KEY:?set VILA_SIGNING_KEY in .env}
       VILA_GPIO_CHIP: "${VILA_GPIO_CHIP:-0}"
     devices:
