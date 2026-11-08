@@ -48,7 +48,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.24.2-preview.1" PrivateAssets="all" />
-		<PackageReference Include="WebExpress.WebApp" Version="2.0.0-alpha" />
+		<PackageReference Include="WebExpress.WebApp" Version="2.0.1-alpha" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release' and '$(DOTNET_RUNNING_IN_CONTAINER)' != 'true'">

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM scratch AS nuget
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0-noble AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-noble AS build
 WORKDIR /src
 COPY --from=nuget . /nuget/
 COPY docker/nuget.config ./

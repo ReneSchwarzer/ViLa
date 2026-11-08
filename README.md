@@ -1,6 +1,6 @@
 # ViLa
 
-ViLa monitors a wallbox through an S0 electricity meter and a GPIO contactor. The application runs on .NET 10 and uses WebExpress WebCore, WebUI, WebIndex, and WebApp `2.0.0-alpha`.
+WebApp `2.0.1-alpha`.
 
 ## Features
 
@@ -43,7 +43,7 @@ Visual Studio uses the local WebExpress feed in `%USERPROFILE%\Documents\.nuget`
 
 ## Docker on a Raspberry Pi
 
-Run Docker Engine with the Compose plugin on a Raspberry Pi running 64 bit Linux. The build uses .NET 10 and a local NuGet feed containing the four WebExpress `2.0.0-alpha` packages listed above. Set `WEBEXPRESS_FEED` to the absolute path of that directory on the build host.
+WebExpress `2.0.1-alpha` packages
 
 Identify the GPIO chip connected to the header with `gpioinfo` on the Pi. ViLa uses line 3 for the S0 input and line 13 for the contactor output. For example, if both lines belong to `gpiochip0`, inspect its permissions and prepare the environment file from the repository root.
 
@@ -63,7 +63,13 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Open `/vila/` at the configured base address. The HTTP health check verifies the web host. To verify GPIO initialization, open the ViLa log and check for the GPIO initialization entry. Verify S0 readings and contactor operation on the installed hardware.
+To publish a multi-architecture image (`linux/amd64` and `linux/arm64`) for Raspberry Pi and other ARM hosts, build with Buildx and push a single tag.
+
+```sh
+docker buildx build --platform linux/amd64,linux/arm64 --build-context nuget=$WEBEXPRESS_FEED -t rschwarzer/vila:2.0.0 --push .
+```
+
+Open `/vila/` at the configured base address. The HTTP health check
 
 Docker volumes retain measurements and vehicles in `/app/data`, JSON settings in `/app/settings`, generated assets in `/app/assets` and installed plugins in `/app/packages`. The existing `/app/Config` volume remains mounted for legacy migration. On first start the settings volume receives the JSON files shipped with the application. Check the impulse factor, tariff and operating mode before use.
 
