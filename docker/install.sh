@@ -12,7 +12,7 @@
 # Usage:   curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/Develop/docker/install.sh | sudo bash
 #          or: sudo ./install.sh
 # Options (environment variables, all optional):
-#   VILA_DIR           installation directory               (default: /opt/vila)
+#   VILA_DIR           installation directory               (default: current directory)
 #   VILA_IMAGE         image to run                         (default: rschwarzer/vila:2.0.0-alpha)
 #   VILA_PORT          host port                            (default: 8080)
 #   VILA_EXTERNAL_URI  public base URI                      (default: http://<hostname>:<port>/)
@@ -25,7 +25,7 @@ set -euo pipefail
 # This makes "curl ... | sudo bash" safe (no commands can consume the script from stdin).
 main() {
 
-VILA_DIR="${VILA_DIR:-/opt/vila}"
+VILA_DIR="${VILA_DIR:-$PWD}"
 VILA_IMAGE="${VILA_IMAGE:-rschwarzer/vila:2.0.0-alpha}"
 VILA_PORT="${VILA_PORT:-8080}"
 VILA_UID="${VILA_UID:-1654}"

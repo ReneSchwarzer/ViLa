@@ -45,10 +45,10 @@ sudo ./install.sh
 The script:
 
 - installs Docker Engine and the Compose plugin if they are missing,
-- creates `/opt/vila/{data,settings,assets,packages,log}` owned by UID 1654 (the `app` user of the .NET image) with mode `750`,
+- creates `data, settings, assets, packages, log` in the current directory (`VILA_DIR`), owned by UID 1654 (the `app` user of the .NET image) with mode `750`,
 - detects the GPIO device (`/dev/gpiochip4` on a Raspberry Pi 5, otherwise `/dev/gpiochip0`) and its group id,
-- writes `/opt/vila/.env` with a generated signing key (mode `600`; an existing file is kept),
-- writes `/opt/vila/docker-compose.yml`, pulls the image and starts the container.
+- writes `./.env` with a generated signing key (mode `600`; an existing file is kept),
+- writes `./docker-compose.yml`, pulls the image and starts the container.
 
 Optional environment variables: `VILA_DIR`, `VILA_IMAGE`, `VILA_PORT`, `VILA_EXTERNAL_URI`, `VILA_GPIO_CHIP`, `VILA_UID`, `VILA_SKIP_DOCKER_INSTALL=1`.
 
@@ -56,7 +56,7 @@ Optional environment variables: `VILA_DIR`, `VILA_IMAGE`, `VILA_PORT`, `VILA_EXT
 sudo VILA_PORT=8090 VILA_GPIO_CHIP=0 ./install.sh
 ```
 
-Afterwards the web interface is available at `http://<hostname>:8080/vila/`. Update with `cd /opt/vila && docker compose pull && docker compose up -d`.
+Afterwards the web interface is available at `http://<hostname>:8080/vila/`. Update with `cd <install directory> && docker compose pull && docker compose up -d`.
 
 ## Publish a multi-architecture image
 
