@@ -36,7 +36,7 @@ die()  { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 
 # --- checks -----------------------------------------------------------------------------------
 
-die "Run this script as root (e.g. curl -fsSL <url> | sudo bash)"
+[ "$(id -u)" -eq 0 ] || die "Run this script as root (e.g. curl -fsSL <url> | sudo bash)"
 
 case "$(uname -m)" in
 	aarch64|arm64|x86_64) ;;
