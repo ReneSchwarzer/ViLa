@@ -14,7 +14,7 @@
 #          or: sudo ./install.sh
 # Options (environment variables, all optional):
 #   VILA_DIR           installation directory               (default: /opt/vila)
-#   VILA_IMAGE         image to run                         (default: rschwarzer/vila:2.0.0-alpha)
+#   VILA_IMAGE         image to run                         (default: rschwarzer/vila:2.0.0)
 #   VILA_PORT          host port                            (default: 80)
 #   VILA_EXTERNAL_URI  public base URI                      (default: http://<hostname>:<port>/)
 #   VILA_GPIO_CHIP     GPIO chip number                     (default: auto, 4 on Raspberry Pi 5, otherwise 0)
@@ -27,7 +27,7 @@ set -euo pipefail
 main() {
 
 VILA_DIR="${VILA_DIR:-/opt/vila}"
-VILA_IMAGE="${VILA_IMAGE:-rschwarzer/vila:2.0.0-alpha}"
+VILA_IMAGE="${VILA_IMAGE:-rschwarzer/vila:2.0.0}"
 VILA_PORT="${VILA_PORT:-80}"
 VILA_UID="${VILA_UID:-1654}"
 
@@ -180,7 +180,7 @@ services:
   vila:
     hostname: vila
     container_name: vila
-    image: ${VILA_IMAGE:-rschwarzer/vila:2.0.0-alpha}
+    image: ${VILA_IMAGE:-rschwarzer/vila:2.0.0}
     ports:
       - "${VILA_PORT:-80}:8080"
     environment:

@@ -16,7 +16,7 @@
 		<ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
 		<DockerfileFile>$(MSBuildProjectDirectory)\..\..\Dockerfile</DockerfileFile>
 		<DockerfileRepository>rschwarzer/vila</DockerfileRepository>
-		<ContainerImageTag>$(VERSION)-alpha</ContainerImageTag>
+		<ContainerImageTag>$(VERSION)</ContainerImageTag>
 		<ContainerBuildContext>$(MSBuildProjectDirectory)\..\..</ContainerBuildContext>
 		<WEBEXPRESS_FEED Condition="'$(WEBEXPRESS_FEED)' == '' and Exists('$(USERPROFILE)\Documents\.nuget')">$(USERPROFILE)\Documents\.nuget</WEBEXPRESS_FEED>
 		<DockerfileBuildArguments Condition="'$(WEBEXPRESS_FEED)' != ''">--build-context "nuget=$(WEBEXPRESS_FEED)"</DockerfileBuildArguments>
