@@ -28,7 +28,7 @@ docker compose up -d --build
 
 `WEBEXPRESS_FEED`, `VILA_SIGNING_KEY` and `VILA_GPIO_GID` must be set (see `.env.example`).
 
-Persistent storage uses bind mounts under `/opt/vila` by default. Set `VILA_DIR` to an absolute host path to use another directory. Before starting Compose directly, create the `data`, `settings`, `assets`, `packages` and `log` subdirectories and grant the container user with UID `1654` write access. Existing named Docker volumes are not migrated automatically; copy their contents into the corresponding directories while the application is stopped before switching to bind mounts.
+Persistent storage uses bind mounts under `/opt/vila` by default. Set `VILA_DIR` to an absolute host path to use another directory. Before starting Compose directly, create the `data/measurements`, `data/archive`, `settings`, `assets`, `packages` and `log` subdirectories and grant the container user with UID `1654` write access. Existing named Docker volumes are not migrated automatically; copy their contents into the corresponding directories while the application is stopped before switching to bind mounts.
 
 ## Install on a Raspberry Pi
 

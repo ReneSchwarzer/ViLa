@@ -13,6 +13,32 @@ public sealed class DataBackupTest : IDisposable
     private readonly string _root = Path.Combine(Path.GetTempPath(), "vila-backup-" + Guid.NewGuid().ToString("N"));
 
     /// <summary>
+    /// Restores archived measurements into an empty persistent data mount and exports them again.
+    /// </summary>
+    [Fact]
+    public void Import_WithEmptyDataMount_PersistsArchive()
+    {
+        // arrange
+        var archived = new MeasurementLog { ID = Guid.NewGuid().ToString() };
+        WriteXml(Path.Combine(_root, "source", "archive", "2026", "11", archived.ID + ".xml"), archived);
+        var bytes = new DataBackup(Path.Combine(_root, "source"), Store("source")).Export(new Settings(), true);
+        var target = Path.Combine(_root, "target");
+        Directory.CreateDirectory(Path.Combine(target, "data"));
+        var service = new DataBackup(target, Store("target"));
+
+        // act
+        var result = service.Import(bytes);
+        var exported = service.Export(new Settings(), true);
+
+        // validation
+        Assert.Equal(1, result.MeasurementsAdded);
+        Assert.True(File.Exists(Path.Combine(target, "data", "archive", "2026", "11", archived.ID + ".xml")));
+        Assert.False(Directory.Exists(Path.Combine(target, "archive")));
+        using var zip = new ZipArchive(new MemoryStream(exported), ZipArchiveMode.Read);
+        Assert.NotNull(zip.GetEntry("archive/2026/11/" + archived.ID + ".xml"));
+    }
+
+    /// <summary>
     /// Publishes committed history and settings after a later archive write fails and supports a safe retry.
     /// </summary>
     [Fact]
@@ -180,7 +206,7 @@ public sealed class DataBackupTest : IDisposable
         Assert.Equal(100, Assert.Single(restored.Measurements).Impulse);
         Assert.Equal("Comment", Assert.Single(restored.Comments).Comment);
         Assert.Equal(vehicle, Assert.Single(new VehicleStore(Path.Combine(_root, "target", "data", "vehicles.json")).GetAll()));
-        Assert.Equal(includeArchive, File.Exists(Path.Combine(_root, "target", "archive", "2020", "01", archived.ID + ".xml")));
+        Assert.Equal(includeArchive, File.Exists(Path.Combine(_root, "target", "data", "archive", "2020", "01", archived.ID + ".xml")));
         Assert.Equal(0, repeated.MeasurementsAdded);
         Assert.Equal(0, repeated.VehiclesAdded);
         Assert.False(repeated.SettingsAdded);

@@ -51,8 +51,7 @@ namespace ViLa.Model
         /// <returns>The current or legacy directory.</returns>
         private string DirectoryFor(string category)
         {
-            var current = Path.Combine(_root, "data", category);
-            return Directory.Exists(current) ? current : Path.Combine(_root, category);
+            return StorageDirectory.Resolve(_root, category);
         }
 
         /// <summary>

@@ -62,10 +62,12 @@ systemctl enable --now docker >/dev/null 2>&1 || true
 
 log "Creating directories in $VILA_DIR"
 mkdir -p "$VILA_DIR"/{data,settings,assets,packages,log}
+mkdir -p "$VILA_DIR/data/measurements" "$VILA_DIR/data/archive"
 VILA_DIR="$(cd "$VILA_DIR" && pwd -P)"
 chown root:root "$VILA_DIR"
 chown -R "$VILA_UID:$VILA_UID" "$VILA_DIR"/{data,settings,assets,packages,log}
 chmod 750 "$VILA_DIR"/{data,settings,assets,packages,log}
+chmod 750 "$VILA_DIR/data/measurements" "$VILA_DIR/data/archive"
 chmod 755 "$VILA_DIR"
 
 # --- default settings -------------------------------------------------------------------------

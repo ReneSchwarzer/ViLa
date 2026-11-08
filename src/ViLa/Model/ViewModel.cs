@@ -523,21 +523,16 @@ namespace ViLa.Model
         }
 
         /// <summary>
-        /// Gets the data directory for measurement logs; creates it if necessary.
-        /// Reihenfolge: <BaseDirectory>/data/measurements, sonst <BaseDirectory>/measurements.
+        /// Gets the measurement directory, preserving existing storage and creating missing mounted storage.
         /// </summary>
-        private static string ResolveMeasurementsDirectory()
+        /// <param name="baseDirectory">The application base directory, or null to use the current application directory.</param>
+        /// <returns>The existing or newly created measurement directory.</returns>
+        private static string ResolveMeasurementsDirectory(string baseDirectory = null)
         {
-            var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
-            var dataDir = Path.Combine(baseDir, "data", "measurements");
-            if (Directory.Exists(dataDir))
-            {
-                return dataDir;
-            }
-
-            var legacyDir = Path.Combine(baseDir, "measurements");
-            Directory.CreateDirectory(legacyDir);
-            return legacyDir;
+            var baseDir = baseDirectory ?? System.AppDomain.CurrentDomain.BaseDirectory;
+            var directory = StorageDirectory.Resolve(baseDir, "measurements");
+            Directory.CreateDirectory(directory);
+            return directory;
         }
 
         /// <summary>
@@ -815,15 +810,7 @@ namespace ViLa.Model
                     if (measurementLog != null)
                     {
                         var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
-                        var archive = Path.Combine(baseDir, "data", "archive");
-                        if (!Directory.Exists(archive))
-                        {
-                            archive = Path.Combine(baseDir, "archive");
-                            if (!Directory.Exists(archive))
-                            {
-                                Directory.CreateDirectory(archive);
-                            }
-                        }
+                        var archive = StorageDirectory.Resolve(baseDir, "archive");
 
                         var year = Path.Combine(archive, DateTime.Now.Year.ToString());
                         if (!Directory.Exists(year))
