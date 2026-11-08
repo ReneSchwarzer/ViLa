@@ -1,0 +1,60 @@
+﻿<Project>
+	<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<AssemblyName>ViLa.App</AssemblyName>
+		<RootNamespace>ViLa.App</RootNamespace>
+		<Version>2.0.0</Version>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/ReneSchwarzer/ViLa.git</RepositoryUrl>
+		<ApplicationIcon>ViLa.ico</ApplicationIcon>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<StartupObject>ViLa.App.Program</StartupObject>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
+		<DockerfileFile>$(MSBuildProjectDirectory)\..\..\Dockerfile</DockerfileFile>
+		<DockerfileRepository>rschwarzer/vila</DockerfileRepository>
+		<ContainerImageTag>$(VERSION)</ContainerImageTag>
+		<ContainerBuildContext>$(MSBuildProjectDirectory)\..\..</ContainerBuildContext>
+		<WEBEXPRESS_FEED Condition="'$(WEBEXPRESS_FEED)' == '' and Exists('$(USERPROFILE)\Documents\.nuget')">$(USERPROFILE)\Documents\.nuget</WEBEXPRESS_FEED>
+		<DockerfileBuildArguments Condition="'$(WEBEXPRESS_FEED)' != ''">--build-context "nuget=$(WEBEXPRESS_FEED)"</DockerfileBuildArguments>
+		<DockerfileRunArguments>-p 80:8080</DockerfileRunArguments>
+		<DockerfileRunArguments Condition="'$(VILA_GPIO_CHIP)' != '' and '$(VILA_GPIO_GID)' != ''">$(DockerfileRunArguments) --device /dev/gpiochip$(VILA_GPIO_CHIP):/dev/gpiochip$(VILA_GPIO_CHIP):rw --group-add $(VILA_GPIO_GID) -e VILA_GPIO_CHIP=$(VILA_GPIO_CHIP)</DockerfileRunArguments>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Assets\**" />
+	  <EmbeddedResource Remove="Assets\**" />
+	  <None Remove="Assets\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ViLa\ViLa.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="settings\vila.settings.json">
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="settings\webexpress.settings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</None>
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.24.2-preview.1" PrivateAssets="all" />
+		<PackageReference Include="WebExpress.WebApp" Version="2.0.1-alpha" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release' and '$(DOTNET_RUNNING_IN_CONTAINER)' != 'true'">
+		<Exec Command="$(SolutionDir)$(AssemblyName)\bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).exe -s $(SolutionDir)..\Vila.spec -c $(Configuration) -t $(TargetFramework) -o $(SolutionDir)..\pkg\$(Configuration)" />
+	</Target>
+
+	<Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+	<Import Project="ViLa.ContainerProfiles.targets" />
+</Project>

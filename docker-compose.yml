@@ -1,0 +1,27 @@
+services:
+  vila:
+    hostname: vila
+    image: rschwarzer/vila:2.0.0
+    build:
+      context: ..
+      dockerfile: ViLa/Dockerfile
+      additional_contexts:
+        nuget: ${WEBEXPRESS_FEED:?set WEBEXPRESS_FEED to the local WebExpress package directory}
+    ports:
+      - "${VILA_PORT:-80}:8080"
+    environment:
+      WEBEXPRESS_WebExpress__ExternalUri: ${VILA_EXTERNAL_URI:-http://localhost:${VILA_PORT:-80}/}
+      WEBEXPRESS_WebExpress__Authentication__SigningKey: ${VILA_SIGNING_KEY:?set VILA_SIGNING_KEY in .env}
+      VILA_GPIO_CHIP: "${VILA_GPIO_CHIP:-0}"
+    devices:
+      - "/dev/gpiochip${VILA_GPIO_CHIP:-0}:/dev/gpiochip${VILA_GPIO_CHIP:-0}:rw"
+    group_add:
+      - "${VILA_GPIO_GID:?set VILA_GPIO_GID to the numeric group of the GPIO device}"
+    volumes:
+      - ${VILA_DIR:-/opt/vila}/data:/app/data
+      - ${VILA_DIR:-/opt/vila}/settings:/app/settings
+      - ${VILA_DIR:-/opt/vila}/assets:/app/assets
+      - ${VILA_DIR:-/opt/vila}/packages:/app/packages
+      - ${VILA_DIR:-/opt/vila}/log:/app/log
+    restart: unless-stopped
+    stop_grace_period: 45s

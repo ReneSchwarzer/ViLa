@@ -1,0 +1,161 @@
+using System;
+using System.Globalization;
+using System.Net;
+using ViLa.Model;
+using WebExpress.WebCore.Internationalization;
+using WebExpress.WebCore.WebHtml;
+using WebExpress.WebCore.WebIcon;
+using WebExpress.WebUI.WebControl;
+using WebExpress.WebUI.WebIcon;
+using WebExpress.WebUI.WebPage;
+
+namespace ViLa.WebControl
+{
+    /// <summary>
+    /// Represents a card with its associated measurement log.
+    /// Layout matches ControlCardCounter, but the header is a formatted string
+    /// (e.g. "13.70 kWh / 3.42 €") instead of a single int.
+    /// </summary>
+    public class ControlCardMeasurementLog : Control
+    {
+        /// <summary>
+        /// Gets or sets the measurement log.
+        /// </summary>
+        public MeasurementLog MeasurementLog { get; set; }
+
+        /// <summary>
+        /// Optional icon override. Defaults to a tachometer.
+        /// </summary>
+        public Func<IRenderControlContext, IIcon> Icon { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the class.
+        /// </summary>
+        /// <param name="id">The ID of the measurement log. May be null.</param>
+        public ControlCardMeasurementLog(string id = null)
+            : base(id)
+        {
+            Margin = _ => new PropertySpacingMargin(PropertySpacing.Space.Two);
+            Icon = _ => new IconTachometerAlt();
+            TextColor = _ => new PropertyColorText(TypeColorText.Default);
+            BackgroundColor = _ => new PropertyColorBackground(TypeColorBackground.Light);
+        }
+
+        /// <summary>
+        /// Renders a completed session with its stored totals and encoded labels.
+        /// </summary>
+        /// <param name="renderContext">The context providing localization and routes.</param>
+        /// <param name="visualTree">The visual tree receiving child controls.</param>
+        /// <returns>The rendered measurement card.</returns>
+        public override IHtmlNode Render(IRenderControlContext renderContext, IVisualTreeControl visualTree)
+        {
+            var icon = Icon?.Invoke(renderContext);
+            var ml = MeasurementLog;
+
+            // 0.0.11 migration: ImpulsePerkWh=0 makes Power=Infinity/NaN; clamp to 0..100% (x86: (uint?)Infinity -> uint.MaxValue).
+            uint? progressValue = null;
+            if (ml?.Power is float power && !float.IsNaN(power) && !float.IsInfinity(power) && power >= 0f)
+            {
+                progressValue = (uint)Math.Min(power, 100f);
+            }
+
+            // Header text: "13.70 kWh / 3.42 €" (or null if no log)
+            string headerText = null;
+            if (ml != null)
+            {
+                var culture = renderContext?.Request?.Culture ?? CultureInfo.CurrentCulture;
+                var finalCost = float.IsNaN(ml.FinalCost) || float.IsInfinity(ml.FinalCost) ? 0f : ml.FinalCost;
+                var finalPower = float.IsNaN(ml.FinalPower) || float.IsInfinity(ml.FinalPower) ? 0f : ml.FinalPower;
+                headerText = string.Format(culture, "{0:F2} kWh / {1:F2} {2}", finalPower, finalCost, ml.Currency);
+            }
+
+            // date and time range
+            string bodyText = null;
+            ControlLink detailsLink = null;
+            if (ml != null)
+            {
+                var culture = renderContext.Request.Culture ?? CultureInfo.CurrentCulture;
+                var shortDate = ml.From.ToString(culture.DateTimeFormat.ShortDatePattern);
+                var finalFrom = ml.FinalFrom.ToString(culture.DateTimeFormat.LongTimePattern);
+                var finalTill = ml.FinalTill.ToString(culture.DateTimeFormat.LongTimePattern);
+                var labelTime = WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(culture, "vila:vila.charging.time");
+                var labelDetails = WebExpress.WebCore.WebEx.ComponentHub.InternationalizationManager.Translate(culture, "vila:vila.charging.details");
+                var detailsUri = WebExpress.WebCore.WebEx.ComponentHub.SitemapManager.GetUri<WWW.Details.Index>(renderContext.Request.ApplicationContext, new WebExpress.WebCore.WebParameter.ParameterId(ml.ID));
+
+                bodyText = $"{shortDate} <small class=\"text-muted\">({finalFrom} - {finalTill} {labelTime})</small>";
+                detailsLink = new ControlLink { Text = _ => labelDetails, Uri = _ => detailsUri };
+
+            }
+
+            var html = new HtmlElementTextSemanticsSpan()
+            {
+                Id = Id,
+                Class = Css.Concatenate("card-counter", GetClasses(renderContext)),
+                Style = GetStyles(renderContext),
+                Role = Role?.Invoke(renderContext)
+            };
+
+            if (icon != null)
+            {
+                html.Add(new ControlIcon()
+                {
+                    Icon = _ => icon,
+                    TextColor = TextColor,
+                    HorizontalAlignment = _ => TypeHorizontalAlignment.Right
+                }.Render(renderContext, visualTree));
+            }
+
+            var header = new ControlText(string.IsNullOrWhiteSpace(Id) ? null : Id + "_header")
+            {
+                Text = _ => headerText,
+                Format = _ => TypeFormatText.H4
+            };
+
+            var info = new ControlText()
+            {
+                Text = _ => bodyText,
+                Format = _ => TypeFormatText.Span,
+                TextColor = _ => new PropertyColorText(TypeColorText.Muted)
+            };
+
+            var content = new ControlPanel(null, header, info);
+            if (ml != null)
+            {
+                content.Add(new ControlText
+                {
+                    Text = context => I18N.Translate(context, "vila:vila.charging.average",
+                        ml.AveragePowerKw?.ToString("N2", context.Request.Culture ?? CultureInfo.CurrentCulture) ?? "–")
+                });
+                content.Add(new ControlPanel(null, new ControlVehicleBadge(ml)));
+                var badges = new ControlPanel()
+                {
+                    Classes = new[] { "d-flex", "flex-wrap", "gap-1", "vila-measurement-tags" }
+                };
+                foreach (var tag in BillingPeriod.GetTags(ml))
+                {
+                    badges.Add(new ControlBadge
+                    {
+                        Value = _ => WebUtility.HtmlEncode(tag),
+                        Classes = new[] { "vila-measurement-tag" },
+                        Styles = new[] { "--vila-tag-color: " + ViewModel.Instance.GetColor(tag) }
+                    });
+                }
+                content.Add(badges, detailsLink);
+            }
+            html.Add(content.Render(renderContext, visualTree));
+
+            if (progressValue.HasValue)
+            {
+                html.Add(new ControlProgress()
+                {
+                    Value = _ => progressValue.Value,
+                    Format = _ => TypeFormatProgress.Striped,
+                    BackgroundColor = BackgroundColor,
+                    Size = _ => TypeSizeProgress.Small
+                }.Render(renderContext, visualTree));
+            }
+
+            return html;
+        }
+    }
+}
