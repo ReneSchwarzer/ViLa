@@ -4,6 +4,7 @@
 # The script
 #   - installs Docker Engine with the Compose plugin if missing,
 #   - creates the installation and data directories with the correct owner and permissions,
+#   - creates default WebExpress and ViLa settings files if missing,
 #   - detects the GPIO device and its group,
 #   - generates a signing key and writes the .env file (an existing .env is kept),
 #   - writes a docker-compose.yml that uses the published image (no local build),
@@ -64,6 +65,58 @@ mkdir -p "$VILA_DIR"/{data,settings,assets,packages,log}
 chown -R "$VILA_UID:$VILA_UID" "$VILA_DIR"/{data,settings,assets,packages,log}
 chmod 750 "$VILA_DIR"/{data,settings,assets,packages,log}
 chmod 755 "$VILA_DIR"
+
+# --- default settings -------------------------------------------------------------------------
+
+WEBEXPRESS_SETTINGS_FILE="$VILA_DIR/settings/webexpress.settings.json"
+if [ -e "$WEBEXPRESS_SETTINGS_FILE" ]; then
+	log "Keeping existing $WEBEXPRESS_SETTINGS_FILE"
+else
+	log "Writing $WEBEXPRESS_SETTINGS_FILE"
+	cat > "$WEBEXPRESS_SETTINGS_FILE" <<'EOF'
+{
+  "WebExpress": {
+    "Endpoints": [
+      { "Uri": "http://0.0.0.0:8080/" }
+    ],
+    "ExternalUri": "http://localhost:8080/",
+    "Culture": "de-DE",
+    "PackagePath": "./packages",
+    "AssetPath": "./assets",
+    "DataPath": "./data",
+    "ContextPath": ""
+  }
+}
+EOF
+	chown "$VILA_UID:$VILA_UID" "$WEBEXPRESS_SETTINGS_FILE"
+	chmod 640 "$WEBEXPRESS_SETTINGS_FILE"
+fi
+
+VILA_SETTINGS_FILE="$VILA_DIR/settings/vila.settings.json"
+if [ -e "$VILA_SETTINGS_FILE" ]; then
+	log "Keeping existing $VILA_SETTINGS_FILE"
+else
+	log "Writing $VILA_SETTINGS_FILE"
+	cat > "$VILA_SETTINGS_FILE" <<'EOF'
+{
+  "Plugins": {
+    "vila": {
+      "DebugMode": false,
+      "ImpulsePerkWh": 500,
+      "ElectricityPricePerkWh": 0.28,
+      "MaxWattage": 40,
+      "MinWattage": 0,
+      "MaxChargingTime": 24,
+      "Currency": "€",
+      "BillingDayOffset": 0,
+      "Mode": "ManuallyControlled"
+    }
+  }
+}
+EOF
+	chown "$VILA_UID:$VILA_UID" "$VILA_SETTINGS_FILE"
+	chmod 640 "$VILA_SETTINGS_FILE"
+fi
 
 # --- GPIO -------------------------------------------------------------------------------------
 

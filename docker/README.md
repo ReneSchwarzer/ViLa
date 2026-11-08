@@ -52,6 +52,8 @@ The script:
 
 Optional environment variables: `VILA_DIR`, `VILA_IMAGE`, `VILA_PORT`, `VILA_EXTERNAL_URI`, `VILA_GPIO_CHIP`, `VILA_UID`, `VILA_SKIP_DOCKER_INSTALL=1`.
 
+Default settings are created in `settings/webexpress.settings.json` and `settings/vila.settings.json` when the files do not exist. Existing files are preserved. New files are owned by `VILA_UID` with mode `640`, allowing the application to save configuration changes. WebExpress listens on container port `8080`, and Compose supplies the public URI and signing key through environment variables. ViLa starts in `ManuallyControlled` mode with the application defaults.
+
 ```sh
 sudo VILA_PORT=8090 VILA_GPIO_CHIP=0 ./install.sh
 ```
