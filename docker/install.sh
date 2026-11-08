@@ -25,7 +25,7 @@ set -euo pipefail
 # This makes "curl ... | sudo bash" safe (no commands can consume the script from stdin).
 main() {
 
-VILA_DIR=
+VILA_DIR="${VILA_DIR:-/opt/vila}"
 VILA_IMAGE="${VILA_IMAGE:-rschwarzer/vila:2.0.0-alpha}"
 VILA_PORT="${VILA_PORT:-8080}"
 VILA_UID="${VILA_UID:-1654}"
