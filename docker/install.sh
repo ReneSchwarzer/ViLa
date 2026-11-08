@@ -161,7 +161,7 @@ ViLa is installed in $VILA_DIR.
 
   Web interface:  http://$(hostname):${VILA_PORT}/vila/
   Logs:           sudo docker compose -f $COMPOSE_FILE logs -f
-  Update:         cd $VILA_DIR && sudo docker compose pull && docker compose up -d
+  Update:         cd $VILA_DIR && sudo docker compose pull && sudo docker compose up -d
   Stop:           cd $VILA_DIR && sudo docker compose down
 
 Check the impulse factor, tariff and operating mode before use, and verify the S0 readings
