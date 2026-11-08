@@ -8,6 +8,7 @@ using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebMessage;
 using WebExpress.WebCore.WebPage;
 using WebExpress.WebUI.WebControl;
+using WebExpress.WebUI.WebIcon;
 
 namespace ViLa.WWW.Vehicles
 {
@@ -41,7 +42,12 @@ namespace ViLa.WWW.Vehicles
                 Required = _ => true,
                 MaxLength = _ => 100
             });
-            form.AddPreferencesButton(new ControlFormItemButtonSubmit { Text = _ => "vila:vila.vehicles.delete" });
+            form.AddPreferencesButton(new ControlFormItemButtonSubmit
+            {
+                Text = _ => "webexpress.webui:delete.label",
+                Color = _ => new PropertyColorButton(TypeColorButton.Danger),
+                Icon = _ => new IconTrash()
+            });
             visualTree.Content.MainPanel.AddPrimary(form);
         }
     }
