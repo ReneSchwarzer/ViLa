@@ -18,15 +18,10 @@ services:
     group_add:
       - "${VILA_GPIO_GID:?set VILA_GPIO_GID to the numeric group of the GPIO device}"
     volumes:
-      - vila-data:/app/data
-      - vila-settings:/app/settings
-      - vila-assets:/app/assets
-      - vila-packages:/app/packages
+      - ${VILA_DIR:-/opt/vila}/data:/app/data
+      - ${VILA_DIR:-/opt/vila}/settings:/app/settings
+      - ${VILA_DIR:-/opt/vila}/assets:/app/assets
+      - ${VILA_DIR:-/opt/vila}/packages:/app/packages
+      - ${VILA_DIR:-/opt/vila}/log:/app/log
     restart: unless-stopped
     stop_grace_period: 45s
-
-volumes:
-  vila-data:
-  vila-settings:
-  vila-assets:
-  vila-packages:

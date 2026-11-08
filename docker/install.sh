@@ -13,7 +13,7 @@
 # Usage:   curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/Develop/docker/install.sh | sudo bash
 #          or: sudo ./install.sh
 # Options (environment variables, all optional):
-#   VILA_DIR           installation directory               (default: current directory)
+#   VILA_DIR           installation directory               (default: /opt/vila)
 #   VILA_IMAGE         image to run                         (default: rschwarzer/vila:2.0.0-alpha)
 #   VILA_PORT          host port                            (default: 8080)
 #   VILA_EXTERNAL_URI  public base URI                      (default: http://<hostname>:<port>/)
@@ -26,7 +26,7 @@ set -euo pipefail
 # This makes "curl ... | sudo bash" safe (no commands can consume the script from stdin).
 main() {
 
-VILA_DIR="${VILA_DIR:-$PWD}"
+VILA_DIR="${VILA_DIR:-/opt/vila}"
 VILA_IMAGE="${VILA_IMAGE:-rschwarzer/vila:2.0.0-alpha}"
 VILA_PORT="${VILA_PORT:-8080}"
 VILA_UID="${VILA_UID:-1654}"
@@ -62,6 +62,8 @@ systemctl enable --now docker >/dev/null 2>&1 || true
 
 log "Creating directories in $VILA_DIR"
 mkdir -p "$VILA_DIR"/{data,settings,assets,packages,log}
+VILA_DIR="$(cd "$VILA_DIR" && pwd -P)"
+chown root:root "$VILA_DIR"
 chown -R "$VILA_UID:$VILA_UID" "$VILA_DIR"/{data,settings,assets,packages,log}
 chmod 750 "$VILA_DIR"/{data,settings,assets,packages,log}
 chmod 755 "$VILA_DIR"
@@ -165,6 +167,7 @@ EOF
 	umask 022
 fi
 chmod 600 "$ENV_FILE"
+chown root:root "$ENV_FILE"
 
 # --- docker-compose.yml -----------------------------------------------------------------------
 
@@ -195,6 +198,8 @@ services:
     restart: unless-stopped
     stop_grace_period: 45s
 EOF
+chown root:root "$COMPOSE_FILE"
+chmod 644 "$COMPOSE_FILE"
 
 # --- start ------------------------------------------------------------------------------------
 
