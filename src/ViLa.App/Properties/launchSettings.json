@@ -6,7 +6,7 @@
     "Container (Dockerfile)": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:8080/vila/",
+      "launchUrl": "http://localhost/vila/",
       "useSSL": false,
       "publishAllPorts": false,
       "containerName": "vila"

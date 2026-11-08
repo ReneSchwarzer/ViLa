@@ -345,17 +345,17 @@ webexpress.webui.Controller.registerClass("vila-wql-search", vila.WqlSearchCtrl)
  */
 vila.VehicleCatalogCtrl = class extends webexpress.webui.Ctrl {
     /**
-     * Connects the catalog table and its create and edit dialogs.
+     * Connects the catalog table and its create, edit, and delete dialogs.
      * @param {HTMLElement} element - The catalog containing the REST controls.
      */
     constructor(element) {
         super(element);
         this._element = element;
         const controller = node => webexpress.webui.Controller.getInstanceByElement(node);
-        const dialogs = [element.querySelector("#vehicle-create"), element.querySelector("#vehicle-edit")];
+        const dialogs = [element.querySelector("#vehicle-create"), element.querySelector("#vehicle-edit"), element.querySelector("#vehicle-delete")];
         this._onSaved = event => {
             const sender = event.detail?.sender || event.detail?.form || event.target;
-            const dialog = sender?.closest?.("#vehicle-create, #vehicle-edit");
+            const dialog = sender?.closest?.("#vehicle-create, #vehicle-edit, #vehicle-delete");
             if (dialog && dialogs.includes(dialog)) {
                 controller(element.querySelector("#vehicle_catalog"))?.load();
             }

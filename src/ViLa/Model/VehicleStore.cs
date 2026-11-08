@@ -160,6 +160,39 @@ namespace ViLa.Model
         }
 
         /// <summary>
+        /// Deletes a confirmed profile without changing stored measurement assignments.
+        /// </summary>
+        /// <param name="id">The identifier of the profile to delete.</param>
+        /// <param name="name">The exact vehicle name supplied as confirmation.</param>
+        /// <returns>Whether the matching profile was deleted.</returns>
+        public bool Delete(string id, string name)
+        {
+            lock (_sync)
+            {
+                if (!_vehicles.Any(vehicle => vehicle.Id == id && vehicle.Name == name))
+                {
+                    return false;
+                }
+                var updated = _vehicles.Where(vehicle => vehicle.Id != id).ToList();
+                var temporary = _path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+                try
+                {
+                    File.WriteAllText(temporary, JsonSerializer.Serialize(updated, new JsonSerializerOptions { WriteIndented = true }));
+                    File.Move(temporary, _path, true);
+                    _vehicles = updated;
+                }
+                finally
+                {
+                    if (File.Exists(temporary))
+                    {
+                        File.Delete(temporary);
+                    }
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Checks the persisted name and power constraints.
         /// </summary>
         /// <param name="name">The vehicle name.</param>

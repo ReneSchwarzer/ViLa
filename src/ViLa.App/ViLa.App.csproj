@@ -20,7 +20,7 @@
 		<ContainerBuildContext>$(MSBuildProjectDirectory)\..\..</ContainerBuildContext>
 		<WEBEXPRESS_FEED Condition="'$(WEBEXPRESS_FEED)' == '' and Exists('$(USERPROFILE)\Documents\.nuget')">$(USERPROFILE)\Documents\.nuget</WEBEXPRESS_FEED>
 		<DockerfileBuildArguments Condition="'$(WEBEXPRESS_FEED)' != ''">--build-context "nuget=$(WEBEXPRESS_FEED)"</DockerfileBuildArguments>
-		<DockerfileRunArguments>-p 8080:8080</DockerfileRunArguments>
+		<DockerfileRunArguments>-p 80:8080</DockerfileRunArguments>
 		<DockerfileRunArguments Condition="'$(VILA_GPIO_CHIP)' != '' and '$(VILA_GPIO_GID)' != ''">$(DockerfileRunArguments) --device /dev/gpiochip$(VILA_GPIO_CHIP):/dev/gpiochip$(VILA_GPIO_CHIP):rw --group-add $(VILA_GPIO_GID) -e VILA_GPIO_CHIP=$(VILA_GPIO_CHIP)</DockerfileRunArguments>
 	</PropertyGroup>
 

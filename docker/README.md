@@ -50,7 +50,7 @@ The script:
 - installs Docker Engine and the Compose plugin if they are missing,
 - creates `data, settings, assets, packages, log` under `/opt/vila` by default (`VILA_DIR`), owned by UID 1654 (the `app` user of the .NET image) with mode `750`,
 - detects the GPIO device (`/dev/gpiochip4` on a Raspberry Pi 5, otherwise `/dev/gpiochip0`) and its group id,
-- writes `./.env` with a generated signing key (mode `600`; an existing file is kept),
+- writes `./.env` with a generated signing key (mode `600`), or updates only the public port and URI in an existing file,
 - writes `./docker-compose.yml`, pulls the image and starts the container.
 
 Optional environment variables: `VILA_DIR`, `VILA_IMAGE`, `VILA_PORT`, `VILA_EXTERNAL_URI`, `VILA_GPIO_CHIP`, `VILA_UID`, `VILA_SKIP_DOCKER_INSTALL=1`.
@@ -65,7 +65,9 @@ sudo VILA_PORT=8090 VILA_GPIO_CHIP=0 ./install.sh
 
 Afterwards the web interface is available at `http://<hostname>/vila/`. Update with `cd <install directory> && docker compose pull && docker compose up -d`.
 
-The default host port is `80`, mapped to container port `8080`. Existing `.env` files are preserved by the installer. To change an existing installation, set `VILA_PORT=80` and adjust `VILA_EXTERNAL_URI` to `http://<hostname>/` in `/opt/vila/.env`, then run `sudo docker compose -f /opt/vila/docker-compose.yml up -d` to apply the new port mapping.
+The default host port is `80`, mapped to container port `8080`. Each installer run updates `VILA_PORT` and `VILA_EXTERNAL_URI` in `.env` using the supplied options or their defaults. The signing key and other existing settings are preserved. For a custom port, hostname or reverse proxy URL, supply the same options on every installer run. The public URI must match the address used in the browser so that form submissions and live requests remain on the same origin.
+
+For access through `http://vila/vila`, run `sudo VILA_PORT=80 VILA_EXTERNAL_URI=http://vila/ bash install.sh`. The installer applies the updated environment with `docker compose up -d`; a container restart alone does not apply changed environment variables.
 
 ## Uninstall on a Raspberry Pi
 

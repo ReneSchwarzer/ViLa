@@ -254,3 +254,8 @@ vila.backup.drop=Drop a ZIP backup here or click to select a file
 vila.backup.import.done=Missing data has been added. Existing records and settings remain unchanged.
 vila.backup.unavailable=The import could not be confirmed. Check the connection and available storage. Some records may already have been added; you can safely retry the import.
 vila.vehicles.saved=The vehicle has been saved.
+
+vila.vehicles.delete=Delete vehicle
+vila.vehicles.delete.help=Enter the exact vehicle name to delete it. Stored charging sessions are preserved.
+vila.vehicles.delete.invalid=The entered name does not match the vehicle name.
+vila.vehicles.deleted=The vehicle has been deleted.

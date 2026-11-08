@@ -57,6 +57,58 @@ public sealed class VehicleStoreTest : IDisposable
     }
 
     /// <summary>
+    /// Persists deletion while retaining other profiles and rejecting an incorrect confirmation.
+    /// </summary>
+    [Fact]
+    public void Delete_RequiresMatchingNameAndPersistsRemoval()
+    {
+        // arrange
+        var path = Path.Combine(_directory, "vehicles.json");
+        var store = new VehicleStore(path);
+        var removed = store.Save(null!, "Family car", 11, true, true);
+        var retained = store.Save(null!, "Other car", 7.4, false, false);
+
+        // act
+        var incorrect = store.Delete(removed.Id, "Wrong name");
+        var before = new VehicleStore(path).GetAll();
+        var deleted = store.Delete(removed.Id, removed.Name);
+        var repeated = store.Delete(removed.Id, removed.Name);
+        var restored = new VehicleStore(path).GetAll();
+
+        // validation
+        Assert.False(incorrect);
+        Assert.Equal(2, before.Length);
+        Assert.True(deleted);
+        Assert.False(repeated);
+        Assert.Null(store.GetVehicle(removed.Id));
+        Assert.Equal(retained.Id, Assert.Single(restored).Id);
+        Assert.Empty(Directory.GetFiles(_directory, "*.tmp"));
+    }
+
+    /// <summary>
+    /// Keeps the in-memory profile when replacing the catalog fails.
+    /// </summary>
+    [Fact]
+    public void Delete_WriteFailurePreservesProfile()
+    {
+        // arrange
+        var path = Path.Combine(_directory, "vehicles.json");
+        var store = new VehicleStore(path);
+        var vehicle = store.Save(null!, "Family car", 11, true, true);
+        File.Delete(path);
+        Directory.CreateDirectory(path);
+
+        // act
+        var exception = Record.Exception(() => store.Delete(vehicle.Id, vehicle.Name));
+        Directory.Delete(path);
+
+        // validation
+        Assert.NotNull(exception);
+        Assert.Equal(vehicle.Id, Assert.Single(store.GetAll()).Id);
+        Assert.Empty(Directory.GetFiles(_directory, "*.tmp"));
+    }
+
+    /// <summary>
     /// Removes only the files created in this test's dedicated temporary directory.
     /// </summary>
     public void Dispose()

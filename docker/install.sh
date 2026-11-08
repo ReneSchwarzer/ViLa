@@ -6,7 +6,7 @@
 #   - creates the installation and data directories with the correct owner and permissions,
 #   - creates default WebExpress and ViLa settings files if missing,
 #   - detects the GPIO device and its group,
-#   - generates a signing key and writes the .env file (an existing .env is kept),
+#   - generates a signing key for new installations and updates the public address in .env,
 #   - writes a docker-compose.yml that uses the published image (no local build),
 #   - pulls the image and starts the container.
 #
@@ -145,8 +145,32 @@ fi
 # --- .env -------------------------------------------------------------------------------------
 
 ENV_FILE="$VILA_DIR/.env"
+PUBLIC_HOST="$(hostname)"
+if [ "$VILA_PORT" = "80" ]; then
+	EXTERNAL_URI="${VILA_EXTERNAL_URI:-http://${PUBLIC_HOST}/}"
+else
+	EXTERNAL_URI="${VILA_EXTERNAL_URI:-http://${PUBLIC_HOST}:${VILA_PORT}/}"
+fi
+[[ "$VILA_PORT" =~ ^[0-9]+$ ]] && [ "${#VILA_PORT}" -le 5 ] \
+	&& [ "$((10#$VILA_PORT))" -ge 1 ] && [ "$((10#$VILA_PORT))" -le 65535 ] \
+	|| die "VILA_PORT must be a number between 1 and 65535."
+[[ "$EXTERNAL_URI" != *$'\n'* && "$EXTERNAL_URI" != *$'\r'* ]] \
+	|| die "VILA_EXTERNAL_URI must not contain line breaks."
+
 if [ -f "$ENV_FILE" ]; then
-	log "Keeping existing $ENV_FILE (delete it to regenerate)"
+	log "Updating public address in $ENV_FILE while preserving the signing key and other settings"
+	ENV_TEMP="$(mktemp "$VILA_DIR/.env.XXXXXX")"
+	if ! VILA_INSTALL_PORT="$VILA_PORT" VILA_INSTALL_URI="$EXTERNAL_URI" awk '
+		!/^[[:space:]]*(export[[:space:]]+)?VILA_(PORT|EXTERNAL_URI)[[:space:]]*=/ { print }
+		END {
+			print "VILA_PORT=" ENVIRON["VILA_INSTALL_PORT"]
+			print "VILA_EXTERNAL_URI=" ENVIRON["VILA_INSTALL_URI"]
+		}
+	' "$ENV_FILE" > "$ENV_TEMP"; then
+		rm -f -- "$ENV_TEMP"
+		die "Could not update $ENV_FILE."
+	fi
+	mv -f -- "$ENV_TEMP" "$ENV_FILE"
 else
 	log "Writing $ENV_FILE"
 	if command -v openssl >/dev/null 2>&1; then
@@ -154,7 +178,6 @@ else
 	else
 		SIGNING_KEY="$(head -c 32 /dev/urandom | base64)"
 	fi
-	EXTERNAL_URI="${VILA_EXTERNAL_URI:-http://$(hostname):${VILA_PORT}/}"
 
 	umask 077
 	cat > "$ENV_FILE" <<EOF
@@ -184,6 +207,7 @@ services:
     ports:
       - "${VILA_PORT:-80}:8080"
     environment:
+      WEBEXPRESS_WebExpress__Endpoints__0__Uri: http://0.0.0.0:8080/
       WEBEXPRESS_WebExpress__ExternalUri: ${VILA_EXTERNAL_URI:-http://localhost:${VILA_PORT:-80}/}
       WEBEXPRESS_WebExpress__Authentication__SigningKey: ${VILA_SIGNING_KEY:?set VILA_SIGNING_KEY in .env}
       VILA_GPIO_CHIP: "${VILA_GPIO_CHIP:-0}"
@@ -219,7 +243,7 @@ cat <<EOF
 
 ViLa is installed in $VILA_DIR.
 
-  Web interface:  http://$(hostname):${VILA_PORT}/vila/
+  Web interface:  ${EXTERNAL_URI%/}/vila/
   Logs:           sudo docker compose -f $COMPOSE_FILE logs -f
   Update:         cd $VILA_DIR && sudo docker compose pull && sudo docker compose up -d
   Stop:           cd $VILA_DIR && sudo docker compose down

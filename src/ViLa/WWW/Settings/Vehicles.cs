@@ -14,7 +14,7 @@ using WebExpress.WebUI.WebIcon;
 namespace ViLa.WWW.Settings
 {
     /// <summary>
-    /// Provides creation, editing, deactivation, and restoration of vehicle profiles.
+    /// Provides creation, editing, deletion, deactivation, and restoration of vehicle profiles.
     /// </summary>
     [Title("vila:vila.vehicles.title")]
     [WebIcon<IconCar>]
@@ -63,6 +63,13 @@ namespace ViLa.WWW.Settings
                     Selector = _ => "#vehicle_editor"
                 });
             }
+            panel.Add(new ControlModalRemoteForm("vehicle-delete")
+            {
+                Header = _ => "vila:vila.vehicles.delete",
+                CloseLabel = _ => "webexpress.webui:form.cancel.label",
+                Uri = _ => sitemap.GetUri<WWW.Vehicles.Delete>(app),
+                Selector = _ => "#vehicle_delete"
+            });
             visualTree.Content.MainPanel.AddPrimary(panel);
         }
     }

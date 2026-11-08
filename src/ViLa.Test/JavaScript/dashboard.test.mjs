@@ -73,12 +73,14 @@ test("refreshes the vehicle catalog for local and document-level save events and
     const listeners = new Map();
     const createDialog = {};
     const editDialog = {};
+    const deleteDialog = {};
     let loads = 0;
     const table = { load: () => loads++ };
     const host = {
         querySelector: selector => ({
             "#vehicle-create": createDialog,
             "#vehicle-edit": editDialog,
+            "#vehicle-delete": deleteDialog,
             "#vehicle_catalog": table,
             "#vehicle-search": {}
         })[selector]
@@ -113,8 +115,10 @@ test("refreshes the vehicle catalog for local and document-level save events and
     listener({ target: document, detail: { sender: { closest: () => editDialog } } });
     listener({ target: document, detail: { sender: { closest: () => ({}) } } });
 
+    listener({ target: document, detail: { sender: { closest: () => deleteDialog } } });
+
     // validation
-    assert.equal(loads, 2);
+    assert.equal(loads, 3);
     controller.destroy();
     assert.equal(listeners.size, 0);
 });

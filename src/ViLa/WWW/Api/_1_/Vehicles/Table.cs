@@ -56,7 +56,7 @@ namespace ViLa.WWW.Api._1_.Vehicles
         }
 
         /// <summary>
-        /// Returns the requested page and its edit actions.
+        /// Returns the requested page and its edit and delete actions.
         /// </summary>
         /// <param name="query">The query including paging.</param>
         /// <param name="context">The query context.</param>
@@ -67,6 +67,7 @@ namespace ViLa.WWW.Api._1_.Vehicles
             IEnumerable<RestApiTableColumn> columns, IRequest request)
         {
             var editor = WebEx.ComponentHub.SitemapManager.GetUri<WWW.Vehicles.Editor>(request.ApplicationContext);
+            var deletion = WebEx.ComponentHub.SitemapManager.GetUri<WWW.Vehicles.Delete>(request.ApplicationContext);
             foreach (var vehicle in query.Apply(ViewModel.Instance.Vehicles.GetAll().AsQueryable()))
             {
                 yield return new RestApiTableRow
@@ -78,7 +79,10 @@ namespace ViLa.WWW.Api._1_.Vehicles
                         new RestApiTableCell { Content = I18N.Translate(request, vehicle.Active ? "vila:vila.vehicles.active" : "vila:vila.vehicles.inactive") },
                         new RestApiTableCell { Content = I18N.Translate(request, vehicle.AutomaticAssignment ? "vila:vila.vehicles.enabled" : "vila:vila.vehicles.disabled") }
                     ],
-                    Options = [new RestApiOptionEdit(request) { PrimaryAction = new ActionModal("vehicle-edit", new UriEndpoint(editor + "?id=" + vehicle.Id)) }.ToJson()]
+                    Options = [
+                        new RestApiOptionEdit(request) { PrimaryAction = new ActionModal("vehicle-edit", new UriEndpoint(editor + "?id=" + vehicle.Id)) }.ToJson(),
+                        new RestApiOptionDelete(request) { PrimaryAction = new ActionModal("vehicle-delete", new UriEndpoint(deletion + "?id=" + vehicle.Id)) }.ToJson()
+                    ]
                 };
             }
         }

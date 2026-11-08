@@ -253,3 +253,8 @@ vila.backup.drop=ZIP-Sicherung hier ablegen oder klicken, um eine Datei auszuwä
 vila.backup.import.done=Fehlende Daten wurden ergänzt. Vorhandene Einträge und Einstellungen bleiben unverändert.
 vila.backup.unavailable=Der Import konnte nicht bestätigt werden. Prüfen Sie die Verbindung und den verfügbaren Speicher. Einige Einträge wurden möglicherweise bereits ergänzt; Sie können den Import gefahrlos wiederholen.
 vila.vehicles.saved=Das Fahrzeug wurde gespeichert.
+
+vila.vehicles.delete=Fahrzeug löschen
+vila.vehicles.delete.help=Zum Löschen den Fahrzeugnamen exakt eingeben. Gespeicherte Ladevorgänge bleiben erhalten.
+vila.vehicles.delete.invalid=Der eingegebene Name stimmt nicht mit dem Fahrzeugnamen überein.
+vila.vehicles.deleted=Das Fahrzeug wurde gelöscht.
