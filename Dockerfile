@@ -17,13 +17,14 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS final
 RUN apt-get update && apt-get install -y --no-install-recommends libgpiod2t64 && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /publish/ ./
-RUN mkdir -p data/measurements assets packages Config && ln -s data/measurements measurements && chown -R app:app data assets packages Config settings
+RUN mkdir -p data/measurements assets packages Config log && ln -s data/measurements measurements && chown -R app:app data assets packages Config settings log
 ENV WEBEXPRESS_WebExpress__Endpoints__0__Uri=http://0.0.0.0:8080/ \
     WEBEXPRESS_WebExpress__ExternalUri=http://localhost:8080/ \
-    WEBEXPRESS_WebExpress__Shutdown=graceful
+    WEBEXPRESS_WebExpress__Shutdown=graceful \
+    WEBEXPRESS_WebExpress__Log__Mode=Off
 USER app
 EXPOSE 8080
-VOLUME ["/app/data", "/app/Config", "/app/settings", "/app/assets", "/app/packages"]
+VOLUME ["/app/data", "/app/log", "/app/settings", "/app/assets", "/app/packages"]
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD ["timeout", "4", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && head -n 1 <&3 | grep -q '^HTTP/1\\.[01] 200 '"]
 ENTRYPOINT ["dotnet", "ViLa.App.dll"]

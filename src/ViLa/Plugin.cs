@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using ViLa.Model;
@@ -37,7 +38,14 @@ namespace ViLa
             WebEx.Favicon = "assets/img/vila.svg";
 
             // increase priority
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+            try
+            {
+                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+            }
+            catch (Exception ex) when (ex is System.ComponentModel.Win32Exception || ex is PlatformNotSupportedException || ex is UnauthorizedAccessException)
+            {
+                // insufficient privileges (e.g. in a container); continue with the default priority
+            }
         }
 
         /// <summary>  
