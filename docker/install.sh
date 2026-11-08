@@ -120,27 +120,27 @@ log "Writing $COMPOSE_FILE"
 cat > "$COMPOSE_FILE" <<'EOF'
 services:
   vila:
-	hostname: vila
-	container_name: vila
-	image: ${VILA_IMAGE:-rschwarzer/vila:2.0.0-alpha}
-	ports:
-	  - "${VILA_PORT:-8080}:8080"
-	environment:
-	  WEBEXPRESS_WebExpress__ExternalUri: ${VILA_EXTERNAL_URI:-http://localhost:${VILA_PORT:-8080}/}
-	  WEBEXPRESS_WebExpress__Authentication__SigningKey: ${VILA_SIGNING_KEY:?set VILA_SIGNING_KEY in .env}
-	  VILA_GPIO_CHIP: "${VILA_GPIO_CHIP:-0}"
-	devices:
-	  - "/dev/gpiochip${VILA_GPIO_CHIP:-0}:/dev/gpiochip${VILA_GPIO_CHIP:-0}:rw"
-	group_add:
-	  - "${VILA_GPIO_GID:?set VILA_GPIO_GID to the numeric group of the GPIO device}"
-	volumes:
-	  - ./data:/app/data
-	  - ./settings:/app/settings
-	  - ./assets:/app/assets
-	  - ./packages:/app/packages
-	  - ./log:/app/log
-	restart: unless-stopped
-	stop_grace_period: 45s
+    hostname: vila
+    container_name: vila
+    image: ${VILA_IMAGE:-rschwarzer/vila:2.0.0-alpha}
+    ports:
+      - "${VILA_PORT:-8080}:8080"
+    environment:
+      WEBEXPRESS_WebExpress__ExternalUri: ${VILA_EXTERNAL_URI:-http://localhost:${VILA_PORT:-8080}/}
+      WEBEXPRESS_WebExpress__Authentication__SigningKey: ${VILA_SIGNING_KEY:?set VILA_SIGNING_KEY in .env}
+      VILA_GPIO_CHIP: "${VILA_GPIO_CHIP:-0}"
+    devices:
+      - "/dev/gpiochip${VILA_GPIO_CHIP:-0}:/dev/gpiochip${VILA_GPIO_CHIP:-0}:rw"
+    group_add:
+      - "${VILA_GPIO_GID:?set VILA_GPIO_GID to the numeric group of the GPIO device}"
+    volumes:
+      - ./data:/app/data
+      - ./settings:/app/settings
+      - ./assets:/app/assets
+      - ./packages:/app/packages
+      - ./log:/app/log
+    restart: unless-stopped
+    stop_grace_period: 45s
 EOF
 
 # --- start ------------------------------------------------------------------------------------
