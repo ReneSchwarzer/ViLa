@@ -35,12 +35,17 @@ public class ControlFormTests
     [Fact]
     public void ControlFormMode_InitializesControls()
     {
-        // Act
+        // arrange
+        var modes = System.Enum.GetValues<Mode>();
+
+        // act
         var form = new ControlFormMode();
 
-        // Assert
+        // validation
         Assert.Equal("settings", form.Id);
         Assert.NotNull(form.Mode);
+        Assert.Equal(modes.Select(mode => mode.ToString()), form.Mode.Items.Select(item => item.Value(null!)));
+        Assert.Equal(modes.Select(mode => mode.ToText()), form.Mode.Items.Select(item => item.Text(null!)));
     }
 
     /// <summary>

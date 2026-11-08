@@ -19,6 +19,14 @@ namespace ViLa.WebControl
         public ControlFormMode()
             : base("settings")
         {
+            foreach (var mode in System.Enum.GetValues<Model.Mode>())
+            {
+                Mode.Add(new ControlFormItemInputComboItem
+                {
+                    Value = _ => mode.ToString(),
+                    Text = _ => mode.ToText()
+                });
+            }
             Mode.Initialize(args => args.Value.Text = ViewModel.Instance.Settings.Mode.ToString());
 
             Add(Mode);

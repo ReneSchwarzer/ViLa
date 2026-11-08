@@ -68,6 +68,57 @@ function settle() {
 
 const snapshot = { ActiveCharging: true, CurrentPower: "6,00", Power: "1,00", Cost: "0,28", MeasurementTime: "10m", ChartLabels: ["0"], ChartData: ["6"] };
 
+test("refreshes the vehicle catalog for local and document-level save events and removes its listener", () => {
+    // arrange
+    const listeners = new Map();
+    const createDialog = {};
+    const editDialog = {};
+    let loads = 0;
+    const table = { load: () => loads++ };
+    const host = {
+        querySelector: selector => ({
+            "#vehicle-create": createDialog,
+            "#vehicle-edit": editDialog,
+            "#vehicle_catalog": table,
+            "#vehicle-search": {}
+        })[selector]
+    };
+    const document = {
+        addEventListener: (name, listener, capture) => listeners.set(name, { listener, capture }),
+        removeEventListener: (name, listener, capture) => {
+            assert.equal(listeners.get(name).listener, listener);
+            assert.equal(listeners.get(name).capture, capture);
+            listeners.delete(name);
+        }
+    };
+    const context = vm.createContext({
+        document,
+        window: { location: { href: "http://localhost/vila/settings/vehicles" } },
+        URL,
+        webexpress: { webui: {
+            Ctrl: class {
+                /** Releases the stub base controller. */
+                destroy() {}
+            },
+            Event: { SAVED_EVENT: "saved" },
+            Controller: { registerClass: () => {}, getInstanceByElement: element => element }
+        } }
+    });
+    vm.runInContext(source, context);
+    const controller = new context.vila.VehicleCatalogCtrl(host);
+    const listener = listeners.get("saved").listener;
+
+    // act
+    listener({ target: { closest: () => createDialog } });
+    listener({ target: document, detail: { sender: { closest: () => editDialog } } });
+    listener({ target: document, detail: { sender: { closest: () => ({}) } } });
+
+    // validation
+    assert.equal(loads, 2);
+    controller.destroy();
+    assert.equal(listeners.size, 0);
+});
+
 test("updates metrics as text and sends numeric values to the WebExpress chart", async () => {
     const harness = createHarness(async () => ({ ok: true, json: async () => snapshot }));
     await settle();

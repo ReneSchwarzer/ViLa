@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
 using ViLa.Model;
+using WebExpress.WebCore;
+using WebExpress.WebUI.WebNotification;
 using WebExpress.WebCore.Internationalization;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebMessage;
@@ -94,6 +96,8 @@ namespace ViLa.WWW.Api._1_.Vehicles
                 return Json(new ResponseBadRequest(), new { errors });
             }
             var saved = ViewModel.Instance.Vehicles.Save(id, name, power, automatic, active, color);
+            WebEx.ComponentHub?.GetComponentManager<NotificationManager>()?.AddNotification(
+                request.ApplicationContext, request, "vila:vila.vehicles.saved", 5000, type: TypeNotification.Success);
             return Json(new ResponseOK(), new { saved.Id, hideForm = true });
         }
 

@@ -252,3 +252,4 @@ vila.backup.result.success=Import abgeschlossen
 vila.backup.drop=ZIP-Sicherung hier ablegen oder klicken, um eine Datei auszuwählen
 vila.backup.import.done=Fehlende Daten wurden ergänzt. Vorhandene Einträge und Einstellungen bleiben unverändert.
 vila.backup.unavailable=Der Import konnte nicht bestätigt werden. Prüfen Sie die Verbindung und den verfügbaren Speicher. Einige Einträge wurden möglicherweise bereits ergänzt; Sie können den Import gefahrlos wiederholen.
+vila.vehicles.saved=Das Fahrzeug wurde gespeichert.

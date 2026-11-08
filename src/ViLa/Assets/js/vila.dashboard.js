@@ -352,12 +352,15 @@ vila.VehicleCatalogCtrl = class extends webexpress.webui.Ctrl {
         super(element);
         this._element = element;
         const controller = node => webexpress.webui.Controller.getInstanceByElement(node);
+        const dialogs = [element.querySelector("#vehicle-create"), element.querySelector("#vehicle-edit")];
         this._onSaved = event => {
-            if (event.target.closest("#vehicle-create, #vehicle-edit")) {
-                controller(element.querySelector("#vehicle_catalog")).load();
+            const sender = event.detail?.sender || event.detail?.form || event.target;
+            const dialog = sender?.closest?.("#vehicle-create, #vehicle-edit");
+            if (dialog && dialogs.includes(dialog)) {
+                controller(element.querySelector("#vehicle_catalog"))?.load();
             }
         };
-        element.addEventListener(webexpress.webui.Event.SAVED_EVENT, this._onSaved);
+        document.addEventListener(webexpress.webui.Event.SAVED_EVENT, this._onSaved, true);
         const params = new URL(window.location.href).searchParams;
         const table = controller(element.querySelector("#vehicle_catalog"));
         const search = controller(element.querySelector("#vehicle-search"));
@@ -385,7 +388,7 @@ vila.VehicleCatalogCtrl = class extends webexpress.webui.Ctrl {
      * @returns {void}
      */
     destroy() {
-        this._element.removeEventListener(webexpress.webui.Event.SAVED_EVENT, this._onSaved);
+        document.removeEventListener(webexpress.webui.Event.SAVED_EVENT, this._onSaved, true);
         super.destroy();
     }
 };
