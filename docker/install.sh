@@ -10,7 +10,7 @@
 #   - writes a docker-compose.yml that uses the published image (no local build),
 #   - pulls the image and starts the container.
 #
-# Usage:   curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/Develop/docker/install.sh | sudo bash
+# Usage:   curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/master/docker/install.sh | sudo bash
 #          or: sudo ./install.sh
 # Options (environment variables, all optional):
 #   VILA_DIR           installation directory               (default: /opt/vila)

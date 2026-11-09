@@ -2,7 +2,7 @@
 # Removes the ViLa Docker Compose deployment and configuration while preserving application data.
 #
 # Usage: sudo bash deinstall.sh
-#        curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/Develop/docker/deinstall.sh | sudo bash
+#        curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/master/docker/deinstall.sh | sudo bash
 # Options (environment variables, all optional):
 #   VILA_DIR           installation directory (default: /opt/vila)
 set -euo pipefail

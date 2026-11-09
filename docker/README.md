@@ -35,7 +35,7 @@ Persistent storage uses bind mounts under `/opt/vila` by default. Set `VILA_DIR`
 Install it directly with curl (as root):
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/Develop/docker/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/master/docker/install.sh | sudo bash
 ```
 
 With options: `curl -fsSL <url> | sudo VILA_PORT=8090 bash`. Alternatively copy the script to the Pi and run it as root:
