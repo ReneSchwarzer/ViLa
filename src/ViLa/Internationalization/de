@@ -258,3 +258,6 @@ vila.vehicles.delete=Fahrzeug löschen
 vila.vehicles.delete.help=Zum Löschen den Fahrzeugnamen exakt eingeben. Gespeicherte Ladevorgänge bleiben erhalten.
 vila.vehicles.delete.invalid=Der eingegebene Name stimmt nicht mit dem Fahrzeugnamen überein.
 vila.vehicles.deleted=Das Fahrzeug wurde gelöscht.
+
+vila.dashboard.vehicles=Fahrzeuggegenüberstellung
+vila.dashboard.comparison.title=Jahresvergleich

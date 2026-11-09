@@ -127,41 +127,42 @@ vila.ChartCtrl = class extends webexpress.webui.Ctrl {
 webexpress.webui.Controller.registerClass("wx-vila-chart", vila.ChartCtrl);
 
 /**
- * Persists a vehicle assignment when a Kanban card moves between columns.
+ * Persists assignment moves through DataKanban with an expected source column.
  */
-vila.AssignmentBoardCtrl = class extends webexpress.webui.Ctrl {
+vila.AssignmentBoardCtrl = class extends webexpress.webapp.KanbanCtrl {
     /**
-     * Connects the board move event to the assignment form.
-     * @param {HTMLElement} element - The host containing the board and its form.
+     * Captures the source column before the standard persistence listener runs.
+     * @param {HTMLElement} element - The data board element.
+     * @returns {void}
      */
-    constructor(element) {
-        super(element);
-        this._board = element.querySelector("#vehicle-assignment-board");
-        const form = element.querySelector("form");
-        this._onMove = event => {
-            const { cardId, oldColumnId, columnId } = event.detail;
-            if (oldColumnId === columnId) {
-                return;
-            }
-            form.elements.measurement.value = cardId;
-            form.elements.source.value = oldColumnId;
-            form.elements.target.value = columnId;
-            form.requestSubmit();
+    _initRestPersistence(element) {
+        this._onAssignmentMove = event => {
+            this._assignmentSource = event.detail?.oldColumnId;
         };
-        this._board.addEventListener(webexpress.webui.Event.MOVE_EVENT, this._onMove);
+        element.addEventListener(webexpress.webui.Event.MOVE_EVENT, this._onAssignmentMove, true);
+        super._initRestPersistence(element);
     }
 
     /**
-     * Disconnects the move listener when the board is removed.
+     * Adds the expected source to the standard asynchronous move request.
+     * @param {Object} payload - The card destination supplied by DataKanban.
+     * @returns {void}
+     */
+    _sendStateToServer(payload) {
+        super._sendStateToServer({ ...payload, source: this._assignmentSource });
+    }
+
+    /**
+     * Removes the source listener and releases the data board resources.
      * @returns {void}
      */
     destroy() {
-        this._board.removeEventListener(webexpress.webui.Event.MOVE_EVENT, this._onMove);
+        this._element.removeEventListener(webexpress.webui.Event.MOVE_EVENT, this._onAssignmentMove, true);
         super.destroy();
     }
 };
 
-webexpress.webui.Controller.registerClass("vila-assignment-board", vila.AssignmentBoardCtrl);
+webexpress.webui.Controller.registerClass("wx-vila-data-kanban", vila.AssignmentBoardCtrl);
 
 /**
  * Applies a submitted WQL expression to the current page.

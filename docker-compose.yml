@@ -1,7 +1,7 @@
 services:
   vila:
     hostname: vila
-    image: rschwarzer/vila:2.0.0
+    image: rschwarzer/vila:2.0.1
     build:
       context: ..
       dockerfile: ViLa/Dockerfile

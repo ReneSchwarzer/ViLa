@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Builds and pushes the ViLa image for linux/amd64 and linux/arm64.
 # Usage: ./docker/publish.sh [version] [suffix] [repository]
-# Example: ./docker/publish.sh 2.0.0 '' rschwarzer/vila
+# Example: ./docker/publish.sh 2.0.1 '' rschwarzer/vila
 set -euo pipefail
 
-VERSION="${1:-2.0.0}"
+VERSION="${1:-2.0.1}"
 SUFFIX="${2-}"
 REPOSITORY="${3:-rschwarzer/vila}"
 FEED="${WEBEXPRESS_FEED:-$HOME/Documents/.nuget}"

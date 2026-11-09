@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
   <id>ViLa</id>
-  <version>2.0.0.0</version>
+  <version>2.0.1.0</version>
   <title>ViLa</title>
   <authors>rene_schwarzer@hotmail.de</authors>
   <license>MIT</license>

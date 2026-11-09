@@ -12,6 +12,7 @@ using WebExpress.WebApp.WebScope;
 using WebExpress.WebCore.Internationalization;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebPage;
+using WebExpress.WebCore.WebMessage;
 using WebExpress.WebCore.WebParameter;
 using WebExpress.WebUI.WebControl;
 
@@ -131,21 +132,33 @@ namespace ViLa.WWW.Details
             if (measurementLog != null)
             {
                 var deleteUri = WebEx.ComponentHub.SitemapManager.GetUri<WWW.Api._1_.History.Delete>(renderContext.Request.ApplicationContext);
-                var confirm = new ControlModal("delete-measurement-" + id)
+                var confirm = new ControlModalForm("delete-measurement-" + id)
                 {
                     Header = _ => "vila:vila.details.delete",
-                    CloseLabel = _ => "webexpress.webui:form.cancel.label"
+                    CloseLabel = _ => "webexpress.webui:form.cancel.label",
+                    Uri = _ => deleteUri,
+                    Method = _ => RequestMethod.POST
                 };
-                confirm.Add(new ControlHtml
+                confirm.Add(new ControlFormItemInputHidden("id").Initialize(e => e.Value.Text = id));
+                confirm.Add(new ControlFormItemStaticText
                 {
-                    Html = context => $"<form method='post' action='{System.Net.WebUtility.HtmlEncode(deleteUri.ToString())}'>" +
-                        $"<input type='hidden' name='id' value='{System.Net.WebUtility.HtmlEncode(id)}'>" +
-                        $"<p>{I18N.Translate(context, "vila:vila.delete.description")}</p>" +
-                        $"<p><code>{System.Net.WebUtility.HtmlEncode(id)}</code></p>" +
-                        $"<label for='confirm-{id}'>{I18N.Translate(context, "vila:vila.details.confirm.id")}</label>" +
-                        $"<input id='confirm-{id}' class='form-control mb-3' name='confirmation' type='text' required " +
-                        $"pattern='{System.Net.WebUtility.HtmlEncode(id)}' autocomplete='off' spellcheck='false'>" +
-                        $"<button class='btn btn-danger' type='submit'>{I18N.Translate(context, "vila:vila.details.delete")}</button></form>"
+                    Text = _ => "vila:vila.delete.description"
+                });
+                confirm.Add(new ControlFormItemStaticText
+                {
+                    Text = _ => id
+                });
+                confirm.Add(new ControlFormItemInputText("confirmation")
+                {
+                    Label = _ => "vila:vila.details.confirm.id",
+                    Required = _ => true,
+                    Pattern = _ => id
+                });
+                confirm.AddPreferencesButton(new ControlFormItemButtonSubmit
+                {
+                    Text = _ => "vila:vila.details.delete",
+                    Color = _ => new PropertyColorButton(TypeColorButton.Danger),
+                    Icon = _ => new IconTrash()
                 });
                 visualTree.Content.MainPanel.AddPrimary(confirm);
                 var editorId = "measurement-description-editor-" + measurementLog.ID;

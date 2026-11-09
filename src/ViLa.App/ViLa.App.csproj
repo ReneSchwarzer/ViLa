@@ -6,7 +6,7 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<AssemblyName>ViLa.App</AssemblyName>
 		<RootNamespace>ViLa.App</RootNamespace>
-		<Version>2.0.0</Version>
+		<Version>2.0.1</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/ReneSchwarzer/ViLa.git</RepositoryUrl>
 		<ApplicationIcon>ViLa.ico</ApplicationIcon>

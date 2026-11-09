@@ -259,3 +259,6 @@ vila.vehicles.delete=Delete vehicle
 vila.vehicles.delete.help=Enter the exact vehicle name to delete it. Stored charging sessions are preserved.
 vila.vehicles.delete.invalid=The entered name does not match the vehicle name.
 vila.vehicles.deleted=The vehicle has been deleted.
+
+vila.dashboard.vehicles=Vehicle comparison
+vila.dashboard.comparison.title=Year comparison

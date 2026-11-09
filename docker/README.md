@@ -35,7 +35,7 @@ Persistent storage uses bind mounts under `/opt/vila` by default. Set `VILA_DIR`
 Install it directly with curl (as root):
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/Develop/docker/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/master/docker/install.sh | sudo bash
 ```
 
 With options: `curl -fsSL <url> | sudo VILA_PORT=8090 bash`. Alternatively copy the script to the Pi and run it as root:
@@ -90,13 +90,13 @@ sudo VILA_DIR=/path/to/vila bash deinstall.sh
 A plain `docker build` or the Visual Studio container build only produces an image for the host platform. To publish one tag for Raspberry Pi (ARM64) and amd64:
 
 ```powershell
-./docker/publish.ps1 -Version 2.0.0
+./docker/publish.ps1 -Version 2.0.1
 ```
 
 If PowerShell reports that script execution is disabled, run the script with a process-scoped bypass. This does not change the system policy:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ./docker/publish.ps1 -Version 2.0.0
+powershell -ExecutionPolicy Bypass -File ./docker/publish.ps1 -Version 2.0.1
 ```
 
 Alternatively, allow local scripts permanently for your user with `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`. If Windows marks the file as downloaded, run `Unblock-File ./docker/publish.ps1`.
@@ -105,14 +105,14 @@ On Linux or macOS use the Bash script. It takes positional arguments `[version] 
 
 ```sh
 chmod +x docker/publish.sh
-WEBEXPRESS_FEED=/path/to/feed ./docker/publish.sh 2.0.0
+WEBEXPRESS_FEED=/path/to/feed ./docker/publish.sh 2.0.1
 ```
 
 Parameters of the PowerShell script:
 
 |Parameter     |Default                |Description
 |--------------|-----------------------|-----------------------------------------
-|`-Version`    |`2.0.0`                |Version number of the tag
+|`-Version`    |`2.0.1`                |Version number of the tag
 |`-Suffix`     |                       |Tag suffix (leave empty for a release without suffix)
 |`-Repository` |`rschwarzer/vila`      |Image name in the registry
 |`-Feed`       |`$env:WEBEXPRESS_FEED` |Path to the local NuGet feed
@@ -121,10 +121,10 @@ If needed, the script creates the `multiarch` builder (driver `docker-container`
 
 Verify the result:
 
-The default image tag is `rschwarzer/vila:2.0.0` without a prerelease suffix. Existing installations retain their `.env` file. Set `VILA_IMAGE=rschwarzer/vila:2.0.0` in `/opt/vila/.env`, then run `sudo docker compose -f /opt/vila/docker-compose.yml pull` and `sudo docker compose -f /opt/vila/docker-compose.yml up -d` to switch an existing installation after the image has been published.
+The default image tag is `rschwarzer/vila:2.0.1` without a prerelease suffix. Existing installations retain their `.env` file. Set `VILA_IMAGE=rschwarzer/vila:2.0.1` in `/opt/vila/.env`, then run `sudo docker compose -f /opt/vila/docker-compose.yml pull` and `sudo docker compose -f /opt/vila/docker-compose.yml up -d` to switch an existing installation after the image has been published.
 
 ```sh
-docker buildx imagetools inspect rschwarzer/vila:2.0.0
+docker buildx imagetools inspect rschwarzer/vila:2.0.1
 ```
 
 The manifest must list `linux/amd64` and `linux/arm64`. The `unknown/unknown` entry is only the attestation manifest and not a separate image.

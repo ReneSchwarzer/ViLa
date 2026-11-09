@@ -3,10 +3,10 @@
 .SYNOPSIS
 Builds and pushes the ViLa image for linux/amd64 and linux/arm64.
 .EXAMPLE
-./docker/publish.ps1 -Version 2.0.0
+./docker/publish.ps1 -Version 2.0.1
 #>
 param(
-	[string]$Version = '2.0.0',
+	[string]$Version = '2.0.1',
 	[string]$Suffix = '',
 	[string]$Repository = 'rschwarzer/vila',
 	[string]$Feed = $(if ($env:WEBEXPRESS_FEED) { $env:WEBEXPRESS_FEED } else { Join-Path $env:USERPROFILE 'Documents\.nuget' })

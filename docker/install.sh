@@ -10,11 +10,11 @@
 #   - writes a docker-compose.yml that uses the published image (no local build),
 #   - pulls the image and starts the container.
 #
-# Usage:   curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/Develop/docker/install.sh | sudo bash
+# Usage:   curl -fsSL https://raw.githubusercontent.com/ReneSchwarzer/ViLa/master/docker/install.sh | sudo bash
 #          or: sudo ./install.sh
 # Options (environment variables, all optional):
 #   VILA_DIR           installation directory               (default: /opt/vila)
-#   VILA_IMAGE         image to run                         (default: rschwarzer/vila:2.0.0)
+#   VILA_IMAGE         image to run                         (default: rschwarzer/vila:2.0.1)
 #   VILA_PORT          host port                            (default: 80)
 #   VILA_EXTERNAL_URI  public base URI                      (default: http://<hostname>:<port>/)
 #   VILA_GPIO_CHIP     GPIO chip number                     (default: auto, 4 on Raspberry Pi 5, otherwise 0)
@@ -27,7 +27,7 @@ set -euo pipefail
 main() {
 
 VILA_DIR="${VILA_DIR:-/opt/vila}"
-VILA_IMAGE="${VILA_IMAGE:-rschwarzer/vila:2.0.0}"
+VILA_IMAGE="${VILA_IMAGE:-rschwarzer/vila:2.0.1}"
 VILA_PORT="${VILA_PORT:-80}"
 VILA_UID="${VILA_UID:-1654}"
 
@@ -203,7 +203,7 @@ services:
   vila:
     hostname: vila
     container_name: vila
-    image: ${VILA_IMAGE:-rschwarzer/vila:2.0.0}
+    image: ${VILA_IMAGE:-rschwarzer/vila:2.0.1}
     ports:
       - "${VILA_PORT:-80}:8080"
     environment:
