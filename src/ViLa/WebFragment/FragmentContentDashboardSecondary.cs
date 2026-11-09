@@ -87,7 +87,8 @@ namespace ViLa.WebFragment
                 Text = _ => BillingPeriod.FormatCosts(logs, culture, model.Settings.Currency)
             });
             var views = new ControlView("vila-consumption-views") { Layout = _ => TypeLayoutView.ToggleGroup };
-            var yearlyView = new ControlViewItem("vila-yearly-comparison") { Title = _ => "vila:vila.dashboard.comparison" };
+            var yearlyView = new ControlViewItem("vila-yearly-comparison") { Title = _ => "vila:vila.dashboard.comparison.title" };
+            yearlyView.Add(new ControlText { Text = _ => "vila:vila.dashboard.comparison" });
             yearlyView.Add(new ControlChart("vila-monthly-chart")
             {
                 Type = _ => TypeChart.Bar,

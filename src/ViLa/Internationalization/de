@@ -260,3 +260,4 @@ vila.vehicles.delete.invalid=Der eingegebene Name stimmt nicht mit dem Fahrzeugn
 vila.vehicles.deleted=Das Fahrzeug wurde gelöscht.
 
 vila.dashboard.vehicles=Fahrzeuggegenüberstellung
+vila.dashboard.comparison.title=Jahresvergleich
