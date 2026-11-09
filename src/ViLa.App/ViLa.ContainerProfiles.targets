@@ -1,8 +1,8 @@
 <Project>
   <!-- keep container hooks limited to the Docker launch profile -->
   <PropertyGroup Condition="'$(ActiveDebugProfile)' != 'Container (Dockerfile)' and '$(ActiveDebugProfile)' != 'Docker (Dockerfile)' and '$(ContainersToolsLaunchingInVS)' != 'true' and '$(DOTNET_RUNNING_IN_CONTAINER)' != 'true'">
-    <BuildDependsOn>$(BuildDependsOn.Replace('ContainerWaitForWarmupCompletion;', '').Replace('ContainerPrepareForBuild;', '').Replace('ContainerLaunch;', ''))</BuildDependsOn>
-    <CleanDependsOn>$(CleanDependsOn.Replace('ContainerClean;', ''))</CleanDependsOn>
+    <BuildDependsOn>$([MSBuild]::Unescape($(BuildDependsOn.Replace('ContainerWaitForWarmupCompletion;', '').Replace('ContainerPrepareForBuild;', '').Replace('ContainerLaunch;', ''))))</BuildDependsOn>
+    <CleanDependsOn>$([MSBuild]::Unescape($(CleanDependsOn.Replace('ContainerClean;', ''))))</CleanDependsOn>
   </PropertyGroup>
   <Target Name="ContainerPrepareForBuild" Condition="'$(ActiveDebugProfile)' == 'Container (Dockerfile)' or '$(ActiveDebugProfile)' == 'Docker (Dockerfile)'">
     <KillAppInsideContainer Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'" IntermediateOutputPath="$(ContainerIntermediateOutputPath)" ProjectFilePath="$(MSBuildProjectFullPath)" ErrorLogFilePath="$(ContainerSemaphoreFilePath)" ProjectCapability="@(ProjectCapability)" ProjectTypeGuids="$(ProjectTypeGuids)" OutputType="$(OutputType)" PublishAot="$(PublishAot)" Configuration="$(Configuration)" FunctionsExecutionModel="$(FunctionsExecutionModel)" LocalRegistry="$(LocalRegistry)" />

@@ -131,22 +131,20 @@ namespace ViLa.WWW.Details
             if (measurementLog != null)
             {
                 var deleteUri = WebEx.ComponentHub.SitemapManager.GetUri<WWW.Api._1_.History.Delete>(renderContext.Request.ApplicationContext);
-                var confirm = new ControlModal("delete-measurement-" + id)
+                var confirm = new ControlHtml
                 {
-                    Header = _ => "vila:vila.details.delete",
-                    CloseLabel = _ => "webexpress.webui:form.cancel.label"
-                };
-                confirm.Add(new ControlHtml
-                {
-                    Html = context => $"<form method='post' action='{System.Net.WebUtility.HtmlEncode(deleteUri.ToString())}'>" +
+                    Html = context => $"<dialog id='delete-measurement-{id}' class='wx-webui-modal' data-close-label='{I18N.Translate(context, "webexpress.webui:form.cancel.label")}'>" +
+                        $"<div class='wx-modal-header'>{I18N.Translate(context, "vila:vila.details.delete")}</div>" +
+                        $"<div class='wx-modal-content'><form id='delete-measurement-form-{id}' method='post' action='{System.Net.WebUtility.HtmlEncode(deleteUri.ToString())}'>" +
                         $"<input type='hidden' name='id' value='{System.Net.WebUtility.HtmlEncode(id)}'>" +
                         $"<p>{I18N.Translate(context, "vila:vila.delete.description")}</p>" +
                         $"<p><code>{System.Net.WebUtility.HtmlEncode(id)}</code></p>" +
                         $"<label for='confirm-{id}'>{I18N.Translate(context, "vila:vila.details.confirm.id")}</label>" +
                         $"<input id='confirm-{id}' class='form-control mb-3' name='confirmation' type='text' required " +
                         $"pattern='{System.Net.WebUtility.HtmlEncode(id)}' autocomplete='off' spellcheck='false'>" +
-                        $"<button class='btn btn-danger' type='submit'>{I18N.Translate(context, "vila:vila.details.delete")}</button></form>"
-                });
+                        "</form></div><div class='wx-modal-footer'>" +
+                        $"<button class='btn btn-danger' type='submit' form='delete-measurement-form-{id}'><i class='{new IconTrash().Class} me-2' aria-hidden='true'></i>{I18N.Translate(context, "vila:vila.details.delete")}</button></div></dialog>"
+                };
                 visualTree.Content.MainPanel.AddPrimary(confirm);
                 var editorId = "measurement-description-editor-" + measurementLog.ID;
                 var section = new ControlSection { Header = _ => "vila:vila.description.title" };

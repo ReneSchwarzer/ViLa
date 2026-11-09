@@ -66,7 +66,7 @@ docker compose ps
 To publish a multi-architecture image (`linux/amd64` and `linux/arm64`) for Raspberry Pi and other ARM hosts, build with Buildx and push a single tag.
 
 ```sh
-docker buildx build --platform linux/amd64,linux/arm64 --build-context nuget=$WEBEXPRESS_FEED -t rschwarzer/vila:2.0.0 --push .
+docker buildx build --platform linux/amd64,linux/arm64 --build-context nuget=$WEBEXPRESS_FEED -t rschwarzer/vila:2.0.1 --push .
 ```
 
 Open `/vila/` at the configured base address. The HTTP health check

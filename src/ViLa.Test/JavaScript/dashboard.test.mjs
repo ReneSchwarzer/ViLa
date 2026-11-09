@@ -42,7 +42,7 @@ function createHarness(fetchHandler, hidden = false) {
         fetch: fetchHandler,
         setTimeout: (callback, delay) => { timers.set(++timerId, { callback, delay }); return timerId; },
         clearTimeout: id => timers.delete(id),
-        webexpress: { webui: {
+        webexpress: { webapp: { KanbanCtrl: class {} }, webui: {
             Ctrl: class {
                 /** Releases the stub base controller. */
                 destroy() {}
@@ -97,7 +97,7 @@ test("refreshes the vehicle catalog for local and document-level save events and
         document,
         window: { location: { href: "http://localhost/vila/settings/vehicles" } },
         URL,
-        webexpress: { webui: {
+        webexpress: { webapp: { KanbanCtrl: class {} }, webui: {
             Ctrl: class {
                 /** Releases the stub base controller. */
                 destroy() {}
@@ -196,4 +196,49 @@ test("shows the live section only during an active charging session", async () =
     }
     assert.equal(harness.updates.length, 1);
     harness.controller.destroy();
+});
+
+/**
+ * Verifies that assignment moves retain their source across asynchronous persistence.
+ */
+test("data kanban sends the expected source without submitting a form", () => {
+    // arrange
+    const sent = [];
+    const listeners = new Map();
+    const host = {
+        addEventListener: (name, listener) => listeners.set(name, listener),
+        removeEventListener: name => listeners.delete(name)
+    };
+    const context = vm.createContext({ webexpress: {
+        webui: { Ctrl: class {}, Event: { MOVE_EVENT: "move" }, Controller: { registerClass: () => {} } },
+        webapp: { KanbanCtrl: class {
+            /** Initializes the persistence stub. */
+            _initRestPersistence() {}
+            /**
+             * Records the request supplied to standard DataKanban persistence.
+             * @param {Object} payload - The move request.
+             */
+            _sendStateToServer(payload) { sent.push(payload); }
+            /** Releases the persistence stub. */
+            destroy() {}
+        } }
+    } });
+    vm.runInContext(source, context);
+    const controller = new context.vila.AssignmentBoardCtrl();
+    controller._element = host;
+    controller._initRestPersistence(host);
+
+    // act
+    listeners.get("move")({ detail: { oldColumnId: "none" } });
+    controller._sendStateToServer({ cardId: "first", columnId: "car-a" });
+    listeners.get("move")({ detail: { oldColumnId: "car-a" } });
+    controller._sendStateToServer({ cardId: "first", columnId: "car-b" });
+    controller.destroy();
+
+    // validation
+    assert.equal(sent[0].source, "none");
+    assert.equal(sent[0].columnId, "car-a");
+    assert.equal(sent[1].source, "car-a");
+    assert.equal(sent[1].columnId, "car-b");
+    assert.equal(listeners.size, 0);
 });

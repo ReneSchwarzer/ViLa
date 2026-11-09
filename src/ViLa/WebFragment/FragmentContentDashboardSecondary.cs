@@ -4,6 +4,7 @@ using System.Linq;
 using ViLa.Model;
 using ViLa.WebControl;
 using WebExpress.WebApp.WebSection;
+using WebExpress.WebCore.Internationalization;
 using WebExpress.WebCore.WebAttribute;
 using WebExpress.WebCore.WebFragment;
 using WebExpress.WebCore.WebHtml;
@@ -85,8 +86,9 @@ namespace ViLa.WebFragment
             {
                 Text = _ => BillingPeriod.FormatCosts(logs, culture, model.Settings.Currency)
             });
-            summary.Add(new ControlText { Text = _ => "vila:vila.dashboard.comparison" });
-            summary.Add(new ControlChart("vila-monthly-chart")
+            var views = new ControlView("vila-consumption-views") { Layout = _ => TypeLayoutView.ToggleGroup };
+            var yearlyView = new ControlViewItem("vila-yearly-comparison") { Title = _ => "vila:vila.dashboard.comparison" };
+            yearlyView.Add(new ControlChart("vila-monthly-chart")
             {
                 Type = _ => TypeChart.Bar,
                 Labels = _ => months.Select(culture.DateTimeFormat.GetAbbreviatedMonthName),
@@ -107,6 +109,37 @@ namespace ViLa.WebFragment
                 MaintainAspectRatio = _ => false,
                 Minimum = _ => 0
             });
+            views.Add(yearlyView);
+            var vehicleView = new ControlViewItem("vila-vehicle-comparison") { Title = _ => "vila:vila.dashboard.vehicles" };
+            vehicleView.Add(new ControlText { Text = _ => current.Year.ToString(culture) });
+            vehicleView.Add(new ControlChart("vila-vehicle-chart")
+            {
+                Type = _ => TypeChart.Line,
+                Labels = _ => months.Take(current.Month).Select(culture.DateTimeFormat.GetAbbreviatedMonthName),
+                Data = context => history.Where(log => log.Till.AddDays(model.Settings.BillingDayOffset).Year == current.Year
+                        && log.Till.AddDays(model.Settings.BillingDayOffset).Month <= current.Month)
+                    .GroupBy(log => log.VehicleId ?? string.Empty).Select(group =>
+                    {
+                        var vehicle = model.Vehicles.GetVehicle(group.Key);
+                        var color = string.IsNullOrEmpty(group.Key) ? "#6c757d" : vehicle?.Color ?? Vehicle.DefaultColor(group.Key);
+                        return new ControlChartDataset
+                        {
+                            Title = string.IsNullOrEmpty(group.Key) ? I18N.Translate(context, "vila:vila.vehicles.badge.unassigned")
+                                : vehicle?.Name ?? group.First().VehicleName ?? group.Key,
+                            BorderColor = color,
+                            BackgroundColor = color,
+                            Data = new ControlChartDatasetPointCollection(months.Take(current.Month).Select(number =>
+                                group.Where(log => log.Till.AddDays(model.Settings.BillingDayOffset).Month == number).Sum(log => log.FinalPower)).ToArray())
+                        };
+                    }).ToArray(),
+                TitleY = _ => "kWh",
+                Responsive = _ => true,
+                Height = _ => 220,
+                MaintainAspectRatio = _ => false,
+                Minimum = _ => 0
+            });
+            views.Add(vehicleView);
+            summary.Add(views);
             Add(summary);
         }
 
